@@ -2,13 +2,13 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 
 	"../../lib"
 	"github.com/gorilla/mux"
+	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/rs/cors"
 )
@@ -23,14 +23,13 @@ const (
 )
 
 // dbInit launch the connection to the database
-func initDatabase() *sql.DB {
+func initDatabase() *sqlx.DB {
 	dns := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable", host, port, user, dbname) // No password
-	db, err := sql.Open("postgres", dns)
+	db, err := sqlx.Open("postgres", dns)
 	if err != nil {
 		log.Panic(err)
 	}
-	defer db.Close()
 	err = db.Ping()
 	if err != nil {
 		log.Panic(err)
@@ -47,12 +46,12 @@ func adapt(h http.Handler, adapters ...Adapter) http.Handler {
 }
 
 // adapt the request by checking the auth and filling the context with usefull data
-func enhanceHandlers(r *mux.Router, db *sql.DB) http.Handler {
+func enhanceHandlers(r *mux.Router, db *sqlx.DB) http.Handler {
 	return adapt(r, withRights(), withDB(db), withCors())
 }
 
 // withDB is an adapter that copy the access to the database to serve a specific call
-func withDB(db *sql.DB) Adapter {
+func withDB(db *sqlx.DB) Adapter {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := context.WithValue(r.Context(), "database", db)
@@ -77,7 +76,7 @@ func withRights() Adapter {
 			// [DB REQUEST] Error: This user doesn't exists or is not admin
 			// userId := r.Header.Get("userId")
 			// token := r.Header.Get("token")
-			_, ok := r.Context().Value("database").(*sql.DB)
+			_, ok := r.Context().Value("database").(*sqlx.DB)
 			if !ok {
 				lib.RespondWithErrorHTTP(w, 500, "Problem with database connection")
 				return

@@ -66,4 +66,5 @@ vendor_get: vendor_clean
 		github.com/gorilla/securecookie \
 		golang.org/x/crypto/bcrypt \
 		github.com/kylelemons/godebug/pretty \
-		github.com/lib/pq
+		github.com/lib/pq \
+		github.com/jmoiron/sqlx
