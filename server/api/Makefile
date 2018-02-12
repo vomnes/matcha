@@ -23,7 +23,7 @@ launch:
 run: build launch
 
 test:
-	cd src; go test ./routes
+	cd src; go test ./routes/*
 
 test-verbose:
 	cd src; go test -v ./routes

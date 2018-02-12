@@ -26,7 +26,22 @@ func checkInput(d accountData) (int, string, error) {
 	}
 	right := IsValidUsername(d.Username)
 	if right == false {
-		return 406, "No a valid username", errors.New("No a valid username")
+		return 406, "Not a valid username", errors.New("Not a valid username")
+	}
+	right = IsValidFirstLastName(d.Firstname)
+	if right == false {
+		return 406, "Not a valid firstname", errors.New("Not a valid firstname")
+	}
+	right = IsValidFirstLastName(d.Lastname)
+	if right == false {
+		return 406, "Not a valid lastname", errors.New("Not a valid lastname")
+	}
+	right = IsValidEmailAddress(d.EmailAddress)
+	if right == false {
+		return 406, "Not a valid email address", errors.New("Not a valid email address")
+	}
+	if d.Password != d.RePassword {
+		return 406, "Both password entered must be identical", errors.New("Both password entered must be identical")
 	}
 	return 0, "", nil
 }
