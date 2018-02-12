@@ -1,13 +1,11 @@
 package account
 
 import (
-	"errors"
 	"log"
 	"net/http"
 
 	"../../../../lib"
 	"github.com/jmoiron/sqlx"
-	"github.com/kylelemons/godebug/pretty"
 )
 
 type accountData struct {
@@ -19,38 +17,74 @@ type accountData struct {
 	RePassword   string `json:"re-password"`
 }
 
-func checkInput(d accountData) (int, string, error) {
+func checkInput(d accountData) (int, string) {
 	if d.Username == "" || d.EmailAddress == "" || d.Firstname == "" ||
 		d.Lastname == "" || d.Password == "" || d.RePassword == "" {
-		return 406, "At least one field of the body is empty", errors.New("At least one field of the body is empty")
+		return 406, "At least one field of the body is empty"
 	}
 	right := IsValidUsername(d.Username)
 	if right == false {
-		return 406, "Not a valid username", errors.New("Not a valid username")
+		return 406, "Not a valid username"
 	}
 	right = IsValidFirstLastName(d.Firstname)
 	if right == false {
-		return 406, "Not a valid firstname", errors.New("Not a valid firstname")
+		return 406, "Not a valid firstname"
 	}
 	right = IsValidFirstLastName(d.Lastname)
 	if right == false {
-		return 406, "Not a valid lastname", errors.New("Not a valid lastname")
+		return 406, "Not a valid lastname"
 	}
 	right = IsValidEmailAddress(d.EmailAddress)
 	if right == false {
-		return 406, "Not a valid email address", errors.New("Not a valid email address")
+		return 406, "Not a valid email address"
 	}
 	if d.Password != d.RePassword {
-		return 406, "Both password entered must be identical", errors.New("Both password entered must be identical")
+		return 406, "Both password entered must be identical"
 	}
-	return 0, "", nil
+	right = IsValidPassword(d.Password)
+	if right == false {
+		return 406, "Not a valid password"
+	}
+	return 0, ""
+}
+
+// availabilityInput check the validity in the database of the username and
+// email address in order to avoid duplicates
+func availabilityInput(d accountData, db *sqlx.DB, r *http.Request) (int, string) {
+	usernameInput := d.Username
+	emailInput := d.EmailAddress
+	var users []lib.User
+	err := db.Select(&users, "SELECT * FROAM Users WHERE username = $1 OR email = $2", usernameInput, emailInput)
+	if err != nil {
+		log.Println(lib.PrettyError(r.URL.String() + " [DB REQUEST - SELECT] " + err.Error()))
+		return 406, "Check availability input failed"
+	}
+	usernameIsAvailable := true
+	emailIsAvailable := true
+	for _, user := range users {
+		if user.Username == usernameInput {
+			usernameIsAvailable = false
+		}
+		if user.Email == emailInput {
+			emailIsAvailable = false
+		}
+		if !usernameIsAvailable && !emailIsAvailable {
+			return 406, "Username and email address already used"
+		}
+	}
+	if !usernameIsAvailable {
+		return 406, "Username already used"
+	} else if !emailIsAvailable {
+		return 406, "Email address already used"
+	}
+	return 0, ""
 }
 
 // Register function corresponds to the API route /v1/account/register
 // The body contains the username, emailAddress, lastname, firstname
 // password and re-password of the new account.
 func Register(w http.ResponseWriter, r *http.Request) {
-	_, ok := r.Context().Value("database").(*sqlx.DB)
+	db, ok := r.Context().Value("database").(*sqlx.DB)
 	if !ok {
 		lib.RespondWithErrorHTTP(w, 500, "Problem with database connection")
 		return
@@ -61,19 +95,16 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	errCode, errContent, err = checkInput(inputData)
-	if err != nil {
-		log.Println(lib.PrettyError(r.URL.String() + err.Error()))
+	errCode, errContent = checkInput(inputData)
+	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	pretty.Print(inputData)
+	errCode, errContent = availabilityInput(inputData, db, r)
+	if errCode != 0 || errContent != "" {
+		lib.RespondWithErrorHTTP(w, errCode, errContent)
+		return
+	}
+	// pretty.Print(inputData)
 	lib.RespondEmptyHTTP(w, http.StatusCreated)
 }
-
-// var u []lib.User
-// err := db.Select(&u, "SELECT * FROM Users")
-// if err != nil {
-// 	lib.RespondWithErrorHTTP(w, 500, "[DB REQUEST - SELECT] Error: ")
-// 	return
-// }

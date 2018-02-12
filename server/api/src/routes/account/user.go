@@ -9,9 +9,9 @@ const (
 	// UsernameMinLength corresponds to the minimum character length of the username
 	UsernameMinLength = 6
 	// UsernameMaxLength corresponds to the maximum character length of the username
-	UsernameMaxLength = 24
+	UsernameMaxLength = 64
 	// EmailAddressMaxLength corresponds to the maximum character length of the email address
-	EmailAddressMaxLength = 255
+	EmailAddressMaxLength = 254
 	// PasswordMinLength corresponds to the minimum character length of a password
 	PasswordMinLength = 8
 	// PasswordMaxLength corresponds to the maximum character length of a password
@@ -35,7 +35,7 @@ func IsValidUsername(s string) bool {
 // Check length maximum and minimum and authorized characters (a-zA-Z -)
 // Return a boolean
 func IsValidFirstLastName(s string) bool {
-	if len(s) < UsernameMinLength || len(s) > UsernameMaxLength {
+	if len(s) < 1 || len(s) > UsernameMaxLength {
 		return false
 	}
 	if !regexp.MustCompile(`^[a-zA-Z\-]+$`).MatchString(s) {
@@ -55,7 +55,8 @@ func IsValidEmailAddress(s string) bool {
 }
 
 // IsValidPassword check if the string parameter is a valid password
-// A valid password must contains only
+// A valid password must contains only uppercase and lowercase characters and digits,
+// have a length between PasswordMinLength and PasswordMaxLength
 // Return a boolean
 func IsValidPassword(s string) bool {
 	var digit, upper, lower bool
