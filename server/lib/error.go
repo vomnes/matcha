@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+// PrettyError create take a string as paramter to return a formated error
+// that contains the error file and line
 func PrettyError(err string) error {
 	_, file, line, ok := runtime.Caller(1)
 	if !ok {

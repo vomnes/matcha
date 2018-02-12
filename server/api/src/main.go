@@ -8,7 +8,7 @@ import (
 	"net/http"
 
 	"../../lib"
-	"./routes"
+	"./routes/account"
 
 	"github.com/gorilla/mux"
 )
@@ -21,7 +21,9 @@ func Handlers() *mux.Router {
 	api.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithJSON(w, 200, "OK")
 	})
-	api.HandleFunc("/v1/authentication", routes.Authentication).Methods("POST") // Don't forget the exception in init.go
+	// Don't forget the exception in init.go
+	api.HandleFunc("/v1/account/register", account.Register).Methods("POST")
+	api.HandleFunc("/v1/account/login", account.Login).Methods("POST")
 	return api
 }
 
