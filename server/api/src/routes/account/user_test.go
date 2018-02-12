@@ -92,10 +92,19 @@ var passwordTests = []struct {
 	testContent string // test details
 }{
 	{"abcABC123", true, "Valid password"},
+	{"abcABC12", true, "Valid password 8 characters"},
+	{"abcABC123abcABC123abcABC123abcABC123abcABC123abcABC" +
+		"abcABC123abcABC123abcABC123abcABC123abcABC123abcA", true, "Valid password" +
+		" 100 characters"},
 	{"abcdefgh", false, "Only lowercase letters"},
 	{"ABCDEFGH", false, "Only uppercase letters"},
 	{"123456789", false, "Only digits"},
-	{"aB1", false, "Too short"},
+	{"abcABC1", false, "Too short"},
+	{"abcABC123abcABC123abcABC123abcABC123abcABC123abcABC" +
+		"abcABC123abcABC123abcABC123abcABC123abcABC123abcABC", false, "Too long"},
+	{"     \t      ", false, "Only space"},
+	{"", false, "Empty"},
+	{"abcABC123$%^&*()_", false, "Special characters"},
 }
 
 func TestIsValidPassword(t *testing.T) {

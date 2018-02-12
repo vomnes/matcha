@@ -1,6 +1,9 @@
 package account
 
-import "regexp"
+import (
+	"regexp"
+	"unicode"
+)
 
 const (
 	// UsernameMinLength corresponds to the minimum character length of the username
@@ -9,6 +12,10 @@ const (
 	UsernameMaxLength = 24
 	// EmailAddressMaxLength corresponds to the maximum character length of the email address
 	EmailAddressMaxLength = 255
+	// PasswordMinLength corresponds to the minimum character length of a password
+	PasswordMinLength = 8
+	// PasswordMaxLength corresponds to the maximum character length of a password
+	PasswordMaxLength = 100
 )
 
 // IsValidUsername check if the string parameter is a valid username
@@ -48,10 +55,32 @@ func IsValidEmailAddress(s string) bool {
 }
 
 // IsValidPassword check if the string parameter is a valid password
+// A valid password must contains only
 // Return a boolean
 func IsValidPassword(s string) bool {
-	reEmail := regexp.MustCompile("^*\\d*[a-z]*[A-Z][a-zA-Z0-9]{8, 254}$")
-	if !reEmail.MatchString(s) {
+	var digit, upper, lower bool
+	char := 0
+	for _, s := range s {
+		switch {
+		case unicode.IsNumber(s):
+			if !digit {
+				digit = true
+			}
+		case unicode.IsUpper(s):
+			if !upper {
+				upper = true
+			}
+		case unicode.IsLower(s):
+			if !lower {
+				lower = true
+			}
+		default:
+			return false
+		}
+		char++
+	}
+	if char < PasswordMinLength || char > PasswordMaxLength ||
+		!digit || !lower || !upper {
 		return false
 	}
 	return true
