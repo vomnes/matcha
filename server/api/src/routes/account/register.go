@@ -91,7 +91,7 @@ func createUser(d accountData, db *sqlx.DB, r *http.Request) (int, string) {
 	// Insert data in database
 	stmt, err := db.Preparex(`INSERT INTO users (username, email, lastname, firstname, password) VALUES ($1, $2, $3, $4, $5)`)
 	if err != nil {
-		log.Fatal(lib.PrettyError("Failed to prepare request insert user" + err.Error()))
+		log.Fatal(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request insert user" + err.Error()))
 		return 500, "Insert data failed"
 	}
 	_ = stmt.QueryRow(d.Username, d.EmailAddress, d.Lastname, d.Firstname, hashedPassword)
