@@ -26,23 +26,23 @@ test:
 	cd src; go test ./routes/*
 
 test-verbose:
-	cd src; go test -v ./routes
+	cd src; go test -v ./routes/*
 
 test-target:
-	go test -v -run '$(TARGET)' ./src/routes
+	go test -v -run '$(TARGET)' ./src/routes/*
 
 cover:
-	go test -cover ./src/routes
+	go test -cover ./src/routes/*
 
 ROUTES=src/routes/
 cover-html:
-	go test -coverprofile=cover.out ./src/routes
+	go test -coverprofile=cover.out ./src/routes/*
 	sed -i -e "s#.*\($(ROUTES).*\.go\)#\./\\1#" cover.out #Format cover.out
 	go tool cover -html=cover.out -o coverage.html
 	rm cover.out
 
 cover-func:
-	@go test -coverprofile=cover.out ./src/routes
+	@go test -coverprofile=cover.out ./src/routes/*
 	@sed -i -e "s#.*\($(ROUTES).*\.go\)#\./\\1#" cover.out #Format cover.out
 	@go tool cover -func=cover.out
 	@rm cover.out

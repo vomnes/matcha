@@ -41,12 +41,12 @@ type responseBodyError struct {
 func ReadBodyError(r io.Reader) string {
 	body, err := ioutil.ReadAll(r)
 	if err != nil {
-		log.Println(PrettyError(err.Error()))
+		log.Fatal(PrettyError(err.Error()))
 	}
 	var responseBody responseBodyError
 	err = json.Unmarshal(body, &responseBody)
 	if err != nil {
-		log.Println(PrettyError(err.Error()))
+		log.Fatal(PrettyError(err.Error()))
 	}
 	return responseBody.Error
 }

@@ -54,7 +54,7 @@ func availabilityInput(d accountData, db *sqlx.DB, r *http.Request) (int, string
 	usernameInput := d.Username
 	emailInput := d.EmailAddress
 	var users []lib.User
-	err := db.Select(&users, "SELECT * FROAM Users WHERE username = $1 OR email = $2", usernameInput, emailInput)
+	err := db.Select(&users, "SELECT * FROM Users WHERE username = $1 OR email = $2", usernameInput, emailInput)
 	if err != nil {
 		log.Println(lib.PrettyError(r.URL.String() + " [DB REQUEST - SELECT] " + err.Error()))
 		return 406, "Check availability input failed"
