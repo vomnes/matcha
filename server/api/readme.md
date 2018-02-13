@@ -1,9 +1,9 @@
 # API routes details
 
 ## Account
-### POST '/v1/account/register'
+#### POST '/v1/account/register'
 ```
-  JSON Body :
+JSON Body :
   {
     "username": string,
     "email": string,
