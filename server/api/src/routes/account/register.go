@@ -6,6 +6,7 @@ import (
 
 	"../../../../lib"
 	"github.com/jmoiron/sqlx"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type accountData struct {
@@ -80,6 +81,23 @@ func availabilityInput(d accountData, db *sqlx.DB, r *http.Request) (int, string
 	return 0, ""
 }
 
+func createUser(d accountData, db *sqlx.DB, r *http.Request) (int, string) {
+	// Generate "hash" to store from user password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(d.Password), bcrypt.DefaultCost)
+	if err != nil {
+		log.Println(lib.PrettyError(r.URL.String() + " [PW - BCRYPT] " + err.Error()))
+		return 500, "Password encryption failed"
+	}
+	// Insert data in database
+	stmt, err := db.Preparex(`INSERT INTO users (username, email, lastname, firstname, password) VALUES ($1, $2, $3, $4, $5)`)
+	if err != nil {
+		log.Fatal(lib.PrettyError("Failed to prepare request insert user" + err.Error()))
+		return 500, "Insert data failed"
+	}
+	_ = stmt.QueryRow(d.Username, d.EmailAddress, d.Lastname, d.Firstname, hashedPassword)
+	return 0, ""
+}
+
 // Register function corresponds to the API route /v1/account/register
 // The body contains the username, emailAddress, lastname, firstname
 // password and re-password of the new account.
@@ -105,6 +123,10 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	// pretty.Print(inputData)
+	errCode, errContent = createUser(inputData, db, r)
+	if errCode != 0 || errContent != "" {
+		lib.RespondWithErrorHTTP(w, errCode, errContent)
+		return
+	}
 	lib.RespondEmptyHTTP(w, http.StatusCreated)
 }
