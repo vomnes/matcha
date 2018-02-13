@@ -13,7 +13,7 @@ import (
 	"github.com/rs/cors"
 )
 
-type Adapter func(http.Handler) http.Handler
+type adapter func(http.Handler) http.Handler
 
 const (
 	host   = "localhost"
@@ -38,7 +38,7 @@ func initDatabase() *sqlx.DB {
 }
 
 // adapt transforms an handler without changing it's type. Usefull for authentification.
-func adapt(h http.Handler, adapters ...Adapter) http.Handler {
+func adapt(h http.Handler, adapters ...adapter) http.Handler {
 	for _, adapter := range adapters {
 		h = adapter(h)
 	}
@@ -51,17 +51,17 @@ func enhanceHandlers(r *mux.Router, db *sqlx.DB) http.Handler {
 }
 
 // withDB is an adapter that copy the access to the database to serve a specific call
-func withDB(db *sqlx.DB) Adapter {
+func withDB(db *sqlx.DB) adapter {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			ctx := context.WithValue(r.Context(), "database", db)
+			ctx := context.WithValue(r.Context(), lib.Database, db)
 			h.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
 }
 
 // withRights is an adapter that verify the user exists, verify the token, and attach userId to the request.
-func withRights() Adapter {
+func withRights() adapter {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			routeURL := *r.URL
@@ -82,7 +82,7 @@ func withRights() Adapter {
 				return
 			}
 			// attach data to the request
-			ctx := context.WithValue(r.Context(), "userId", "currently empty")
+			ctx := context.WithValue(r.Context(), lib.UserID, "currently empty")
 			h.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
@@ -90,7 +90,7 @@ func withRights() Adapter {
 
 // withCors is an adpater that allowed the specific headers we need for our requests from a
 // different domain.
-func withCors() Adapter {
+func withCors() adapter {
 	return func(h http.Handler) http.Handler {
 		c := cors.New(cors.Options{
 			AllowedOrigins:   []string{"http://localhost"},

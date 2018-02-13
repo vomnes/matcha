@@ -84,7 +84,7 @@ func availabilityInput(d accountData, db *sqlx.DB, r *http.Request) (int, string
 // The body contains the username, emailAddress, lastname, firstname
 // password and re-password of the new account.
 func Register(w http.ResponseWriter, r *http.Request) {
-	db, ok := r.Context().Value("database").(*sqlx.DB)
+	db, ok := r.Context().Value(lib.Database).(*sqlx.DB)
 	if !ok {
 		lib.RespondWithErrorHTTP(w, 500, "Problem with database connection")
 		return
