@@ -1,24 +1,22 @@
-package account
+package tests
 
 import (
 	"fmt"
 	"log"
-	"os"
-	"testing"
 
 	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
 )
 
 var (
-	dbTest *sqlx.DB
-	host   = "localhost"
-	port   = 5432
-	user   = "vomnes"
+	// DB corresponds to the test database
+	DB   *sqlx.DB
+	host = "localhost"
+	port = 5432
+	user = "vomnes"
 )
 
-// dbInit launch the connection to the database
-func dbInit() *sqlx.DB {
+// DbTestInit launch the connection to the test database for the tests
+func DbTestInit() *sqlx.DB {
 	dns := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable", host, port, user, "db_matcha_tests") // No password
 	db, err := sqlx.Open("postgres", dns)
@@ -32,25 +30,15 @@ func dbInit() *sqlx.DB {
 	return db
 }
 
+// DbClean delete all of rows of the tables in the test database
 func DbClean() {
-	if dbTest == nil {
+	if DB == nil {
 		log.Panic("Connection to database failed")
 	}
 	tables := []string{
 		"users",
 	}
 	for _, table := range tables {
-		err := dbTest.MustExec("DELETE FROM " + table)
-		if err != nil {
-			fmt.Println(err)
-		}
+		DB.MustExec("DELETE FROM " + table)
 	}
-}
-
-func TestMain(m *testing.M) {
-	dbTest = dbInit()
-	DbClean()
-	ret := m.Run()
-	DbClean()
-	os.Exit(ret)
 }

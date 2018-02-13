@@ -1,4 +1,4 @@
-package lib
+package tests
 
 import (
 	"bytes"
@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 
+	"../lib"
+
 	"github.com/jmoiron/sqlx"
 )
 
@@ -18,7 +20,7 @@ import (
 // Return a http request with database in context
 func CreateRequest(method, url string, body []byte, db *sqlx.DB) *http.Request {
 	r := httptest.NewRequest(method, url, bytes.NewBuffer(body))
-	ctx := context.WithValue(r.Context(), Database, db)
+	ctx := context.WithValue(r.Context(), lib.Database, db)
 	// ctx = context.WithValue(ctx, "userId", userData.UserId)
 	// ctx = context.WithValue(ctx, "hashedToken", userData.HashedToken)
 	return r.WithContext(ctx)
@@ -41,12 +43,12 @@ type responseBodyError struct {
 func ReadBodyError(r io.Reader) string {
 	body, err := ioutil.ReadAll(r)
 	if err != nil {
-		log.Fatal(PrettyError(err.Error()))
+		log.Fatal(lib.PrettyError(err.Error()))
 	}
 	var responseBody responseBodyError
 	err = json.Unmarshal(body, &responseBody)
 	if err != nil {
-		log.Fatal(PrettyError(err.Error()))
+		log.Fatal(lib.PrettyError(err.Error()))
 	}
 	return responseBody.Error
 }
