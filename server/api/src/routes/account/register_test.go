@@ -127,7 +127,9 @@ func TestRegisterFieldInvalidPassword(t *testing.T) {
 }
 
 func TestRegisterNotAvailableUsername(t *testing.T) {
-	body := []byte(`{"username": "vomnes", "email": "vomnes@s.co", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "re-password": "abcABC123"}`)
+	DbClean()
+	dbTest.MustExec(`INSERT INTO users (username, email, lastname, firstname, password) VALUES ($1, $2, $3, $4, $5)`, "vomnes", "valentin.omnes@gmail.com", "Omnes", "Valentin", "abc")
+	body := []byte(`{"username": "vomnes", "email": "valentin.omnes@gmail.com", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "re-password": "abcABC123"}`)
 	r := lib.CreateRequest("POST", "/v1/account/register", body, dbTest)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()

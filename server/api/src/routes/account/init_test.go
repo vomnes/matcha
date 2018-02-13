@@ -37,10 +37,13 @@ func DbClean() {
 		log.Panic("Connection to database failed")
 	}
 	tables := []string{
-		"user",
+		"users",
 	}
 	for _, table := range tables {
-		_ = dbTest.QueryRow("DELETE FROM $1;", table)
+		err := dbTest.MustExec("DELETE FROM " + table)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 }
 
