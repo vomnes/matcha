@@ -2,8 +2,8 @@
 
 ## Account
 ### POST '/v1/account/register'
-Input body - JSON :
 ```
+  JSON Body :
   {
     "username": string,
     "email": string,
@@ -19,5 +19,6 @@ and lastname (a-zA-Z - {6,64}), password (a-zA-Z0-9 {8,100}- At least one of eac
 email address (max 254).
 - Password and reenter password must be identical.
 - Username and email address must not be already used.
+
 If everything is correct the user is inserted in the Users table of the database,
 password is hashed with bcrypt, correct http status code is 201 - Created.
