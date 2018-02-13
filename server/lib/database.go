@@ -1,6 +1,8 @@
 package lib
 
-import "time"
+import (
+	"time"
+)
 
 // User is the data structure of the table User from PostgreSQL
 type User struct {
