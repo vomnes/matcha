@@ -180,6 +180,11 @@ func TestRegisterNotAvailableEmailAddress(t *testing.T) {
 	if resp.StatusCode != expectedCode || statusContent != expectedContent {
 		t.Errorf("Must return an error with http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m and status content '\x1b[1;32m%s\033[0m' not '\x1b[1;31m%s\033[0m'.", expectedCode, resp.StatusCode, expectedContent, statusContent)
 	}
+	var u lib.User
+	tests.DB.Get(&u, "Select * from Users Where username = 'vomnes' and email = 'valentin.omnes@gmail.com'")
+	if u.Username != "" || u.Email != "" {
+		t.Error("User must not has been inserted")
+	}
 }
 
 func TestRegisterNoDatabase(t *testing.T) {
