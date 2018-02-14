@@ -4,13 +4,16 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"encoding/base64"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"../../../../lib"
 	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/go-redis/redis"
 	"github.com/jmoiron/sqlx"
+	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -45,19 +48,30 @@ func checkUserSecret(inputData loginData, db *sqlx.DB) (lib.User, int, string) {
 	return u, 0, ""
 }
 
-func generateJWT(u lib.User) (string, int, string) {
+func generateJWT(u lib.User, client *redis.Client) (string, int, string) {
+	userUUID, err := uuid.NewV4()
+	if err != nil {
+		return "", 500, "UUID generation failed"
+	}
 	now := time.Now().Local()
+	duration := time.Second * time.Duration(60)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"iss":      "matcha.com",
-		"sub":      u.ID,
+		"sub":      userUUID.String(),
+		"userId":   u.ID,
 		"username": u.Username,
 		"iat":      now.Unix(),
-		"exp":      now.Add(time.Hour * time.Duration(72)).Unix(),
+		"exp":      now.Add(duration).Unix(),
 	})
 	tokenString, err := token.SignedString(lib.JWTSecret)
 	if err != nil {
 		return "", 500, "JWT creation failed"
 	}
+	err = lib.RedisSetValue(client, userUUID.String(), tokenString, duration)
+	if err != nil {
+		return "", 500, "Insert key:value in Redis failed"
+	}
+	fmt.Println(userUUID)
 	return tokenString, 0, ""
 }
 
@@ -67,6 +81,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	db, ok := r.Context().Value(lib.Database).(*sqlx.DB)
 	if !ok {
 		lib.RespondWithErrorHTTP(w, 500, "Problem with database connection")
+		return
+	}
+	redisClient, ok := r.Context().Value(lib.Redis).(*redis.Client)
+	if !ok {
+		lib.RespondWithErrorHTTP(w, 500, "Problem with redis connection")
 		return
 	}
 	var inputData loginData
@@ -81,7 +100,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Create JSON Web Token
-	token, errCode, errContent := generateJWT(u)
+	token, errCode, errContent := generateJWT(u, redisClient)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return

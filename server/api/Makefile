@@ -68,4 +68,6 @@ vendor_get: vendor_clean
 		github.com/kylelemons/godebug/pretty \
 		github.com/lib/pq \
 		github.com/jmoiron/sqlx \
-		github.com/dgrijalva/jwt-go
+		github.com/dgrijalva/jwt-go \
+		github.com/go-redis/redis \
+		github.com/satori/go.uuid

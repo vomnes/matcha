@@ -35,8 +35,9 @@ func main() {
 		fmt.Printf("running on port: %s\n", *portPtr)
 	}
 	db := initDatabase()
+	redisClient := lib.RedisConn()
 	router := handleAPIRoutes()
-	enhancedRouter := enhanceHandlers(router, db)
+	enhancedRouter := enhanceHandlers(router, db, redisClient)
 	if err := http.ListenAndServe(":"+*portPtr, enhancedRouter); err != nil {
 		log.Fatal(err)
 	}

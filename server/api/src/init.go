@@ -10,6 +10,7 @@ import (
 
 	"../../lib"
 	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/go-redis/redis"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -49,15 +50,16 @@ func adapt(h http.Handler, adapters ...adapter) http.Handler {
 }
 
 // adapt the request by checking the auth and filling the context with usefull data
-func enhanceHandlers(r *mux.Router, db *sqlx.DB) http.Handler {
-	return adapt(r, withRights(), withDB(db), withCors())
+func enhanceHandlers(r *mux.Router, db *sqlx.DB, client *redis.Client) http.Handler {
+	return adapt(r, withRights(), withDB(db, client), withCors())
 }
 
 // withDB is an adapter that copy the access to the database to serve a specific call
-func withDB(db *sqlx.DB) adapter {
+func withDB(db *sqlx.DB, client *redis.Client) adapter {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := context.WithValue(r.Context(), lib.Database, db)
+			ctx = context.WithValue(ctx, lib.Redis, client)
 			h.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}

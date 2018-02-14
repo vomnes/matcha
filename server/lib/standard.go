@@ -14,6 +14,8 @@ const (
 	UserID = key(2)
 	// Username key is used as value in order to store username in the context
 	Username = key(3)
+	// Redis key is used as value in order to store redis client in the context
+	Redis = key(4)
 )
 
 // StringInArray take a string and a array of string as parameter
