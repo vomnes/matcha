@@ -4,7 +4,6 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"encoding/base64"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -13,13 +12,13 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/go-redis/redis"
 	"github.com/jmoiron/sqlx"
-	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type loginData struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+	UUID     string `json:"uuid"`
 }
 
 func generateRandomSHA256() (string, string) {
@@ -48,16 +47,12 @@ func checkUserSecret(inputData loginData, db *sqlx.DB) (lib.User, int, string) {
 	return u, 0, ""
 }
 
-func generateJWT(u lib.User, client *redis.Client) (string, int, string) {
-	userUUID, err := uuid.NewV4()
-	if err != nil {
-		return "", 500, "UUID generation failed"
-	}
+func generateJWT(u lib.User, UUID string, client *redis.Client) (string, int, string) {
 	now := time.Now().Local()
-	duration := time.Second * time.Duration(60)
+	duration := time.Hour * time.Duration(72)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"iss":      "matcha.com",
-		"sub":      userUUID.String(),
+		"sub":      UUID,
 		"userId":   u.ID,
 		"username": u.Username,
 		"iat":      now.Unix(),
@@ -67,11 +62,10 @@ func generateJWT(u lib.User, client *redis.Client) (string, int, string) {
 	if err != nil {
 		return "", 500, "JWT creation failed"
 	}
-	err = lib.RedisSetValue(client, userUUID.String(), tokenString, duration)
+	err = lib.RedisSetValue(client, u.Username+"-"+UUID, tokenString, duration)
 	if err != nil {
 		return "", 500, "Insert key:value in Redis failed"
 	}
-	fmt.Println(userUUID)
 	return tokenString, 0, ""
 }
 
@@ -100,7 +94,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Create JSON Web Token
-	token, errCode, errContent := generateJWT(u, redisClient)
+	token, errCode, errContent := generateJWT(u, inputData.UUID, redisClient)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return

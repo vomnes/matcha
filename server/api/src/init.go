@@ -98,12 +98,12 @@ func withRights() adapter {
 				return lib.JWTSecret, nil
 			})
 			if err != nil {
-				lib.RespondWithErrorHTTP(w, 403, "Access denied - Error parsing token")
+				lib.RespondWithErrorHTTP(w, 403, "Access denied - Parse")
 				return
 			}
 			claims, ok := token.Claims.(jwt.MapClaims)
 			if !ok || !token.Valid {
-				if ve, ok := err.(*jwt.ValidationError); ok {
+				if ve, yes := err.(*jwt.ValidationError); yes {
 					if ve.Errors&(jwt.ValidationErrorExpired) != 0 {
 						lib.RespondWithErrorHTTP(w, 403, "Access denied - Token expired")
 						return
@@ -113,8 +113,27 @@ func withRights() adapter {
 				lib.RespondWithErrorHTTP(w, 403, "Access denied - Not a valid token")
 				return
 			}
+			// Check token in Redis storage
+			redisClient, ok := r.Context().Value(lib.Redis).(*redis.Client)
+			if !ok {
+				lib.RespondWithErrorHTTP(w, 500, "Problem with redis connection")
+				return
+			}
+			value, err := lib.RedisGetValue(redisClient, claims["username"].(string)+"-"+claims["sub"].(string))
+			if err != nil {
+				if err.Error() == "Key does not exist" {
+					lib.RespondWithErrorHTTP(w, 403, "Access denied")
+					return
+				}
+				lib.RespondWithErrorHTTP(w, 500, "Problem to get Redis value from key")
+				return
+			}
+			if value != tokenString {
+				lib.RespondWithErrorHTTP(w, 403, "Access denied - Old token")
+				return
+			}
 			// Attach data from the token to the request
-			ctx := context.WithValue(r.Context(), lib.UserID, claims["sub"])
+			ctx := context.WithValue(r.Context(), lib.UserID, claims["userId"])
 			ctx = context.WithValue(ctx, lib.Username, claims["username"])
 			h.ServeHTTP(w, r.WithContext(ctx))
 		})
