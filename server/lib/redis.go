@@ -9,11 +9,11 @@ import (
 )
 
 // RedisConn allows to create a connection with Redis storage
-func RedisConn() *redis.Client {
+func RedisConn(dbSelected int) *redis.Client {
 	client := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Password: "",         // no password set
+		DB:       dbSelected, // use default DB
 	})
 	err := client.Ping().Err()
 	if err != nil {

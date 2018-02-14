@@ -12,6 +12,7 @@ import (
 
 	"../lib"
 
+	"github.com/go-redis/redis"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -22,6 +23,17 @@ func CreateRequest(method, url string, body []byte, db *sqlx.DB) *http.Request {
 	r := httptest.NewRequest(method, url, bytes.NewBuffer(body))
 	ctx := context.WithValue(r.Context(), lib.Database, db)
 	// ctx = context.WithValue(ctx, "userId", userData.UserId)
+	// ctx = context.WithValue(ctx, "hashedToken", userData.HashedToken)
+	return r.WithContext(ctx)
+}
+
+// CreateRequestWithRedis allows to call a http route with a body for tests
+// Take as parameter a method, url, body, sql database and redis database
+// Return a http request with database in context
+func CreateRequestWithRedis(method, url string, body []byte, db *sqlx.DB, client *redis.Client) *http.Request {
+	r := httptest.NewRequest(method, url, bytes.NewBuffer(body))
+	ctx := context.WithValue(r.Context(), lib.Database, db)
+	ctx = context.WithValue(ctx, lib.Redis, client)
 	// ctx = context.WithValue(ctx, "hashedToken", userData.HashedToken)
 	return r.WithContext(ctx)
 }

@@ -47,7 +47,7 @@ func checkUserSecret(inputData loginData, db *sqlx.DB) (lib.User, int, string) {
 	return u, 0, ""
 }
 
-func generateJWT(u lib.User, UUID string, client *redis.Client) (string, int, string) {
+func handleJWT(u lib.User, UUID string, client *redis.Client) (string, int, string) {
 	now := time.Now().Local()
 	duration := time.Hour * time.Duration(72)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
@@ -93,8 +93,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	// Create JSON Web Token
-	token, errCode, errContent := generateJWT(u, inputData.UUID, redisClient)
+	// Create JSON Web Token and store it in redis
+	token, errCode, errContent := handleJWT(u, inputData.UUID, redisClient)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return

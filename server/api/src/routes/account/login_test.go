@@ -11,7 +11,7 @@ import (
 )
 
 func TestLoginNoBody(t *testing.T) {
-	r := tests.CreateRequest("POST", "/v1/account/login", nil, tests.DB)
+	r := tests.CreateRequestWithRedis("POST", "/v1/account/login", nil, tests.DB, tests.RedisClient)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	Login(w, r)
@@ -40,7 +40,7 @@ func TestLoginNoDatabase(t *testing.T) {
 
 func TestLoginWrongUsername(t *testing.T) {
 	body := []byte(`{"username": "vomnes", "password": "abcABC123"}`)
-	r := tests.CreateRequest("POST", "/v1/account/login", body, tests.DB)
+	r := tests.CreateRequestWithRedis("POST", "/v1/account/login", body, tests.DB, tests.RedisClient)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	Login(w, r)
@@ -57,7 +57,7 @@ func TestLoginWrongPassword(t *testing.T) {
 	tests.DbClean()
 	_ = tests.InsertUser(lib.User{Username: "vomnes", Email: "valentin@g.com", Lastname: "Omnes", Firstname: "Valentin", Password: "abcABC123"}, tests.DB)
 	body := []byte(`{"username": "vomnes", "password": "abc"}`)
-	r := tests.CreateRequest("POST", "/v1/account/login", body, tests.DB)
+	r := tests.CreateRequestWithRedis("POST", "/v1/account/login", body, tests.DB, tests.RedisClient)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	Login(w, r)
@@ -74,8 +74,8 @@ func TestLoginWrongPassword(t *testing.T) {
 func TestLogin(t *testing.T) {
 	tests.DbClean()
 	u := tests.InsertUser(lib.User{Username: "vomnes", Password: "$2a$10$pgek6WtdhtKmGXPWOOtEf.gsgtNXOkqr3pBjaCCa9il6XhRS7LAua"}, tests.DB)
-	body := []byte(`{"username": "vomnes", "password": "abcABC123"}`)
-	r := tests.CreateRequest("POST", "/v1/account/login", body, tests.DB)
+	body := []byte(`{"uuid": "uuid-test", "username": "vomnes", "password": "abcABC123"}`)
+	r := tests.CreateRequestWithRedis("POST", "/v1/account/login", body, tests.DB, tests.RedisClient)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	Login(w, r)
@@ -93,7 +93,8 @@ func TestLogin(t *testing.T) {
 	// Expected JWT
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"iss":      "matcha.com",
-		"sub":      u.ID,
+		"sub":      "uuid-test",
+		"userId":   u.ID,
 		"username": u.Username,
 		"iat":      now.Unix(),
 		"exp":      now.Add(time.Hour * time.Duration(72)).Unix(),
@@ -104,6 +105,14 @@ func TestLogin(t *testing.T) {
 		return
 	}
 	if response["token"] != expectedJWT {
-		t.Error("Response token is not correct")
+		t.Error("Response token is not correct - Header")
+	}
+	value, err := lib.RedisGetValue(tests.RedisClient, u.Username+"-uuid-test")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if value != expectedJWT {
+		t.Error("Response token is not correct - Redis")
 	}
 }

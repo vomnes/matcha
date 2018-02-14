@@ -4,15 +4,18 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/go-redis/redis"
 	"github.com/jmoiron/sqlx"
 )
 
 var (
 	// DB corresponds to the test database
-	DB   *sqlx.DB
-	host = "localhost"
-	port = 5432
-	user = "vomnes"
+	DB *sqlx.DB
+	// RedisClient corresponds to the test redis
+	RedisClient *redis.Client
+	host        = "localhost"
+	port        = 5432
+	user        = "vomnes"
 )
 
 // DbTestInit launch the connection to the test database for the tests
