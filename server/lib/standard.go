@@ -8,10 +8,12 @@ import (
 type key int
 
 const (
-	// Database key is used as value in the context
+	// Database key is used as value in order to store database in the context
 	Database = key(1)
-	// UserID key is used as value in the context
+	// UserID key is used as value in order to store userId in the context
 	UserID = key(2)
+	// Username key is used as value in order to store username in the context
+	Username = key(3)
 )
 
 // StringInArray take a string and a array of string as parameter

@@ -6,6 +6,11 @@ import (
 	"net/http"
 )
 
+var (
+	// JWTSecret is used for JWT
+	JWTSecret = []byte("IamValentin")
+)
+
 // RespondWithJSON set the content of the http response
 func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	response, err := json.Marshal(payload)

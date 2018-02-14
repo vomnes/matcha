@@ -6,8 +6,10 @@ import (
 	"encoding/base64"
 	"log"
 	"net/http"
+	"time"
 
 	"../../../../lib"
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/jmoiron/sqlx"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -25,6 +27,40 @@ func generateRandomSHA256() (string, string) {
 	return hashString, generated
 }
 
+func checkUserSecret(inputData loginData, db *sqlx.DB) (lib.User, int, string) {
+	var u lib.User
+	err := db.Get(&u, "SELECT * FROM Users WHERE username = $1", inputData.Username)
+	if err != nil && err != sql.ErrNoRows {
+		log.Fatal(lib.PrettyError("[DB REQUEST - SELECT] Failed to get user data " + err.Error()))
+		return lib.User{}, 500, "User data collection failed"
+	}
+	if err == sql.ErrNoRows || u == (lib.User{}) {
+		return lib.User{}, 403, "User or password incorrect"
+	}
+	// Comparing the password with the hashed password from the body
+	err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(inputData.Password))
+	if err != nil {
+		return lib.User{}, 403, "User or password incorrect"
+	}
+	return u, 0, ""
+}
+
+func generateJWT(u lib.User) (string, int, string) {
+	now := time.Now().Local()
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"iss":      "matcha.com",
+		"sub":      u.ID,
+		"username": u.Username,
+		"iat":      now.Unix(),
+		"exp":      now.Add(time.Hour * time.Duration(72)).Unix(),
+	})
+	tokenString, err := token.SignedString(lib.JWTSecret)
+	if err != nil {
+		return "", 500, "JWT creation failed"
+	}
+	return tokenString, 0, ""
+}
+
 // Login function corresponds to the API route /v1/account/login
 // It allows the handle the user authentication
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -39,34 +75,18 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	var u lib.User
-	err = db.Get(&u, "SELECT * FROM Users WHERE username = $1", inputData.Username)
-	if err != nil && err != sql.ErrNoRows {
-		log.Fatal(lib.PrettyError("[DB REQUEST - SELECT] Failed to get user data " + err.Error()))
-		lib.RespondWithErrorHTTP(w, 500, "User data collection failed")
+	u, errCode, errContent := checkUserSecret(inputData, db)
+	if errCode != 0 || errContent != "" {
+		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	if err == sql.ErrNoRows || u == (lib.User{}) {
-		lib.RespondWithErrorHTTP(w, 403, "User or password incorrect")
+	// Create JSON Web Token
+	token, errCode, errContent := generateJWT(u)
+	if errCode != 0 || errContent != "" {
+		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	// Comparing the password with the hashed password from the body
-	err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(inputData.Password))
-	if err != nil {
-		lib.RespondWithErrorHTTP(w, 403, "User or password incorrect")
-		return
-	}
-	// Create a 43 characters random string then hash with SHA256
-	hashedToken, token := generateRandomSHA256()
-	// Set token in database
-	stmt, err := db.Preparex(`UPDATE users SET login_token = $1 WHERE username = $2;`)
-	if err != nil {
-		log.Fatal(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request update user with login_token" + err.Error()))
-		lib.RespondWithErrorHTTP(w, 500, "Update login_token failed")
-	}
-	_ = stmt.QueryRow(hashedToken, inputData.Username)
 	lib.RespondWithJSON(w, 200, map[string]interface{}{
-		"userId": u.ID,
-		"token":  token,
+		"token": token,
 	})
 }

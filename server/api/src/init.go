@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"../../lib"
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -65,24 +67,48 @@ func withRights() adapter {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			routeURL := *r.URL
-			// Exception if routeURL is authentication because token doesn't exists
-			// check that this user has this token
-			if routeURL.String() == "/v1/authentication" {
+			noCheckJWT := []string{
+				"/v1/account/login",
+				"/v1/account/register",
+			}
+			if lib.StringInArray(routeURL.String(), noCheckJWT) {
 				h.ServeHTTP(w, r)
 				return
 			}
-			// Check the data send on every request
-			// Need to check userId and token
-			// [DB REQUEST] Error: This user doesn't exists or is not admin
-			// userId := r.Header.Get("userId")
-			// token := r.Header.Get("token")
-			_, ok := r.Context().Value("database").(*sqlx.DB)
-			if !ok {
-				lib.RespondWithErrorHTTP(w, 500, "Problem with database connection")
+			var tokenString string
+			// Get token from the Authorization header
+			// format: Authorization: Bearer
+			tokens, right := r.Header["Authorization"]
+			if right && len(tokens) >= 1 {
+				tokenString = tokens[0]
+				tokenString = strings.TrimPrefix(tokenString, "Bearer ")
+			} else {
+				lib.RespondWithErrorHTTP(w, 403, "Access denied")
 				return
 			}
-			// attach data to the request
-			ctx := context.WithValue(r.Context(), lib.UserID, "currently empty")
+			// Check JWT validity on every request
+			// Parse takes the token string and a function for looking up the key
+			token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+					return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+				}
+				return lib.JWTSecret, nil
+			})
+			claims, ok := token.Claims.(jwt.MapClaims)
+			if !ok || !token.Valid {
+				if ve, ok := err.(*jwt.ValidationError); ok {
+					if ve.Errors&(jwt.ValidationErrorExpired) != 0 {
+						lib.RespondWithErrorHTTP(w, 403, "Access denied - Token expired")
+						return
+					}
+				}
+				fmt.Println(lib.PrettyError("[Authentication] " + err.Error()))
+				lib.RespondWithErrorHTTP(w, 403, "Access denied - Not a valid token")
+				return
+			}
+			// Attach data from the token to the request
+			ctx := context.WithValue(r.Context(), lib.UserID, claims["sub"])
+			ctx = context.WithValue(ctx, lib.Username, claims["username"])
 			h.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}

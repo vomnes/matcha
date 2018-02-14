@@ -67,4 +67,5 @@ vendor_get: vendor_clean
 		golang.org/x/crypto/bcrypt \
 		github.com/kylelemons/godebug/pretty \
 		github.com/lib/pq \
-		github.com/jmoiron/sqlx
+		github.com/jmoiron/sqlx \
+		github.com/dgrijalva/jwt-go

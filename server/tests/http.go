@@ -40,6 +40,7 @@ type responseBodyError struct {
 }
 
 // ReadBodyError allows to read body in error case, used for tests
+// Return the error string
 func ReadBodyError(r io.Reader) string {
 	body, err := ioutil.ReadAll(r)
 	if err != nil {
@@ -48,20 +49,7 @@ func ReadBodyError(r io.Reader) string {
 	var responseBody responseBodyError
 	err = json.Unmarshal(body, &responseBody)
 	if err != nil {
-		log.Fatal(lib.PrettyError(err.Error()))
+		return ""
 	}
 	return responseBody.Error
 }
-
-// func readResponseJson(r io.Reader) responseJson {
-// 	body, err := ioutil.ReadAll(r)
-// 	if err != nil {
-// 		panic(err.Error())
-// 	}
-// 	var output responseJson
-// 	err = json.Unmarshal(body, &output)
-// 	if err != nil {
-// 		fmt.Println("Error - readJsonError:", err)
-// 	}
-// 	return output
-// }
