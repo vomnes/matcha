@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -90,10 +91,14 @@ func withRights() adapter {
 			// Parse takes the token string and a function for looking up the key
 			token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-					return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+					return nil, errors.New("Unexpected signing method")
 				}
 				return lib.JWTSecret, nil
 			})
+			if err != nil {
+				lib.RespondWithErrorHTTP(w, 403, "Access denied - Error parsing token")
+				return
+			}
 			claims, ok := token.Claims.(jwt.MapClaims)
 			if !ok || !token.Valid {
 				if ve, ok := err.(*jwt.ValidationError); ok {

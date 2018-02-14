@@ -19,6 +19,9 @@ func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 		response, _ = json.Marshal(map[string]interface{}{"error": "Failed to marshal response"})
 		code = 401
 	}
+	w.Header().Set("X-XSS-Protection", "1; mode=block")
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.Header().Set("X-Frame-Options", "DENY")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write(response)
@@ -26,6 +29,9 @@ func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 
 // RespondEmptyHTTP set empty compte for the http response
 func RespondEmptyHTTP(w http.ResponseWriter, code int) {
+	w.Header().Set("X-XSS-Protection", "1; mode=block")
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.Header().Set("X-Frame-Options", "DENY")
 	w.WriteHeader(code)
 	w.Write(nil)
 }
