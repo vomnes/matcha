@@ -15,3 +15,5 @@
 
 # history files
 *~
+_vendor
+bin
