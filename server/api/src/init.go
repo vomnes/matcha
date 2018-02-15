@@ -119,8 +119,12 @@ func withRights() adapter {
 			}
 			// Check token in Redis storage
 			redisClient, ok := r.Context().Value(lib.Redis).(*redis.Client)
-			if !ok {
+			if !ok || redisClient == nil {
 				lib.RespondWithErrorHTTP(w, 500, "Problem with redis connection [4]")
+				return
+			}
+			if claims["username"] == nil || claims["sub"] == nil || claims["userId"] == nil {
+				lib.RespondWithErrorHTTP(w, 403, "Access denied - Not the right data in JWT")
 				return
 			}
 			value, err := lib.RedisGetValue(redisClient, claims["username"].(string)+"-"+claims["sub"].(string))

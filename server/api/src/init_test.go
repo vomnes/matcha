@@ -11,6 +11,7 @@ import (
 	"../../lib"
 	"../../tests"
 	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/go-redis/redis"
 	"github.com/gorilla/mux"
 )
 
@@ -148,7 +149,7 @@ func jwtWithExp(duration time.Duration) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"iss":      "matcha.com",
 		"sub":      "test",
-		"userId":   1,
+		"userId":   42,
 		"username": "vomnes",
 		"iat":      now.Unix(),
 		"exp":      now.Add(duration).Unix(),
@@ -212,8 +213,12 @@ func TestWithRightsNotValidToken(t *testing.T) {
 	}
 }
 
-func TestWithRightsNoRedis(t *testing.T) {
-	token, err := jwtWithExp(time.Hour * time.Duration(72))
+func TestWithRightsNotValidTokenNoPayload(t *testing.T) {
+	tokenX := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{})
+	token, err := tokenX.SignedString(lib.JWTSecret)
+	if err != nil {
+		t.Error("jwtWithExp - JWT creation failed")
+	}
 	if err != nil {
 		t.Error(err)
 	}
@@ -221,8 +226,6 @@ func TestWithRightsNoRedis(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// ctx := context.WithValue(r.Context(), lib.Redis, nil)
-	// r.WithContext(ctx)
 	r.Header.Add("Authorization", "Bearer "+token)
 	w := httptest.NewRecorder()
 	router := newTestServer()
@@ -233,9 +236,99 @@ func TestWithRightsNoRedis(t *testing.T) {
 		return
 	}
 	expectedCode := 403
-	expectedContent := "Access denied - Not a valid JSON Web Token"
+	expectedContent := "Access denied - Not the right data in JWT"
 	if w.Code != expectedCode || response["error"] != expectedContent {
 		t.Errorf("Must return an error with http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m and status content '\x1b[1;32m%s\033[0m' not '\x1b[1;31m%s\033[0m'.", expectedCode, w.Code, expectedContent, response["error"])
 		return
+	}
+}
+
+func TestWithRightsProblemWithRedis(t *testing.T) {
+	token, err := jwtWithExp(time.Hour * time.Duration(72))
+	if err != nil {
+		t.Error(err)
+	}
+	r, err := http.NewRequest("GET", "/", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	r.Header.Add("Authorization", "Bearer "+token)
+	w := httptest.NewRecorder()
+	router := newTestServer()
+	wrongRedis := redis.NewClient(&redis.Options{})
+	enhanceHandlers(router, tests.DB, wrongRedis).ServeHTTP(w, r)
+	var response map[string]interface{}
+	if err := tests.ChargeResponse(w, &response); err != nil {
+		t.Error(err)
+		return
+	}
+	expectedCode := 500
+	expectedContent := "Problem to get Redis value from key [6]"
+	if w.Code != expectedCode || response["error"] != expectedContent {
+		t.Errorf("Must return an error with http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m and status content '\x1b[1;32m%s\033[0m' not '\x1b[1;31m%s\033[0m'.", expectedCode, w.Code, expectedContent, response["error"])
+		return
+	}
+}
+
+func TestWithRightsNoTokenInRedis(t *testing.T) {
+	token, err := jwtWithExp(time.Hour * time.Duration(72))
+	if err != nil {
+		t.Error(err)
+	}
+	r, err := http.NewRequest("GET", "/", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	r.Header.Add("Authorization", "Bearer "+token)
+	w := httptest.NewRecorder()
+	router := newTestServer()
+	enhanceHandlers(router, tests.DB, tests.RedisClient).ServeHTTP(w, r)
+	var response map[string]interface{}
+	if err := tests.ChargeResponse(w, &response); err != nil {
+		t.Error(err)
+		return
+	}
+	expectedCode := 403
+	expectedContent := "Access denied [5]"
+	if w.Code != expectedCode || response["error"] != expectedContent {
+		t.Errorf("Must return an error with http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m and status content '\x1b[1;32m%s\033[0m' not '\x1b[1;31m%s\033[0m'.", expectedCode, w.Code, expectedContent, response["error"])
+		return
+	}
+}
+
+func TestWithRights(t *testing.T) {
+	duration := time.Hour * time.Duration(72)
+	token, err := jwtWithExp(duration)
+	if err != nil {
+		t.Error(err)
+	}
+	err = lib.RedisSetValue(tests.RedisClient, "vomnes-test", token, duration)
+	if err != nil {
+		t.Error(err)
+	}
+	r, err := http.NewRequest("GET", "/", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	r.Header.Add("Authorization", "Bearer "+token)
+	w := httptest.NewRecorder()
+	router := newTestServer()
+	enhanceHandlers(router, tests.DB, tests.RedisClient).ServeHTTP(w, r)
+	expectedCode := 201
+	expectedContent := "\"OK\""
+	if w.Code != expectedCode || w.Body.String() != expectedContent {
+		t.Errorf("Must return an error with http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m and status content '\x1b[1;32m%s\033[0m' not '\x1b[1;31m%s\033[0m'.", expectedCode, w.Code, expectedContent, w.Body.String())
+	}
+	userID, ok := r.Context().Value(lib.UserID).(string)
+	if !ok {
+		t.Errorf("Failed to get UserID from context")
+	} else if userID != "42" {
+		t.Error("UserId expected to be 42 not " + userID)
+	}
+	username, ok := r.Context().Value(lib.Username).(string)
+	if !ok {
+		t.Errorf("Failed to get Username from context")
+	} else if username != "vomnes" {
+		t.Error("UserId expected to be vomnes not " + username)
 	}
 }
