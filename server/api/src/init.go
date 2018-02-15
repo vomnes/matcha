@@ -85,9 +85,13 @@ func withRights() adapter {
 			tokens, right := r.Header["Authorization"]
 			if right && len(tokens) >= 1 {
 				tokenString = tokens[0]
+				if !strings.HasPrefix(tokenString, "Bearer ") {
+					lib.RespondWithErrorHTTP(w, 403, "Access denied - Authorization wrong standard")
+					return
+				}
 				tokenString = strings.TrimPrefix(tokenString, "Bearer ")
 			} else {
-				lib.RespondWithErrorHTTP(w, 403, "Access denied")
+				lib.RespondWithErrorHTTP(w, 403, "Access denied [1]")
 				return
 			}
 			// Check JWT validity on every request
@@ -99,38 +103,37 @@ func withRights() adapter {
 				return lib.JWTSecret, nil
 			})
 			if err != nil {
-				lib.RespondWithErrorHTTP(w, 403, "Access denied - Parse")
+				if ve, yes := err.(*jwt.ValidationError); yes {
+					if ve.Errors&(jwt.ValidationErrorExpired) != 0 {
+						lib.RespondWithErrorHTTP(w, 403, "Access denied - Token expired [3]")
+						return
+					}
+				}
+				lib.RespondWithErrorHTTP(w, 403, "Access denied - Not a valid JSON Web Token")
 				return
 			}
 			claims, ok := token.Claims.(jwt.MapClaims)
 			if !ok || !token.Valid {
-				if ve, yes := err.(*jwt.ValidationError); yes {
-					if ve.Errors&(jwt.ValidationErrorExpired) != 0 {
-						lib.RespondWithErrorHTTP(w, 403, "Access denied - Token expired")
-						return
-					}
-				}
-				fmt.Println(lib.PrettyError("[Authentication] " + err.Error()))
-				lib.RespondWithErrorHTTP(w, 403, "Access denied - Not a valid token")
+				lib.RespondWithErrorHTTP(w, 403, "Access denied - Not a valid token [4]")
 				return
 			}
 			// Check token in Redis storage
 			redisClient, ok := r.Context().Value(lib.Redis).(*redis.Client)
 			if !ok {
-				lib.RespondWithErrorHTTP(w, 500, "Problem with redis connection")
+				lib.RespondWithErrorHTTP(w, 500, "Problem with redis connection [4]")
 				return
 			}
 			value, err := lib.RedisGetValue(redisClient, claims["username"].(string)+"-"+claims["sub"].(string))
 			if err != nil {
 				if err.Error() == "Key does not exist" {
-					lib.RespondWithErrorHTTP(w, 403, "Access denied")
+					lib.RespondWithErrorHTTP(w, 403, "Access denied [5]")
 					return
 				}
-				lib.RespondWithErrorHTTP(w, 500, "Problem to get Redis value from key")
+				lib.RespondWithErrorHTTP(w, 500, "Problem to get Redis value from key [6]")
 				return
 			}
 			if value != tokenString {
-				lib.RespondWithErrorHTTP(w, 403, "Access denied - Old token")
+				lib.RespondWithErrorHTTP(w, 403, "Access denied - Old token [7]")
 				return
 			}
 			// Attach data from the token to the request
