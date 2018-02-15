@@ -91,7 +91,7 @@ func withRights() adapter {
 				}
 				tokenString = strings.TrimPrefix(tokenString, "Bearer ")
 			} else {
-				lib.RespondWithErrorHTTP(w, 403, "Access denied [1]")
+				lib.RespondWithErrorHTTP(w, 403, "Access denied")
 				return
 			}
 			// Check JWT validity on every request
@@ -105,7 +105,7 @@ func withRights() adapter {
 			if err != nil {
 				if ve, yes := err.(*jwt.ValidationError); yes {
 					if ve.Errors&(jwt.ValidationErrorExpired) != 0 {
-						lib.RespondWithErrorHTTP(w, 403, "Access denied - Token expired [3]")
+						lib.RespondWithErrorHTTP(w, 403, "Access denied - Token expired")
 						return
 					}
 				}
@@ -114,13 +114,13 @@ func withRights() adapter {
 			}
 			claims, ok := token.Claims.(jwt.MapClaims)
 			if !ok || !token.Valid {
-				lib.RespondWithErrorHTTP(w, 403, "Access denied - Not a valid token [4]")
+				lib.RespondWithErrorHTTP(w, 403, "Access denied - Not a valid token")
 				return
 			}
 			// Check token in Redis storage
 			redisClient, ok := r.Context().Value(lib.Redis).(*redis.Client)
 			if !ok || redisClient == nil {
-				lib.RespondWithErrorHTTP(w, 500, "Problem with redis connection [4]")
+				lib.RespondWithErrorHTTP(w, 500, "Problem with redis connection")
 				return
 			}
 			if claims["username"] == nil || claims["sub"] == nil || claims["userId"] == nil {
@@ -130,14 +130,14 @@ func withRights() adapter {
 			value, err := lib.RedisGetValue(redisClient, claims["username"].(string)+"-"+claims["sub"].(string))
 			if err != nil {
 				if err.Error() == "Key does not exist" {
-					lib.RespondWithErrorHTTP(w, 403, "Access denied [5]")
+					lib.RespondWithErrorHTTP(w, 403, "Access denied - Key linked to the token does not exists")
 					return
 				}
-				lib.RespondWithErrorHTTP(w, 500, "Problem to get Redis value from key [6]")
+				lib.RespondWithErrorHTTP(w, 500, "Problem to get Redis value from key")
 				return
 			}
 			if value != tokenString {
-				lib.RespondWithErrorHTTP(w, 403, "Access denied - Old token [7]")
+				lib.RespondWithErrorHTTP(w, 403, "Access denied - Old token")
 				return
 			}
 			// Attach data from the token to the request

@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -27,7 +28,18 @@ func TestMain(m *testing.M) {
 func newTestServer() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		lib.RespondWithJSON(w, 201, "OK")
+		userID, ok := r.Context().Value(lib.UserID).(string)
+		if !ok {
+			log.Fatal("Failed to get UserID from context")
+		}
+		username, ok := r.Context().Value(lib.Username).(string)
+		if !ok {
+			log.Fatal("Failed to get Username from context")
+		}
+		lib.RespondWithJSON(w, 200, map[string]string{
+			"userId":   userID,
+			"username": username,
+		})
 	}).Methods("GET")
 	r.HandleFunc("/v1/account/login", func(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithJSON(w, 200, "OK-Test-Login")
@@ -49,7 +61,7 @@ func TestWithRightsLogin(t *testing.T) {
 	expectedCode := 200
 	expectedContent := "\"OK-Test-Login\""
 	if w.Code != expectedCode || w.Body.String() != expectedContent {
-		t.Errorf("Must return an error with http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m and status content '\x1b[1;32m%s\033[0m' not '\x1b[1;31m%s\033[0m'.", expectedCode, w.Code, expectedContent, w.Body.String())
+		t.Errorf("Must return an http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m and status content '\x1b[1;32m%s\033[0m' not '\x1b[1;31m%s\033[0m'.", expectedCode, w.Code, expectedContent, w.Body.String())
 	}
 }
 
@@ -64,7 +76,7 @@ func TestWithRightsRegister(t *testing.T) {
 	expectedCode := 200
 	expectedContent := "\"OK-Test-Register\""
 	if w.Code != expectedCode || w.Body.String() != expectedContent {
-		t.Errorf("Must return an error with http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m and status content '\x1b[1;32m%s\033[0m' not '\x1b[1;31m%s\033[0m'.", expectedCode, w.Code, expectedContent, w.Body.String())
+		t.Errorf("Must return an http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m and status content '\x1b[1;32m%s\033[0m' not '\x1b[1;31m%s\033[0m'.", expectedCode, w.Code, expectedContent, w.Body.String())
 	}
 }
 
@@ -82,7 +94,7 @@ func TestWithRightsNoAuthorization(t *testing.T) {
 		return
 	}
 	expectedCode := 403
-	expectedContent := "Access denied [1]"
+	expectedContent := "Access denied"
 	if w.Code != expectedCode || response["error"] != expectedContent {
 		t.Errorf("Must return an error with http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m and status content '\x1b[1;32m%s\033[0m' not '\x1b[1;31m%s\033[0m'.", expectedCode, w.Code, expectedContent, response["error"])
 	}
@@ -149,7 +161,7 @@ func jwtWithExp(duration time.Duration) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"iss":      "matcha.com",
 		"sub":      "test",
-		"userId":   42,
+		"userId":   "42",
 		"username": "vomnes",
 		"iat":      now.Unix(),
 		"exp":      now.Add(duration).Unix(),
@@ -162,7 +174,7 @@ func jwtWithExp(duration time.Duration) (string, error) {
 }
 
 func TestWithRightsExpiredToken(t *testing.T) {
-	token, err := jwtWithExp(-(time.Hour * time.Duration(72)))
+	token, err := jwtWithExp(-(time.Hour * time.Duration(1)))
 	if err != nil {
 		t.Error(err)
 	}
@@ -180,7 +192,7 @@ func TestWithRightsExpiredToken(t *testing.T) {
 		return
 	}
 	expectedCode := 403
-	expectedContent := "Access denied - Token expired [3]"
+	expectedContent := "Access denied - Token expired"
 	if w.Code != expectedCode || response["error"] != expectedContent {
 		t.Errorf("Must return an error with http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m and status content '\x1b[1;32m%s\033[0m' not '\x1b[1;31m%s\033[0m'.", expectedCode, w.Code, expectedContent, response["error"])
 		return
@@ -188,7 +200,7 @@ func TestWithRightsExpiredToken(t *testing.T) {
 }
 
 func TestWithRightsNotValidToken(t *testing.T) {
-	token, err := jwtWithExp(time.Hour * time.Duration(72))
+	token, err := jwtWithExp(time.Hour * time.Duration(1))
 	if err != nil {
 		t.Error(err)
 	}
@@ -244,7 +256,7 @@ func TestWithRightsNotValidTokenNoPayload(t *testing.T) {
 }
 
 func TestWithRightsProblemWithRedis(t *testing.T) {
-	token, err := jwtWithExp(time.Hour * time.Duration(72))
+	token, err := jwtWithExp(time.Hour * time.Duration(1))
 	if err != nil {
 		t.Error(err)
 	}
@@ -263,7 +275,7 @@ func TestWithRightsProblemWithRedis(t *testing.T) {
 		return
 	}
 	expectedCode := 500
-	expectedContent := "Problem to get Redis value from key [6]"
+	expectedContent := "Problem to get Redis value from key"
 	if w.Code != expectedCode || response["error"] != expectedContent {
 		t.Errorf("Must return an error with http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m and status content '\x1b[1;32m%s\033[0m' not '\x1b[1;31m%s\033[0m'.", expectedCode, w.Code, expectedContent, response["error"])
 		return
@@ -271,7 +283,7 @@ func TestWithRightsProblemWithRedis(t *testing.T) {
 }
 
 func TestWithRightsNoTokenInRedis(t *testing.T) {
-	token, err := jwtWithExp(time.Hour * time.Duration(72))
+	token, err := jwtWithExp(time.Hour * time.Duration(1))
 	if err != nil {
 		t.Error(err)
 	}
@@ -289,7 +301,47 @@ func TestWithRightsNoTokenInRedis(t *testing.T) {
 		return
 	}
 	expectedCode := 403
-	expectedContent := "Access denied [5]"
+	expectedContent := "Access denied - Key linked to the token does not exists"
+	if w.Code != expectedCode || response["error"] != expectedContent {
+		t.Errorf("Must return an error with http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m and status content '\x1b[1;32m%s\033[0m' not '\x1b[1;31m%s\033[0m'.", expectedCode, w.Code, expectedContent, response["error"])
+		return
+	}
+}
+
+func TestWithRightsOldToken(t *testing.T) {
+	oldDuration := time.Hour * time.Duration(1)
+	newDuration := time.Hour * time.Duration(2)
+	oldToken, err := jwtWithExp(oldDuration)
+	if err != nil {
+		t.Error(err)
+	}
+	err = lib.RedisSetValue(tests.RedisClient, "vomnes-test", oldToken, oldDuration)
+	if err != nil {
+		t.Error(err)
+	}
+	newToken, err := jwtWithExp(newDuration)
+	if err != nil {
+		t.Error(err)
+	}
+	err = lib.RedisSetValue(tests.RedisClient, "vomnes-test", newToken, newDuration)
+	if err != nil {
+		t.Error(err)
+	}
+	r, err := http.NewRequest("GET", "/", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	r.Header.Add("Authorization", "Bearer "+oldToken)
+	w := httptest.NewRecorder()
+	router := newTestServer()
+	enhanceHandlers(router, tests.DB, tests.RedisClient).ServeHTTP(w, r)
+	var response map[string]interface{}
+	if err := tests.ChargeResponse(w, &response); err != nil {
+		t.Error(err)
+		return
+	}
+	expectedCode := 403
+	expectedContent := "Access denied - Old token"
 	if w.Code != expectedCode || response["error"] != expectedContent {
 		t.Errorf("Must return an error with http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m and status content '\x1b[1;32m%s\033[0m' not '\x1b[1;31m%s\033[0m'.", expectedCode, w.Code, expectedContent, response["error"])
 		return
@@ -297,7 +349,7 @@ func TestWithRightsNoTokenInRedis(t *testing.T) {
 }
 
 func TestWithRights(t *testing.T) {
-	duration := time.Hour * time.Duration(72)
+	duration := time.Hour * time.Duration(1)
 	token, err := jwtWithExp(duration)
 	if err != nil {
 		t.Error(err)
@@ -314,21 +366,19 @@ func TestWithRights(t *testing.T) {
 	w := httptest.NewRecorder()
 	router := newTestServer()
 	enhanceHandlers(router, tests.DB, tests.RedisClient).ServeHTTP(w, r)
-	expectedCode := 201
-	expectedContent := "\"OK\""
-	if w.Code != expectedCode || w.Body.String() != expectedContent {
-		t.Errorf("Must return an error with http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m and status content '\x1b[1;32m%s\033[0m' not '\x1b[1;31m%s\033[0m'.", expectedCode, w.Code, expectedContent, w.Body.String())
+	expectedCode := 200
+	if w.Code != expectedCode {
+		t.Errorf("Must return an http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m.", expectedCode, w.Code)
 	}
-	userID, ok := r.Context().Value(lib.UserID).(string)
-	if !ok {
-		t.Errorf("Failed to get UserID from context")
-	} else if userID != "42" {
-		t.Error("UserId expected to be 42 not " + userID)
+	var response map[string]string
+	if err := tests.ChargeResponse(w, &response); err != nil {
+		t.Error(err)
+		return
 	}
-	username, ok := r.Context().Value(lib.Username).(string)
-	if !ok {
-		t.Errorf("Failed to get Username from context")
-	} else if username != "vomnes" {
-		t.Error("UserId expected to be vomnes not " + username)
+	if response["userId"] != "42" {
+		t.Errorf("Must have in context userId \x1b[1;32m%s\033[0m not \x1b[1;31m%s\033[0m.", response["userId"], "42")
+	}
+	if response["username"] != "vomnes" {
+		t.Errorf("Must have in context username \x1b[1;32m%s\033[0m not \x1b[1;31m%s\033[0m.", response["username"], "vomnes")
 	}
 }
