@@ -23,26 +23,26 @@ launch:
 run: build launch
 
 test:
-	cd src; go test ./routes/*
+	go test ./src/...
 
 test-verbose:
-	cd src; go test -v ./routes/*
+	go test -v ./src/...
 
 test-target:
-	go test -v -run '$(TARGET)' ./src/routes/*
+	go test -v -run '$(TARGET)' ./src/...
 
 cover:
-	go test -cover ./src/routes/*
+	go test -cover ./src/...
 
 ROUTES=src/routes/
 cover-html:
-	go test -coverprofile=cover.out ./src/routes/*
+	go test -coverprofile=cover.out ./src/...
 	sed -i -e "s#.*\($(ROUTES).*\.go\)#\./\\1#" cover.out #Format cover.out
 	go tool cover -html=cover.out -o coverage.html
 	rm cover.out
 
 cover-func:
-	@go test -coverprofile=cover.out ./src/routes/*
+	@go test -coverprofile=cover.out ./src/...
 	@sed -i -e "s#.*\($(ROUTES).*\.go\)#\./\\1#" cover.out #Format cover.out
 	@go tool cover -func=cover.out
 	@rm cover.out

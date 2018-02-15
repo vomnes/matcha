@@ -65,7 +65,8 @@ func withDB(db *sqlx.DB, client *redis.Client) adapter {
 	}
 }
 
-// withRights is an adapter that verify the user exists, verify the token, and attach userId to the request.
+// withRights is an adapter that verify the user exists, verify the token,
+// and attach userId and username to the request.
 func withRights() adapter {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

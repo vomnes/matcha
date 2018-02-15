@@ -33,7 +33,7 @@ func DbTestInit() *sqlx.DB {
 	return db
 }
 
-// DbClean delete all of rows of the tables in the test database
+// DbClean delete all of rows of the tables in the test database and from redis
 func DbClean() {
 	if DB == nil {
 		log.Panic("Connection to database failed")
@@ -44,4 +44,5 @@ func DbClean() {
 	for _, table := range tables {
 		DB.MustExec("DELETE FROM " + table)
 	}
+	RedisClient.FlushDB()
 }
