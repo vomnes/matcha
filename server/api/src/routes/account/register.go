@@ -98,7 +98,7 @@ func createUser(d accountData, db *sqlx.DB, r *http.Request) (int, string) {
 	return 0, ""
 }
 
-// Register function corresponds to the API route /v1/account/register
+// Register function corresponds to the API route POST /v1/account/register
 // The body contains the username, emailAddress, lastname, firstname
 // password and re-password of the new account.
 func Register(w http.ResponseWriter, r *http.Request) {

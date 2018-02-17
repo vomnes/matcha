@@ -36,9 +36,14 @@ func newTestServer() *mux.Router {
 		if !ok {
 			log.Fatal("Failed to get Username from context")
 		}
+		uuid, ok := r.Context().Value(lib.UUID).(string)
+		if !ok {
+			log.Fatal("Failed to get UUID from context")
+		}
 		lib.RespondWithJSON(w, 200, map[string]string{
 			"userId":   userID,
 			"username": username,
+			"uuid":     uuid,
 		})
 	}).Methods("GET")
 	r.HandleFunc("/v1/account/login", func(w http.ResponseWriter, r *http.Request) {
@@ -380,5 +385,8 @@ func TestWithRights(t *testing.T) {
 	}
 	if response["username"] != "vomnes" {
 		t.Errorf("Must have in context username \x1b[1;32m%s\033[0m not \x1b[1;31m%s\033[0m.", response["username"], "vomnes")
+	}
+	if response["uuid"] != "test" {
+		t.Errorf("Must have in context uuid \x1b[1;32m%s\033[0m not \x1b[1;31m%s\033[0m.", response["uuid"], "test")
 	}
 }

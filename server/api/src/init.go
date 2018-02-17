@@ -119,6 +119,7 @@ func withRights() adapter {
 			// Attach data from the token to the request
 			ctx := context.WithValue(r.Context(), lib.UserID, claims["userId"])
 			ctx = context.WithValue(ctx, lib.Username, claims["username"])
+			ctx = context.WithValue(ctx, lib.UUID, claims["sub"])
 			h.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}

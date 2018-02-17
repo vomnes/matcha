@@ -69,17 +69,17 @@ func handleJWT(u lib.User, UUID string, client *redis.Client) (string, int, stri
 	return tokenString, 0, ""
 }
 
-// Login function corresponds to the API route /v1/account/login
-// It allows the handle the user authentication
+// Login function corresponds to the API route POST /v1/account/login
+// It allows to handle the user authentication
 func Login(w http.ResponseWriter, r *http.Request) {
 	db, ok := r.Context().Value(lib.Database).(*sqlx.DB)
 	if !ok {
-		lib.RespondWithErrorHTTP(w, 500, "Problem with database connection")
+		lib.RespondWithErrorHTTP(w, http.StatusInternalServerError, "Problem with database connection")
 		return
 	}
 	redisClient, ok := r.Context().Value(lib.Redis).(*redis.Client)
 	if !ok {
-		lib.RespondWithErrorHTTP(w, 500, "Problem with redis connection")
+		lib.RespondWithErrorHTTP(w, http.StatusInternalServerError, "Problem with redis connection")
 		return
 	}
 	var inputData loginData
@@ -99,7 +99,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	lib.RespondWithJSON(w, 200, map[string]interface{}{
+	lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{
 		"token": token,
 	})
 }

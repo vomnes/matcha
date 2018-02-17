@@ -10,22 +10,25 @@ type key int
 const (
 	// Database key is used as value in order to store database in the context
 	Database key = iota
-	// UserID key is used as value in order to store userId in the context
+	// UserID key is used as value in order to store userId from JSON Web Token in the context
 	UserID
-	// Username key is used as value in order to store username in the context
+	// Username key is used as value in order to store username from JSON Web Token in the context
 	Username
 	// Redis key is used as value in order to store redis client in the context
 	Redis
+	// UUID key is used as value in order to store the UUID from JSON Web Token
+	// in the context, used for logout
+	UUID
 )
 
 const (
 	// PostgreSQLName is the current PostgreSQL database name
 	PostgreSQLName = "db_matcha"
-	// PostgreSQLName is the PostgreSQL database name for tests
+	// PostgreSQLNameTests is the PostgreSQL database name for tests
 	PostgreSQLNameTests = "db_matcha_tests"
 	// RedisDBNum is the Redis database int used in the database selection
 	RedisDBNum = 0
-	// RedisDBNum is the Redis tests database int used in the database selection
+	// RedisDBNumTests is the Redis tests database int used in the database selection
 	RedisDBNumTests = 1
 )
 
