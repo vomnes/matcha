@@ -18,7 +18,7 @@ import (
 
 func TestMain(m *testing.M) {
 	tests.DB = lib.PostgreSQLConn(lib.PostgreSQLNameTests)
-	tests.RedisClient = lib.RedisConn(0)
+	tests.RedisClient = lib.RedisConn(lib.RedisDBNumTests)
 	tests.DbClean()
 	ret := m.Run()
 	tests.DbClean()
