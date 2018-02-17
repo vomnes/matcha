@@ -9,13 +9,24 @@ type key int
 
 const (
 	// Database key is used as value in order to store database in the context
-	Database = key(1)
+	Database key = iota
 	// UserID key is used as value in order to store userId in the context
-	UserID = key(2)
+	UserID
 	// Username key is used as value in order to store username in the context
-	Username = key(3)
+	Username
 	// Redis key is used as value in order to store redis client in the context
-	Redis = key(4)
+	Redis
+)
+
+const (
+	// PostgreSQLName is the current PostgreSQL database name
+	PostgreSQLName = "db_matcha"
+	// PostgreSQLName is the PostgreSQL database name for tests
+	PostgreSQLNameTests = "db_matcha_tests"
+	// RedisDBNum is the Redis database int used in the database selection
+	RedisDBNum = 0
+	// RedisDBNum is the Redis tests database int used in the database selection
+	RedisDBNumTests = 1
 )
 
 // StringInArray take a string and a array of string as parameter

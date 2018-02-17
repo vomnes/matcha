@@ -34,8 +34,8 @@ func main() {
 	if *portPtr != "" {
 		fmt.Printf("running on port: %s\n", *portPtr)
 	}
-	db := initDatabase()
-	redisClient := lib.RedisConn(0)
+	db := lib.PostgreSQLConn(lib.PostgreSQLName)
+	redisClient := lib.RedisConn(lib.RedisDBNum)
 	router := handleAPIRoutes()
 	enhancedRouter := enhanceHandlers(router, db, redisClient)
 	if err := http.ListenAndServe(":"+*portPtr, enhancedRouter); err != nil {

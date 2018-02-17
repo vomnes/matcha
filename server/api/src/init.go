@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
@@ -18,28 +16,6 @@ import (
 )
 
 type adapter func(http.Handler) http.Handler
-
-const (
-	host   = "localhost"
-	port   = 5432
-	user   = "vomnes"
-	dbname = "db_matcha"
-)
-
-// dbInit launch the connection to the database
-func initDatabase() *sqlx.DB {
-	dns := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable", host, port, user, dbname) // No password
-	db, err := sqlx.Open("postgres", dns)
-	if err != nil {
-		log.Panic(err)
-	}
-	err = db.Ping()
-	if err != nil {
-		log.Panic(err)
-	}
-	return db
-}
 
 // adapt transforms an handler without changing it's type. Usefull for authentification.
 func adapt(h http.Handler, adapters ...adapter) http.Handler {
