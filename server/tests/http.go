@@ -16,25 +16,29 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// CreateRequest allows to call a http route with a body for tests
-// Take as parameter a method, url, body and sql database
-// Return a http request with database in context
-func CreateRequest(method, url string, body []byte, db *sqlx.DB) *http.Request {
-	r := httptest.NewRequest(method, url, bytes.NewBuffer(body))
-	ctx := context.WithValue(r.Context(), lib.Database, db)
-	// ctx = context.WithValue(ctx, "userId", userData.UserId)
-	// ctx = context.WithValue(ctx, "hashedToken", userData.HashedToken)
-	return r.WithContext(ctx)
+type ContextData struct {
+	DB       *sqlx.DB
+	Client   *redis.Client
+	UserId   string
+	Username string
+	UUID     string
 }
 
-// CreateRequestWithRedis allows to call a http route with a body for tests
-// Take as parameter a method, url, body, sql database and redis database
-// Return a http request with database in context
-func CreateRequestWithRedis(method, url string, body []byte, db *sqlx.DB, client *redis.Client) *http.Request {
+// CreateRequest allows to call a http route with a body for tests
+// Take as parameter a method, url, body and a structure with the context data
+// Return a http request with data in context
+func CreateRequest(method, url string, body []byte, ctxData ContextData) *http.Request {
 	r := httptest.NewRequest(method, url, bytes.NewBuffer(body))
-	ctx := context.WithValue(r.Context(), lib.Database, db)
-	ctx = context.WithValue(ctx, lib.Redis, client)
-	// ctx = context.WithValue(ctx, "hashedToken", userData.HashedToken)
+	ctx := context.WithValue(r.Context(), lib.UserID, ctxData.UserId)
+	if ctxData.DB != nil {
+		ctx = context.WithValue(ctx, lib.Database, ctxData.DB)
+	}
+	if ctxData.Client != nil {
+		ctx = context.WithValue(ctx, lib.Redis, ctxData.Client)
+	}
+	ctx = context.WithValue(ctx, lib.UserID, ctxData.UserId)
+	ctx = context.WithValue(ctx, lib.Username, ctxData.Username)
+	ctx = context.WithValue(ctx, lib.UUID, ctxData.UUID)
 	return r.WithContext(ctx)
 }
 

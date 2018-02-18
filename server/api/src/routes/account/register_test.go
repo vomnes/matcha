@@ -10,7 +10,10 @@ import (
 )
 
 func TestRegisterNoBody(t *testing.T) {
-	r := tests.CreateRequest("POST", "/v1/account/register", nil, tests.DB)
+	context := tests.ContextData{
+		DB: tests.DB,
+	}
+	r := tests.CreateRequest("POST", "/v1/account/register", nil, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	Register(w, r)
@@ -25,7 +28,10 @@ func TestRegisterNoBody(t *testing.T) {
 
 func TestRegisterFieldEmptyBody(t *testing.T) {
 	body := []byte(`{"username": "vomnes", "email": "", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "re-password": "abcABC123"}`)
-	r := tests.CreateRequest("POST", "/v1/account/register", body, tests.DB)
+	context := tests.ContextData{
+		DB: tests.DB,
+	}
+	r := tests.CreateRequest("POST", "/v1/account/register", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	Register(w, r)
@@ -40,7 +46,10 @@ func TestRegisterFieldEmptyBody(t *testing.T) {
 
 func TestRegisterFieldInvalidUsername(t *testing.T) {
 	body := []byte(`{"username": "vomnes&&", "email": "vomnes@student.42.fr", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "re-password": "abcABC123"}`)
-	r := tests.CreateRequest("POST", "/v1/account/register", body, tests.DB)
+	context := tests.ContextData{
+		DB: tests.DB,
+	}
+	r := tests.CreateRequest("POST", "/v1/account/register", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	Register(w, r)
@@ -55,7 +64,10 @@ func TestRegisterFieldInvalidUsername(t *testing.T) {
 
 func TestRegisterFieldInvalidFirstname(t *testing.T) {
 	body := []byte(`{"username": "vomnes", "email": "vomnes@student.42.fr", "firstname": "Valentin..", "lastname": "Omnes", "password": "abcABC123", "re-password": "abcABC123"}`)
-	r := tests.CreateRequest("POST", "/v1/account/register", body, tests.DB)
+	context := tests.ContextData{
+		DB: tests.DB,
+	}
+	r := tests.CreateRequest("POST", "/v1/account/register", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	Register(w, r)
@@ -70,7 +82,10 @@ func TestRegisterFieldInvalidFirstname(t *testing.T) {
 
 func TestRegisterFieldInvalidLastname(t *testing.T) {
 	body := []byte(`{"username": "vomnes", "email": "vomnes@student.42.fr", "firstname": "Valentin", "lastname": "Omnes**", "password": "abcABC123", "re-password": "abcABC123"}`)
-	r := tests.CreateRequest("POST", "/v1/account/register", body, tests.DB)
+	context := tests.ContextData{
+		DB: tests.DB,
+	}
+	r := tests.CreateRequest("POST", "/v1/account/register", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	Register(w, r)
@@ -85,7 +100,10 @@ func TestRegisterFieldInvalidLastname(t *testing.T) {
 
 func TestRegisterFieldInvalidEmailAddress(t *testing.T) {
 	body := []byte(`{"username": "vomnes", "email": "vomnes", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "re-password": "abcABC123"}`)
-	r := tests.CreateRequest("POST", "/v1/account/register", body, tests.DB)
+	context := tests.ContextData{
+		DB: tests.DB,
+	}
+	r := tests.CreateRequest("POST", "/v1/account/register", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	Register(w, r)
@@ -100,7 +118,10 @@ func TestRegisterFieldInvalidEmailAddress(t *testing.T) {
 
 func TestRegisterFieldWrongIndenticalPassword(t *testing.T) {
 	body := []byte(`{"username": "vomnes", "email": "vomnes@s.co", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "re-password": "abcABC123Wrong"}`)
-	r := tests.CreateRequest("POST", "/v1/account/register", body, tests.DB)
+	context := tests.ContextData{
+		DB: tests.DB,
+	}
+	r := tests.CreateRequest("POST", "/v1/account/register", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	Register(w, r)
@@ -115,7 +136,10 @@ func TestRegisterFieldWrongIndenticalPassword(t *testing.T) {
 
 func TestRegisterFieldInvalidPassword(t *testing.T) {
 	body := []byte(`{"username": "vomnes", "email": "vomnes@s.co", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123**", "re-password": "abcABC123**"}`)
-	r := tests.CreateRequest("POST", "/v1/account/register", body, tests.DB)
+	context := tests.ContextData{
+		DB: tests.DB,
+	}
+	r := tests.CreateRequest("POST", "/v1/account/register", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	Register(w, r)
@@ -133,7 +157,10 @@ func TestRegisterNotAvailableUsernameEmail(t *testing.T) {
 	_ = tests.InsertUser(lib.User{Username: "vomn", Email: "valentin@gmail.com", Lastname: "Omnes", Firstname: "Valentin", Password: "abc"}, tests.DB)
 	_ = tests.InsertUser(lib.User{Username: "vomnes", Email: "valentin.omnes@gmail.com", Lastname: "Omnes", Firstname: "Valentin", Password: "abc"}, tests.DB)
 	body := []byte(`{"username": "vomnes", "email": "valentin.omnes@gmail.com", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "re-password": "abcABC123"}`)
-	r := tests.CreateRequest("POST", "/v1/account/register", body, tests.DB)
+	context := tests.ContextData{
+		DB: tests.DB,
+	}
+	r := tests.CreateRequest("POST", "/v1/account/register", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	Register(w, r)
@@ -151,7 +178,10 @@ func TestRegisterNotAvailableUsername(t *testing.T) {
 	_ = tests.InsertUser(lib.User{Username: "vomnvv", Email: "valentin@g.com", Lastname: "Omnes", Firstname: "Valentin", Password: "abc"}, tests.DB)
 	_ = tests.InsertUser(lib.User{Username: "vomnes", Email: "valentin@gmail.com", Lastname: "Omnes", Firstname: "Valentin", Password: "abc"}, tests.DB)
 	body := []byte(`{"username": "vomnes", "email": "valentin.omnes@gmail.com", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "re-password": "abcABC123"}`)
-	r := tests.CreateRequest("POST", "/v1/account/register", body, tests.DB)
+	context := tests.ContextData{
+		DB: tests.DB,
+	}
+	r := tests.CreateRequest("POST", "/v1/account/register", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	Register(w, r)
@@ -169,7 +199,10 @@ func TestRegisterNotAvailableEmailAddress(t *testing.T) {
 	_ = tests.InsertUser(lib.User{Username: "vomnvv", Email: "valentin@g.com", Lastname: "Omnes", Firstname: "Valentin", Password: "abc"}, tests.DB)
 	_ = tests.InsertUser(lib.User{Username: "vomnvv", Email: "valentin.omnes@gmail.com", Lastname: "Omnes", Firstname: "Valentin", Password: "abc"}, tests.DB)
 	body := []byte(`{"username": "vomnes", "email": "valentin.omnes@gmail.com", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "re-password": "abcABC123"}`)
-	r := tests.CreateRequest("POST", "/v1/account/register", body, tests.DB)
+	context := tests.ContextData{
+		DB: tests.DB,
+	}
+	r := tests.CreateRequest("POST", "/v1/account/register", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	Register(w, r)
@@ -205,7 +238,10 @@ func TestRegister(t *testing.T) {
 	tests.DbClean()
 	_ = tests.InsertUser(lib.User{Username: "valentin", Email: "valentin@g.com", Lastname: "Omnes", Firstname: "Valentin", Password: "abc"}, tests.DB)
 	body := []byte(`{"username": "vomnes", "email": "valentin.omnes@gmail.com", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "re-password": "abcABC123"}`)
-	r := tests.CreateRequest("POST", "/v1/account/register", body, tests.DB)
+	context := tests.ContextData{
+		DB: tests.DB,
+	}
+	r := tests.CreateRequest("POST", "/v1/account/register", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	Register(w, r)

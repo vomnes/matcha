@@ -12,16 +12,8 @@ import (
 // It allows to handle the user logout
 // Delete the user JSON Web Token from Redis database
 func Logout(w http.ResponseWriter, r *http.Request) {
-	username, ok := r.Context().Value(lib.Username).(string)
-	if !ok {
-		lib.RespondWithErrorHTTP(w, 500, "Failed to get Username from context")
-		return
-	}
-	UUID, ok := r.Context().Value(lib.UUID).(string)
-	if !ok {
-		lib.RespondWithErrorHTTP(w, 500, "Failed to get UUID from context")
-		return
-	}
+	username := r.Context().Value(lib.Username).(string)
+	UUID := r.Context().Value(lib.UUID).(string)
 	redisClient, ok := r.Context().Value(lib.Redis).(*redis.Client)
 	if !ok {
 		lib.RespondWithErrorHTTP(w, 500, "Problem with redis connection")
