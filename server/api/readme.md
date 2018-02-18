@@ -63,6 +63,31 @@ Return HTTP Code 200 Status OK - JSON Content "token": JWT
 
 ___
 
+#### JSON Web Token explanation
+
+###### Basics
+JSON Web Token is a JSON-based open standard (RFC 7519) for creating access tokens that assert some number of claims.
+This token is composed of :
+- Header
+```
+{
+  "alg": "HS256",
+  "typ":"JWT",
+}
+```
+- Payload that contains data such as iss, sub, iat (token issued at), exp (token expiration date) and other personal data (userId, username)
+- Signature - A secret string
+
+>token = encodeBase64Url(header) + '.' + encodeBase64Url(payload) + '.' + encodeBase64Url(signature)
+
+JWT is then used to identify the user, it is sent through the header **_Authorization: Bearer \<User_JWT\>_** and
+we can decode the token to collect data from payload (check validity, private data).
+
+###### JWT in this project
+![JSON Web Token Schema](./screenshots/JWT.png "JWT Schema")
+
+___
+
 #### POST - /v1/account/logout
 This route allows to handle the user logout  
 Delete in the Redis database the key `Username + "-" + UUID` allowing to validate the JWT token, using context data  
