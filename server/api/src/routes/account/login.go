@@ -69,8 +69,22 @@ func handleJWT(u lib.User, UUID string, client *redis.Client) (string, int, stri
 	return tokenString, 0, ""
 }
 
-// Login function corresponds to the API route POST /v1/account/login
-// It allows to handle the user authentication
+// Login is the route '/v1/account/login' with the method POST.
+// If the Username from the body is not in our PostgreSQL database
+//     -> Return an error - HTTP Code 403 Forbidden - JSON Content "Error: User or password incorrect"
+// If the Password from the body does not match with the data linked to the username in our PostgreSQL database
+//     -> Return an error - HTTP Code 403 Forbidden - JSON Content "Error: User or password incorrect"
+// Generate a JSON Web Token (JWT) with payload content :
+// {
+// "iss":      "matcha.com",
+// "sub":      UUID, // From body
+// "userId":   UserID, // From body
+// "username": Username, // From body
+// "iat":      now, // As time the number of seconds elapsed since January 1, 1970 UTC
+// "exp":      now + 72h, // As time the number of seconds elapsed since January 1, 1970 UTC
+// }
+// Set in the Redis database the key `Username + "-" + UUID` with the JWT as value
+// Return HTTP Code 200 Status OK - JSON Content "token": JWT
 func Login(w http.ResponseWriter, r *http.Request) {
 	db, ok := r.Context().Value(lib.Database).(*sqlx.DB)
 	if !ok {

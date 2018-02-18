@@ -98,9 +98,19 @@ func createUser(d accountData, db *sqlx.DB, r *http.Request) (int, string) {
 	return 0, ""
 }
 
-// Register function corresponds to the API route POST /v1/account/register
+// Register is the route '/v1/account/Register' with the method POST.
 // The body contains the username, emailAddress, lastname, firstname
 // password and re-password of the new account.
+// - Body Fields can't be empty, it must be a valid username (a-zA-Z0-9.- _ \\ {6,64}), firstname
+// and lastname (a-zA-Z - {6,64}), password (a-zA-Z0-9 {8,100}- At least one of each) and
+// email address (max 254).
+// - Password and reenter password must be identical.
+// If a least one of points below is not respected :
+//    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: <error details>"
+// Check in our PostgreSQL database, if the Username or/and Email address are already used
+//    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: <details> already used"
+// Encrypt the password and insert in the database the new user
+// Return HTTP Code 201 Status Created
 func Register(w http.ResponseWriter, r *http.Request) {
 	db, ok := r.Context().Value(lib.Database).(*sqlx.DB)
 	if !ok {

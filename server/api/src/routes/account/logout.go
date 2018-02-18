@@ -8,9 +8,11 @@ import (
 	"github.com/go-redis/redis"
 )
 
-// Logout function corresponds to the API route POST /v1/account/logout
-// It allows to handle the user logout
-// Delete the user JSON Web Token from Redis database
+// Logout is the route '/v1/account/logout' with the method POST.
+// Delete in the Redis database the key `Username + "-" + UUID` (using context data)
+// If deletion failed
+//    -> Return an error - HTTP Code 500 Internal Server Error - JSON Content "Error: Failed to delete token"
+// Return HTTP Code 202 Status Accepted
 func Logout(w http.ResponseWriter, r *http.Request) {
 	username := r.Context().Value(lib.Username).(string)
 	UUID := r.Context().Value(lib.UUID).(string)
@@ -23,5 +25,5 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, 500, "Failed to delete token")
 		return
 	}
-	lib.RespondWithJSON(w, http.StatusAccepted, "OK")
+	lib.RespondEmptyHTTP(w, http.StatusAccepted)
 }
