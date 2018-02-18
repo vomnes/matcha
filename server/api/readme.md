@@ -1,10 +1,7 @@
 # API routes details
 
 ### Account
-<details>
-<summary>
 #### POST - /v1/account/register
-</summary>
 ```
 JSON Body :
   {
@@ -28,9 +25,10 @@ Check in our PostgreSQL database, if the Username or/and Email address are alrea
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: \<details\> already used"  
 Encrypt the password and insert in the database the new user  
 Return HTTP Code 201 Status Created
-</details>
 
-<POST - /v1/account/login>
+___
+
+#### POST - /v1/account/login
 ```
 JSON Body :
   {
@@ -65,7 +63,7 @@ Return HTTP Code 200 Status OK - JSON Content "token": JWT
 
 ___
 
-<POST - /v1/account/logout>
+#### POST - /v1/account/logout
 This route allows to handle the user logout  
 Delete in the Redis database the key `Username + "-" + UUID` allowing to validate the JWT token, using context data  
 If deletion failed  
