@@ -84,7 +84,7 @@ JWT is then used to identify the user, it is sent through the header **_Authoriz
 we can decode the token to collect data from payload (check validity, private data).
 
 ###### JWT in this project
-![JSON Web Token Schema](../../screenshots/JWT.png "JWT Schema")
+<img alt="JSON Web Token Schema" src="../../screenshots/JWT.png" width="60%" title="JWT Schema">
 
 ___
 
