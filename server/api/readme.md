@@ -25,7 +25,7 @@ If a least one of points below is not respected :
 
 Check in our PostgreSQL database, if the Username or/and Email address are already used
 
-   -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: <details> already used"
+   -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: \<details\> already used"
 
 Encrypt the password and insert in the database the new user
 
@@ -67,7 +67,7 @@ Set in the Redis database the key `Username + "-" + UUID` with the JWT as value
 Return HTTP Code 200 Status OK - JSON Content "token": JWT
 
 All the routes following the login, must contain in the header :
-**_Authorization: Bearer <User_JWT>_**
+**_Authorization: Bearer \<User_JWT\>_**
 This token will be checked by the middleware for authentication.
 
 #### POST - /v1/account/logout
