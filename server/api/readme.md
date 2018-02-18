@@ -17,7 +17,8 @@ This route allows to handle the user registration by using the data sent in the 
 - Body Fields can't be empty, it must be a valid username (a-zA-Z0-9.- _ \\ {6,64}), firstname
 and lastname (a-zA-Z - {6,64}), password (a-zA-Z0-9 {8,100} - At least one of each) and
 email address (max 254)
-- Password and reentered password must be identical  
+- Password and reentered password must be identical
+
 If a least one of points below is not respected :  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: <error details>"  
 Check in our PostgreSQL database, if the Username or/and Email address are already used  
