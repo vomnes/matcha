@@ -53,10 +53,11 @@ Generate a JSON Web Token (JWT) with payload content :
 }
 ```
 Set in the Redis database the key `Username + "-" + UUID` with the JWT as value  
-Return HTTP Code 200 Status OK - JSON Content "token": JWT  
-All the routes following the login, must contain in the header :  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**_Authorization: Bearer \<User_JWT\>_**  
-This token will be checked by the middleware for authentication.
+Return HTTP Code 200 Status OK - JSON Content "token": JWT
+
+> All the routes following the login, must contain in the header :  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**_Authorization: Bearer \<User_JWT\>_**  
+> This token will be checked by the middleware for authentication.
 
 #### POST - /v1/account/logout
 This route allows to handle the user logout  
