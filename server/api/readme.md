@@ -26,6 +26,8 @@ Check in our PostgreSQL database, if the Username or/and Email address are alrea
 Encrypt the password and insert in the database the new user  
 Return HTTP Code 201 Status Created
 
+___
+
 #### POST - /v1/account/login
 ```
 JSON Body :
@@ -59,9 +61,13 @@ Return HTTP Code 200 Status OK - JSON Content "token": JWT
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**_Authorization: Bearer \<User_JWT\>_**  
 > This token will be checked by the middleware for authentication.
 
+___
+
 #### POST - /v1/account/logout
 This route allows to handle the user logout  
 Delete in the Redis database the key `Username + "-" + UUID` allowing to validate the JWT token, using context data  
 If deletion failed  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 500 Internal Server Error - JSON Content "Error: Failed to delete token"  
-Return HTTP Code 202 Status Accepted  
+Return HTTP Code 202 Status Accepted
+
+___
