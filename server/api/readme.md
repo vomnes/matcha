@@ -1,7 +1,7 @@
 # API routes details
 
 ### Account
-#### POST - /v1/account/register
+#### <POST - /v1/account/register>
 ```
 JSON Body :
   {
@@ -28,7 +28,7 @@ Return HTTP Code 201 Status Created
 
 ___
 
-#### POST - /v1/account/login
+#### <POST - /v1/account/login>
 ```
 JSON Body :
   {
@@ -63,7 +63,7 @@ Return HTTP Code 200 Status OK - JSON Content "token": JWT
 
 ___
 
-#### POST - /v1/account/logout
+#### <POST - /v1/account/logout>
 This route allows to handle the user logout  
 Delete in the Redis database the key `Username + "-" + UUID` allowing to validate the JWT token, using context data  
 If deletion failed  
