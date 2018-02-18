@@ -2,6 +2,7 @@ package lib
 
 import (
 	"math/rand"
+	"os"
 	"time"
 )
 
@@ -19,13 +20,15 @@ const (
 	// UUID key is used as value in order to store the UUID from JSON Web Token
 	// in the context, used for logout
 	UUID
+	// MailJet key is used as value in order to store MailJet client in the context
+	MailJet
 )
 
-const (
+var (
 	// PostgreSQLName is the current PostgreSQL database name
-	PostgreSQLName = "db_matcha"
+	PostgreSQLName = os.Getenv("DB_NAME")
 	// PostgreSQLNameTests is the PostgreSQL database name for tests
-	PostgreSQLNameTests = "db_matcha_tests"
+	PostgreSQLNameTests = os.Getenv("DB_NAME_TEST")
 	// RedisDBNum is the Redis database int used in the database selection
 	RedisDBNum = 0
 	// RedisDBNumTests is the Redis tests database int used in the database selection

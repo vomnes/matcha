@@ -12,6 +12,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	mailjet "github.com/mailjet/mailjet-apiv3-go"
 	"github.com/rs/cors"
 )
 
@@ -26,16 +27,17 @@ func adapt(h http.Handler, adapters ...adapter) http.Handler {
 }
 
 // adapt the request by checking the auth and filling the context with usefull data
-func enhanceHandlers(r *mux.Router, db *sqlx.DB, client *redis.Client) http.Handler {
-	return adapt(r, withRights(), withDB(db, client), withCors())
+func enhanceHandlers(r *mux.Router, db *sqlx.DB, redisClient *redis.Client, mailjetClient *mailjet.Client) http.Handler {
+	return adapt(r, withRights(), withDBMail(db, redisClient, mailjetClient), withCors())
 }
 
-// withDB is an adapter that copy the access to the database to serve a specific call
-func withDB(db *sqlx.DB, client *redis.Client) adapter {
+// withDBMail is an adapter that copy the access to the database to serve a specific call
+func withDBMail(db *sqlx.DB, redisClient *redis.Client, mailjetClient *mailjet.Client) adapter {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := context.WithValue(r.Context(), lib.Database, db)
-			ctx = context.WithValue(ctx, lib.Redis, client)
+			ctx = context.WithValue(ctx, lib.Redis, redisClient)
+			ctx = context.WithValue(ctx, lib.MailJet, mailjetClient)
 			h.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}

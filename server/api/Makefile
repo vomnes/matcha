@@ -70,4 +70,4 @@ vendor_get: vendor_clean
 		github.com/jmoiron/sqlx \
 		github.com/dgrijalva/jwt-go \
 		github.com/go-redis/redis \
-		github.com/satori/go.uuid
+		github.com/mailjet/mailjet-apiv3-go

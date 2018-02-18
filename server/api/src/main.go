@@ -24,6 +24,7 @@ func handleAPIRoutes() *mux.Router {
 	// Don't forget the exception in init.go
 	api.HandleFunc("/v1/account/register", account.Register).Methods("POST")
 	api.HandleFunc("/v1/account/login", account.Login).Methods("POST")
+	api.HandleFunc("/v1/account/logout", account.Logout).Methods("POST")
 	return api
 }
 
@@ -36,8 +37,9 @@ func main() {
 	}
 	db := lib.PostgreSQLConn(lib.PostgreSQLName)
 	redisClient := lib.RedisConn(lib.RedisDBNum)
+	mailjetClient := lib.MailJetConn()
 	router := handleAPIRoutes()
-	enhancedRouter := enhanceHandlers(router, db, redisClient)
+	enhancedRouter := enhanceHandlers(router, db, redisClient, mailjetClient)
 	if err := http.ListenAndServe(":"+*portPtr, enhancedRouter); err != nil {
 		log.Fatal(err)
 	}

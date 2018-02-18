@@ -14,6 +14,7 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/go-redis/redis"
 	"github.com/gorilla/mux"
+	mailjet "github.com/mailjet/mailjet-apiv3-go"
 )
 
 func TestMain(m *testing.M) {
@@ -62,7 +63,7 @@ func TestWithRightsLogin(t *testing.T) {
 	}
 	w := httptest.NewRecorder()
 	router := newTestServer()
-	enhanceHandlers(router, tests.DB, tests.RedisClient).ServeHTTP(w, r)
+	enhanceHandlers(router, tests.DB, tests.RedisClient, &mailjet.Client{}).ServeHTTP(w, r)
 	expectedCode := 200
 	expectedContent := "\"OK-Test-Login\""
 	if w.Code != expectedCode || w.Body.String() != expectedContent {
@@ -77,7 +78,7 @@ func TestWithRightsRegister(t *testing.T) {
 	}
 	w := httptest.NewRecorder()
 	router := newTestServer()
-	enhanceHandlers(router, tests.DB, tests.RedisClient).ServeHTTP(w, r)
+	enhanceHandlers(router, tests.DB, tests.RedisClient, &mailjet.Client{}).ServeHTTP(w, r)
 	expectedCode := 200
 	expectedContent := "\"OK-Test-Register\""
 	if w.Code != expectedCode || w.Body.String() != expectedContent {
@@ -92,7 +93,7 @@ func TestWithRightsNoAuthorization(t *testing.T) {
 	}
 	w := httptest.NewRecorder()
 	router := newTestServer()
-	enhanceHandlers(router, tests.DB, tests.RedisClient).ServeHTTP(w, r)
+	enhanceHandlers(router, tests.DB, tests.RedisClient, &mailjet.Client{}).ServeHTTP(w, r)
 	var response map[string]interface{}
 	if err := tests.ChargeResponse(w, &response); err != nil {
 		t.Error(err)
@@ -146,7 +147,7 @@ func TestWithRightsAuthorizationCases(t *testing.T) {
 		r.Header.Add("Authorization", tt.token)
 		w := httptest.NewRecorder()
 		router := newTestServer()
-		enhanceHandlers(router, tests.DB, tests.RedisClient).ServeHTTP(w, r)
+		enhanceHandlers(router, tests.DB, tests.RedisClient, &mailjet.Client{}).ServeHTTP(w, r)
 		var response map[string]interface{}
 		if err := tests.ChargeResponse(w, &response); err != nil {
 			t.Error(err)
@@ -190,7 +191,7 @@ func TestWithRightsExpiredToken(t *testing.T) {
 	r.Header.Add("Authorization", "Bearer "+token)
 	w := httptest.NewRecorder()
 	router := newTestServer()
-	enhanceHandlers(router, tests.DB, tests.RedisClient).ServeHTTP(w, r)
+	enhanceHandlers(router, tests.DB, tests.RedisClient, &mailjet.Client{}).ServeHTTP(w, r)
 	var response map[string]interface{}
 	if err := tests.ChargeResponse(w, &response); err != nil {
 		t.Error(err)
@@ -216,7 +217,7 @@ func TestWithRightsNotValidToken(t *testing.T) {
 	r.Header.Add("Authorization", "Bearer "+token+".Wrong")
 	w := httptest.NewRecorder()
 	router := newTestServer()
-	enhanceHandlers(router, tests.DB, tests.RedisClient).ServeHTTP(w, r)
+	enhanceHandlers(router, tests.DB, tests.RedisClient, &mailjet.Client{}).ServeHTTP(w, r)
 	var response map[string]interface{}
 	if err := tests.ChargeResponse(w, &response); err != nil {
 		t.Error(err)
@@ -246,7 +247,7 @@ func TestWithRightsNotValidTokenNoPayload(t *testing.T) {
 	r.Header.Add("Authorization", "Bearer "+token)
 	w := httptest.NewRecorder()
 	router := newTestServer()
-	enhanceHandlers(router, tests.DB, tests.RedisClient).ServeHTTP(w, r)
+	enhanceHandlers(router, tests.DB, tests.RedisClient, &mailjet.Client{}).ServeHTTP(w, r)
 	var response map[string]interface{}
 	if err := tests.ChargeResponse(w, &response); err != nil {
 		t.Error(err)
@@ -273,7 +274,7 @@ func TestWithRightsProblemWithRedis(t *testing.T) {
 	w := httptest.NewRecorder()
 	router := newTestServer()
 	wrongRedis := redis.NewClient(&redis.Options{})
-	enhanceHandlers(router, tests.DB, wrongRedis).ServeHTTP(w, r)
+	enhanceHandlers(router, tests.DB, wrongRedis, &mailjet.Client{}).ServeHTTP(w, r)
 	var response map[string]interface{}
 	if err := tests.ChargeResponse(w, &response); err != nil {
 		t.Error(err)
@@ -299,7 +300,7 @@ func TestWithRightsNoTokenInRedis(t *testing.T) {
 	r.Header.Add("Authorization", "Bearer "+token)
 	w := httptest.NewRecorder()
 	router := newTestServer()
-	enhanceHandlers(router, tests.DB, tests.RedisClient).ServeHTTP(w, r)
+	enhanceHandlers(router, tests.DB, tests.RedisClient, &mailjet.Client{}).ServeHTTP(w, r)
 	var response map[string]interface{}
 	if err := tests.ChargeResponse(w, &response); err != nil {
 		t.Error(err)
@@ -339,7 +340,7 @@ func TestWithRightsOldToken(t *testing.T) {
 	r.Header.Add("Authorization", "Bearer "+oldToken)
 	w := httptest.NewRecorder()
 	router := newTestServer()
-	enhanceHandlers(router, tests.DB, tests.RedisClient).ServeHTTP(w, r)
+	enhanceHandlers(router, tests.DB, tests.RedisClient, &mailjet.Client{}).ServeHTTP(w, r)
 	var response map[string]interface{}
 	if err := tests.ChargeResponse(w, &response); err != nil {
 		t.Error(err)
@@ -370,7 +371,7 @@ func TestWithRights(t *testing.T) {
 	r.Header.Add("Authorization", "Bearer "+token)
 	w := httptest.NewRecorder()
 	router := newTestServer()
-	enhanceHandlers(router, tests.DB, tests.RedisClient).ServeHTTP(w, r)
+	enhanceHandlers(router, tests.DB, tests.RedisClient, &mailjet.Client{}).ServeHTTP(w, r)
 	expectedCode := 200
 	if w.Code != expectedCode {
 		t.Errorf("Must return an http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m.", expectedCode, w.Code)
