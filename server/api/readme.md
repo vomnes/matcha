@@ -17,11 +17,11 @@ This route allows to handle the user registration by using the data sent in the 
 - Body Fields can't be empty, it must be a valid username (a-zA-Z0-9.- _ \\ {6,64}), firstname
 and lastname (a-zA-Z - {6,64}), password (a-zA-Z0-9 {8,100} - At least one of each) and
 email address (max 254)
-- Password and reentered password must be identical
+- Password and reentered password must be identical  
 If a least one of points below is not respected :  
-   -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: <error details>"  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: <error details>"  
 Check in our PostgreSQL database, if the Username or/and Email address are already used  
-   -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: \<details\> already used"  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: \<details\> already used"  
 Encrypt the password and insert in the database the new user  
 Return HTTP Code 201 Status Created
 
@@ -36,9 +36,10 @@ JSON Body :
 ```
 This route allows to handle the user authentication by using the data sent in the body.  
 If the Username from the body is not in our PostgreSQL database  
-   -> Return an error - HTTP Code 403 Forbidden - JSON Content "Error: User or password incorrect"  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 403 Forbidden - JSON Content "Error: User or password incorrect"  
 If the Password from the body does not match with the data linked to the username in our PostgreSQL database  
-  -> Return an error - HTTP Code 403 Forbidden - JSON Content "Error: User or password incorrect"  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 403 Forbidden - JSON Content "Error: User or password incorrect"
+
 Generate a JSON Web Token (JWT) with payload content :
 ```
 {
@@ -53,12 +54,12 @@ Generate a JSON Web Token (JWT) with payload content :
 Set in the Redis database the key `Username + "-" + UUID` with the JWT as value  
 Return HTTP Code 200 Status OK - JSON Content "token": JWT  
 All the routes following the login, must contain in the header :  
-**_Authorization: Bearer \<User_JWT\>_**  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**_Authorization: Bearer \<User_JWT\>_**  
 This token will be checked by the middleware for authentication.
 
 #### POST - /v1/account/logout
 This route allows to handle the user logout  
 Delete in the Redis database the key `Username + "-" + UUID` allowing to validate the JWT token, using context data  
 If deletion failed  
-    -> Return an error - HTTP Code 500 Internal Server Error - JSON Content "Error: Failed to delete token"  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 500 Internal Server Error - JSON Content "Error: Failed to delete token"  
 Return HTTP Code 202 Status Accepted  
