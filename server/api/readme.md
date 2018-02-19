@@ -1,6 +1,10 @@
 # API routes details
 
-### Account
+## Content
+- [Accounts](./#accounts)
+- [Mails](./#mails)
+
+### Accounts
 #### POST - /v1/account/register
 ```
 JSON Body :
