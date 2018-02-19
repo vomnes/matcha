@@ -41,7 +41,7 @@ func insertTokenDatabase(db *sqlx.DB, randomToken, emailAddress string) (int, st
 
 func sendMessage(w http.ResponseWriter, r *http.Request, isTest bool,
 	user lib.User, randomToken string, mailjetClient *mailjet.Client) {
-	resetPasswordURL := "localhost:8080/resetpassword/" + randomToken
+	resetPasswordURL := "localhost:8080/resetpassword?token=" + randomToken
 	// Test response
 	if isTest == true {
 		lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{

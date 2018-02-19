@@ -119,6 +119,7 @@ func TestForgotPasswordDoesNotExists(t *testing.T) {
 
 func TestForgotPassword(t *testing.T) {
 	tests.DbClean()
+	_ = tests.InsertUser(lib.User{Username: "vomqwdnes", Email: "valentin.omneqwds@gmail.com", Lastname: "Omneqwds", Firstname: "Valentqwdin", Password: "abcqwd"}, tests.DB)
 	_ = tests.InsertUser(lib.User{Username: "vomnes", Email: "valentin.omnes@gmail.com", Lastname: "Omnes", Firstname: "Valentin", Password: "abc"}, tests.DB)
 	context := tests.ContextData{
 		DB:            tests.DB,
@@ -140,7 +141,7 @@ func TestForgotPassword(t *testing.T) {
 	var user lib.User
 	err := tests.DB.Get(&user, "SELECT random_token FROM Users WHERE email = $1", "valentin.omnes@gmail.com")
 	if err != nil {
-		t.Error(err)
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
 		return
 	}
 	if !strings.Contains(user.RandomToken, "VmFsZW50aW4mMjAxOC0wMi0x") {
@@ -149,12 +150,12 @@ func TestForgotPassword(t *testing.T) {
 	}
 	var response map[string]interface{}
 	if err := tests.ChargeResponse(w, &response); err != nil {
-		t.Error(err)
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
 		return
 	}
 	expectedJSONResponse := map[string]interface{}{
 		"email":             "valentin.omnes@gmail.com",
-		"forgotPasswordUrl": "localhost:8080/resetpassword/" + user.RandomToken,
+		"forgotPasswordUrl": "localhost:8080/resetpassword?token=" + user.RandomToken,
 		"fullname":          "Valentin Omnes",
 	}
 	if compare := pretty.Compare(&expectedJSONResponse, response); compare != "" {
