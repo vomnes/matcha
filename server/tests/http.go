@@ -14,14 +14,16 @@ import (
 
 	"github.com/go-redis/redis"
 	"github.com/jmoiron/sqlx"
+	mailjet "github.com/mailjet/mailjet-apiv3-go"
 )
 
 type ContextData struct {
-	DB       *sqlx.DB
-	Client   *redis.Client
-	UserId   string
-	Username string
-	UUID     string
+	DB            *sqlx.DB
+	Client        *redis.Client
+	MailjetClient *mailjet.Client
+	UserId        string
+	Username      string
+	UUID          string
 }
 
 // CreateRequest allows to call a http route with a body for tests
@@ -35,6 +37,9 @@ func CreateRequest(method, url string, body []byte, ctxData ContextData) *http.R
 	}
 	if ctxData.Client != nil {
 		ctx = context.WithValue(ctx, lib.Redis, ctxData.Client)
+	}
+	if ctxData.MailjetClient != nil {
+		ctx = context.WithValue(ctx, lib.MailJet, ctxData.MailjetClient)
 	}
 	ctx = context.WithValue(ctx, lib.UserID, ctxData.UserId)
 	ctx = context.WithValue(ctx, lib.Username, ctxData.Username)
