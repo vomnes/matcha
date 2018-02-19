@@ -24,7 +24,7 @@ func checkEmailAddress(r *http.Request, db *sqlx.DB, emailAddress string) (lib.U
 			return lib.User{}, 400, "Email address does not exists in the database"
 		}
 		log.Println(lib.PrettyError(r.URL.String() + " [DB REQUEST - SELECT] " + err.Error()))
-		return lib.User{}, 500, "Check if email address exist failed"
+		return lib.User{}, 500, "Check if email address exists failed"
 	}
 	return user, 0, ""
 }
