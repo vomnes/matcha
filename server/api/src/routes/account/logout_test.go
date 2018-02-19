@@ -77,6 +77,7 @@ func TestLogoutWrongRedisKey(t *testing.T) {
 }
 
 func TestLogout(t *testing.T) {
+	tests.DbClean()
 	context := tests.ContextData{
 		Client:   tests.RedisClient,
 		UUID:     "test",
