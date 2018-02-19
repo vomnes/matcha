@@ -87,6 +87,7 @@ func sendMessage(w http.ResponseWriter, r *http.Request, isTest bool,
 // used for tests
 // Else send 'Forgot password' email to the email addres from body
 // with variables firstname and forgotPasswordUrl used in the mailjet template
+// Return HTTP Code 202 Status Accepted
 func ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	db, ok := r.Context().Value(lib.Database).(*sqlx.DB)
 	if !ok {

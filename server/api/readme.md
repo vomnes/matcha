@@ -1,6 +1,6 @@
 # API routes details
 
-## Content
+## Table of Contents
 - [Accounts](./#accounts)
 - [Mails](./#mails)
 
