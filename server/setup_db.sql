@@ -14,7 +14,6 @@ CREATE TABLE Users (
   firstname VARCHAR (65)     NOT NULL,
   password VARCHAR (65)     NOT NULL,
   created_at timestamp with time zone DEFAULT current_timestamp,
-  login_token VARCHAR (254) DEFAULT '',
   random_token VARCHAR (254) DEFAULT ''
 );
 
@@ -37,6 +36,5 @@ CREATE TABLE Users (
   firstname VARCHAR (65)     NOT NULL,
   password VARCHAR (65)     NOT NULL,
   created_at timestamp with time zone DEFAULT current_timestamp,
-  login_token VARCHAR (254) DEFAULT '',
   random_token VARCHAR (254) DEFAULT ''
 );

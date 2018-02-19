@@ -13,6 +13,5 @@ type User struct {
 	Firstname   string    `db:"firstname"`
 	Password    string    `db:"password"`
 	CreatedAt   time.Time `db:"created_at"`
-	LoginToken  string    `db:"login_token"`
 	RandomToken string    `db:"random_token"`
 }
