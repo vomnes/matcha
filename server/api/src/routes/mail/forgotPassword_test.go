@@ -3,6 +3,7 @@ package mail
 import (
 	"errors"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"../../../../lib"
@@ -134,6 +135,17 @@ func TestForgotPassword(t *testing.T) {
 	expectedContent := ""
 	if resp.StatusCode != expectedCode || statusContent != expectedContent {
 		t.Errorf("Must return an error with http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m and status content '\x1b[1;32m%s\033[0m' not '\x1b[1;31m%s\033[0m'.", expectedCode, resp.StatusCode, expectedContent, statusContent)
+		return
+	}
+	var user lib.User
+	err := tests.DB.Get(&user, "SELECT random_token FROM Users WHERE email = $1", "valentin.omnes@gmail.com")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if !strings.Contains(user.RandomToken, "VmFsZW50aW4mMjAxOC0wMi0x") {
+		t.Error("\x1b[1;31mNo random_token inserted in users table\033[0m")
+		return
 	}
 	var response map[string]interface{}
 	if err := tests.ChargeResponse(w, &response); err != nil {
@@ -142,7 +154,7 @@ func TestForgotPassword(t *testing.T) {
 	}
 	expectedJSONResponse := map[string]interface{}{
 		"email":             "valentin.omnes@gmail.com",
-		"forgotPasswordUrl": "localhost:8080/resetpassword/",
+		"forgotPasswordUrl": "localhost:8080/resetpassword/" + user.RandomToken,
 		"fullname":          "Valentin Omnes",
 	}
 	if compare := pretty.Compare(&expectedJSONResponse, response); compare != "" {

@@ -14,7 +14,8 @@ CREATE TABLE Users (
   firstname VARCHAR (65)     NOT NULL,
   password VARCHAR (65)     NOT NULL,
   created_at timestamp with time zone DEFAULT current_timestamp,
-  login_token VARCHAR (254) DEFAULT ''
+  login_token VARCHAR (254) DEFAULT '',
+  random_token VARCHAR (254) DEFAULT ''
 );
 
 INSERT INTO Users (username, email, lastname, firstname, password) VALUES ('vomnes', 'valentin.omnes@gmail.com', 'Omnes', 'Valentin', 'abc');
@@ -36,5 +37,6 @@ CREATE TABLE Users (
   firstname VARCHAR (65)     NOT NULL,
   password VARCHAR (65)     NOT NULL,
   created_at timestamp with time zone DEFAULT current_timestamp,
-  login_token VARCHAR (254) DEFAULT ''
+  login_token VARCHAR (254) DEFAULT '',
+  random_token VARCHAR (254) DEFAULT ''
 );

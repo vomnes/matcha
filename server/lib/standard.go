@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"encoding/base64"
 	"math/rand"
 	"os"
 	"time"
@@ -79,4 +80,11 @@ func GetRandomString(n int) string {
 		remain--
 	}
 	return string(b)
+}
+
+// UniqueTimeToken generates a unique base64 token using a key and time.Now() as string
+func UniqueTimeToken(key string) string {
+	now := time.Now()
+	data := []byte(key + "&" + now.String())
+	return base64.StdEncoding.EncodeToString(data)
 }

@@ -13,10 +13,10 @@ const (
 	user = "vomnes"
 )
 
-// RedisConn allows to create a connection with Redis storage
+// PostgreSQLConn allows to create a connection with PostgreSQL database
 func PostgreSQLConn(dbName string) *sqlx.DB {
 	if dbName == "" {
-		log.Fatal("\x1b[1;31mPostgreSQL: Need to export env variables\033[0m")
+		dbName = "db_matcha_tests"
 	}
 	dns := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable", host, port, user, dbName) // No password

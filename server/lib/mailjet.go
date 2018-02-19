@@ -7,15 +7,21 @@ import (
 )
 
 const (
+	// TemplateForgotPassword corresponds to the id of the ForgotPassword template used in mailjet
 	TemplateForgotPassword = 317685
 )
 
+// MailJetConn allows to create a connection with our MailJet client
 func MailJetConn() *mailjet.Client {
 	return mailjet.NewMailjetClient(os.Getenv("MJ_APIKEY_PUBLIC"), os.Getenv("MJ_APIKEY_PRIVATE"))
 }
 
+// SendMail allows to send email through mailjet
+// Take as parameter mailjetClient, email and destinatary name, sibject
+// mailjet templateId and variables containing the variables used in
+// the template
 func SendMail(mailjetClient *mailjet.Client, toEmail, toName, subject string,
-	templateId interface{}, variables map[string]interface{}) error {
+	templateID interface{}, variables map[string]interface{}) error {
 	messagesInfo := []mailjet.InfoMessagesV31{
 		mailjet.InfoMessagesV31{
 			From: &mailjet.RecipientV31{
@@ -28,7 +34,7 @@ func SendMail(mailjetClient *mailjet.Client, toEmail, toName, subject string,
 					Name:  toName,
 				},
 			},
-			TemplateID:       templateId,
+			TemplateID:       templateID,
 			TemplateLanguage: true,
 			Subject:          subject,
 			Variables:        variables,

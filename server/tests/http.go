@@ -17,11 +17,12 @@ import (
 	mailjet "github.com/mailjet/mailjet-apiv3-go"
 )
 
+// ContextData allows to set the context data for tests
 type ContextData struct {
 	DB            *sqlx.DB
 	Client        *redis.Client
 	MailjetClient *mailjet.Client
-	UserId        string
+	UserID        string
 	Username      string
 	UUID          string
 }
@@ -31,7 +32,7 @@ type ContextData struct {
 // Return a http request with data in context
 func CreateRequest(method, url string, body []byte, ctxData ContextData) *http.Request {
 	r := httptest.NewRequest(method, url, bytes.NewBuffer(body))
-	ctx := context.WithValue(r.Context(), lib.UserID, ctxData.UserId)
+	ctx := context.WithValue(r.Context(), lib.UserID, ctxData.UserID)
 	if ctxData.DB != nil {
 		ctx = context.WithValue(ctx, lib.Database, ctxData.DB)
 	}
@@ -41,7 +42,7 @@ func CreateRequest(method, url string, body []byte, ctxData ContextData) *http.R
 	if ctxData.MailjetClient != nil {
 		ctx = context.WithValue(ctx, lib.MailJet, ctxData.MailjetClient)
 	}
-	ctx = context.WithValue(ctx, lib.UserID, ctxData.UserId)
+	ctx = context.WithValue(ctx, lib.UserID, ctxData.UserID)
 	ctx = context.WithValue(ctx, lib.Username, ctxData.Username)
 	ctx = context.WithValue(ctx, lib.UUID, ctxData.UUID)
 	return r.WithContext(ctx)
