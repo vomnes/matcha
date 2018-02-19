@@ -59,6 +59,15 @@ func updateUserPassword(r *http.Request, db *sqlx.DB, password, randomToken stri
 }
 
 // ResetPassword is the route '/v1/account/resetpassword' with the method POST.
+// The body contains the random_token, password and re-password
+// If random_token, password or re-password is empty, passwords doesn't match or password is not valid
+//    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: <details>"
+// Get user data from random_token
+// If random_token doesn't match with any data in the table Users in the database
+//    -> Return an error - HTTP Code 400 Bad Request - JSON Content "Error: Random token does not exists in the database"
+// Encrypt with bcrypt the password
+// Update the database with the new password and delete random_token content in the database
+// Return HTTP Code 200 Status Accepted
 func ResetPassword(w http.ResponseWriter, r *http.Request) {
 	db, ok := r.Context().Value(lib.Database).(*sqlx.DB)
 	if !ok {

@@ -72,7 +72,21 @@ func sendMessage(w http.ResponseWriter, r *http.Request, isTest bool,
 	lib.RespondEmptyHTTP(w, http.StatusAccepted)
 }
 
-// ForgotPassword is the route '/v1/mails/forgotPassword' with the method POST.
+// ForgotPassword is the route '/v1/mails/forgotpassword' with the method POST.
+// The body contains the user email address and test boolean that allows to
+// avoid to send real email during the tests
+// If email address from the body is empty or not a valid email
+//    -> Return an error - HTTP Code 400 Bad Request - JSON Content "Error: Email address <details>"
+// If email address from the body doesn't match with any user in the database
+//    -> Return an error - HTTP Code 400 Bad Request - JSON Content "Error: Email address does not exists in the database"
+// Generate a unique token using user firstname and current time
+// Insert the unique token in the user row of the table Users in the database
+// Send mail :
+// If in the body test is true, then the route with return an OK StatusOK
+// with a JSON containing the email, fullname and forgotPasswordUrl. This is
+// used for tests
+// Else send 'Forgot password' email to the email addres from body
+// with variables firstname and forgotPasswordUrl used in the mailjet template
 func ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	db, ok := r.Context().Value(lib.Database).(*sqlx.DB)
 	if !ok {

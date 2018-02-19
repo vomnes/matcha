@@ -105,7 +105,7 @@ func createUser(d accountData, db *sqlx.DB, r *http.Request) (int, string) {
 // and lastname (a-zA-Z - {6,64}), password (a-zA-Z0-9 {8,100}- At least one of each) and
 // email address (max 254).
 // - Password and reenter password must be identical.
-// If a least one of points below is not respected :
+// If a least one of points above is not respected :
 //    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: <error details>"
 // Check in our PostgreSQL database, if the Username or/and Email address are already used
 //    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: <details> already used"
