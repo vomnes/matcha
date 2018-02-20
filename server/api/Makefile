@@ -59,7 +59,6 @@ vendor_clean:
 
 vendor_get: vendor_clean
 	GOPATH=${PWD}/_vendor go get -d -u -v \
-		gopkg.in/mgo.v2 \
 		github.com/rs/cors \
 		github.com/gorilla/mux \
 		github.com/gorilla/handlers \

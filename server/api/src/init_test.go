@@ -14,6 +14,7 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/go-redis/redis"
 	"github.com/gorilla/mux"
+	"github.com/kylelemons/godebug/pretty"
 	mailjet "github.com/mailjet/mailjet-apiv3-go"
 )
 
@@ -378,18 +379,17 @@ func TestWithRights(t *testing.T) {
 	if w.Code != expectedCode {
 		t.Errorf("Must return an http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m.", expectedCode, w.Code)
 	}
-	var response map[string]string
+	var response map[string]interface{}
 	if err := tests.ChargeResponse(w, &response); err != nil {
-		t.Error(err)
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
 		return
 	}
-	if response["userId"] != "42" {
-		t.Errorf("Must have in context userId \x1b[1;32m%s\033[0m not \x1b[1;31m%s\033[0m.", response["userId"], "42")
+	expectedJSONResponse := map[string]interface{}{
+		"userId":   "42",
+		"username": "vomnes",
+		"uuid":     "test",
 	}
-	if response["username"] != "vomnes" {
-		t.Errorf("Must have in context username \x1b[1;32m%s\033[0m not \x1b[1;31m%s\033[0m.", response["username"], "vomnes")
-	}
-	if response["uuid"] != "test" {
-		t.Errorf("Must have in context uuid \x1b[1;32m%s\033[0m not \x1b[1;31m%s\033[0m.", response["uuid"], "test")
+	if compare := pretty.Compare(&expectedJSONResponse, response); compare != "" {
+		t.Error(compare)
 	}
 }
