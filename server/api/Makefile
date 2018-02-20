@@ -23,14 +23,14 @@ launch:
 run: build launch
 
 test:
-	go test ./src/.
-	go test ./src/routes/account/.
-	go test ./src/routes/mail/.
+	@go test ./src/.
+	@go test ./src/routes/account/.
+	@go test ./src/routes/mail/.
 
 test-verbose:
-	go test -v ./src/.
-	go test -v ./src/routes/account/.
-	go test -v ./src/routes/mail/.
+	@go test -v ./src/.
+	@go test -v ./src/routes/account/.
+	@go test -v ./src/routes/mail/.
 
 test-target:
 	go test -v -run '$(TARGET)' ./src/...
