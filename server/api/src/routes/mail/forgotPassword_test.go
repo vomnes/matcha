@@ -144,7 +144,7 @@ func TestForgotPassword(t *testing.T) {
 		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
 		return
 	}
-	if !strings.Contains(user.RandomToken, "VmFsZW50aW4mMjAxOC0wMi0x") {
+	if !strings.Contains(user.RandomToken, "VmFsZW50aW4mMj") {
 		t.Error("\x1b[1;31mNo random_token inserted in users table\033[0m")
 		return
 	}
