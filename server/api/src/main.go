@@ -9,6 +9,7 @@ import (
 
 	"../../lib"
 	"./routes/account"
+	"./routes/mail"
 
 	"github.com/gorilla/mux"
 )
@@ -22,9 +23,11 @@ func handleAPIRoutes() *mux.Router {
 		lib.RespondWithJSON(w, 200, "OK")
 	})
 	// Don't forget the exception in init.go
-	api.HandleFunc("/v1/account/register", account.Register).Methods("POST")
-	api.HandleFunc("/v1/account/login", account.Login).Methods("POST")
-	api.HandleFunc("/v1/account/logout", account.Logout).Methods("POST")
+	api.HandleFunc("/v1/accounts/register", account.Register).Methods("POST")
+	api.HandleFunc("/v1/accounts/login", account.Login).Methods("POST")
+	api.HandleFunc("/v1/accounts/logout", account.Logout).Methods("POST")
+	api.HandleFunc("/v1/accounts/resetpassword", account.ResetPassword).Methods("POST")
+	api.HandleFunc("/v1/mails/forgotpassword", mail.ForgotPassword).Methods("POST")
 	return api
 }
 

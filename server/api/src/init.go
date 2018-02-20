@@ -52,14 +52,15 @@ func withRights() adapter {
 			noCheckJWT := []string{
 				"/v1/account/login",
 				"/v1/account/register",
+				"/v1/mails/forgotpassword",
+				"/v1/accounts/resetpassword",
 			}
 			if lib.StringInArray(routeURL.String(), noCheckJWT) {
 				h.ServeHTTP(w, r)
 				return
 			}
 			var tokenString string
-			// Get token from the Authorization header
-			// format: Authorization: Bearer
+			// Get token from the Authorization header format: Authorization: Bearer <jwt>
 			tokens, right := r.Header["Authorization"]
 			if right && len(tokens) >= 1 {
 				tokenString = tokens[0]
