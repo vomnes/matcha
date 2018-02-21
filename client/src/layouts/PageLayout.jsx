@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import './PageLayout.css';
+import './PageLayout.scss';
 
-class GeneralLayout extends Component {
+class PageLayout extends Component {
   render() {
     const {
       children,
@@ -18,3 +18,5 @@ class GeneralLayout extends Component {
     );
   }
 }
+
+export default PageLayout;

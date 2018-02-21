@@ -6,11 +6,11 @@ import {
 import PageLayout from '../layouts/PageLayout';
 
 // Check if the user is logged
-const ProtectedRoute = ({
-    isLoggedIn,
+const PrivateRoute = ({
     component: Component,
     ...rest,
   }) => {
+    const isLoggedIn = localStorage.getItem(`matcha_token`);
     return (
       <Route
         {...rest}
@@ -30,4 +30,4 @@ const ProtectedRoute = ({
     );
   };
 
-  export default ProtectedRoute;
+  export default PrivateRoute;

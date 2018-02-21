@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 )
 
 var (
 	// JWTSecret is used for JWT
-	JWTSecret = []byte("IamValentin")
+	JWTSecret = []byte(os.Getenv("JWT_SECRET"))
 )
 
 // RespondWithJSON set the content of the http response

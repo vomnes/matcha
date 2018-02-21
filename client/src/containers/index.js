@@ -4,6 +4,7 @@ import {
   Switch,
   Route,
 } from 'react-router-dom'
+import PrivateRoute from './PrivateRoute'
 
 const Home = () => (
   <div>
@@ -15,6 +16,7 @@ const Login = () => (
   <div>
     <h1>Login</h1>
   </div>
+  // localStorage.setItem(`matcha_token`, `<token>`);
 )
 
 const Main = () => (
@@ -22,6 +24,7 @@ const Main = () => (
     <Switch>
       <Route exact path='/' component={Home}/>
       <Route exact path='/login' component={Login}/>
+      <PrivateRoute exact path='/home' component={Home}/>
     </Switch>
   </Router>
 )
