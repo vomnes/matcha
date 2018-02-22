@@ -1,10 +1,14 @@
 // Design colors
 $design-red: #e63946;
-$design-white: #f1faee;
+$design-white: #ededed;
 $design-light-blue: #a8dadc;
 $design-blue: #457b9d;
 $design-dark-blue: #1d3557;
 
 #register {
-  background-color: $design-red;
+  background-color: $design-white;
+  border: 1px solid red;
+  padding: 5px;
+  width: 420px;
+  font-size: 16px;
 }

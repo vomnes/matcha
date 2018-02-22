@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './Register.scss'
+import './Register.css'
 
 class Register extends Component {
   constructor (props) {
@@ -22,7 +22,7 @@ class Register extends Component {
         <h2>Register</h2>
         <form onSubmit={this.handleSubmit}>
           <fieldset>
-           <label for="name">Username</label><input type="text" name="username" value={this.state.name} onChange={(event) => this.handleUserInput(event)}/>
+           <label htmlFor="name">Username</label><input type="text" name="username" value={this.state.name} onChange={(event) => this.handleUserInput(event)}/>
            {/* <label for="name">Password</label><input type="password" name="password"/> */}
            {/* <label for="name">Re-enter password</label><input type="password" name="re-password"/> */}
            {/* <label for="name">Email address</label><input type="email" name="email" required/> */}
