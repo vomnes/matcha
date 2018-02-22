@@ -5,12 +5,7 @@ import {
   Route,
 } from 'react-router-dom'
 import PrivateRoute from './PrivateRoute'
-
-const Home = () => (
-  <div>
-    <h1>Welcome to the Matcha Website!</h1>
-  </div>
-)
+import Register from './Register'
 
 const Login = () => (
   <div>
@@ -22,9 +17,9 @@ const Login = () => (
 const Main = () => (
   <Router>
     <Switch>
-      <Route exact path='/' component={Home}/>
+      <Route exact path='/' component={Register}/>
       <Route exact path='/login' component={Login}/>
-      <PrivateRoute exact path='/home' component={Home}/>
+      <PrivateRoute exact path='/home' component={Register}/>
     </Switch>
   </Router>
 )
