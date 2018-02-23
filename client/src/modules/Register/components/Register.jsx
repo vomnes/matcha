@@ -24,12 +24,12 @@ class Register extends Component {
           <h2 className="title">Register</h2>
           <h3 className="sub-title">A simple dating website</h3>
           <form onSubmit={this.handleSubmit}>
-            <input class="input-form" placeholder="Username" type="text" name="username" value={this.state.name} onChange={(event) => this.handleUserInput(event)}/><br />
-            <input class="input-form" placeholder="Email address" type="email" name="email" required/><br />
-            <input class="input-form" placeholder="Password" type="password" name="password"/><br />
-            <input class="input-form" placeholder="Re-enter Password" type="password" name="re-password"/><br />
-            <input type="submit" value="Registered"/>
-            <p>Content Error</p>
+            <input class="input-form" id="placeholder-icon-username" placeholder="Username" type="text" name="username" value={this.state.name} onChange={(event) => this.handleUserInput(event)}/><br />
+            <input class="input-form" id="placeholder-icon-email" placeholder="Email address" type="email" name="email"/><br />
+            <input class="input-form" id="placeholder-icon-password" placeholder="Password" type="password" name="password"/><br />
+            <input class="input-form" id="placeholder-icon-re-password" placeholder="Re-enter Password" type="password" name="re-password"/><br />
+            <input class="submit-form" type="submit" value="Register"/>
+            <p className="error">Content Error Content Error Content Error Content Error Content Error Content Error Content Error Content Error Content Error Content Error Content Error Content Error</p>
           </form>
         </div>
       </div>

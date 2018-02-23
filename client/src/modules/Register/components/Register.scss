@@ -1,7 +1,8 @@
-
+@import url('https://fonts.googleapis.com/css?family=Spectral');
 
 // Design colors
 $design-red: #e63946;
+$design-light-red: #ff6b76;
 $design-white: #ededed;
 $design-light-blue: #a8dadc;
 $design-blue: #457b9d;
@@ -21,7 +22,7 @@ body, html {
   left: 0;
   right: 0;
   /* Set background */
-  background-image: url("../../../pictures/Register-robson-hatsukami-morgan-250757-unsplash.jpg");
+  background-image: url("../../../design/pictures/Register-robson-hatsukami-morgan-250757-unsplash.jpg");
   height: 100%;
   background-position: center;
   background-repeat: no-repeat;
@@ -65,10 +66,94 @@ fieldset {
   margin-left: 6%;
   margin-top: 5%;
   padding: 7.55px;
-  padding-left: 45px;
   font-size: 25px;
-  border-radius: 5px;
-  border: 1px solid $design-blue;
-  caret-color: white;
+  border: 2px solid $design-blue;
   font-family: $font;
+}
+
+%placeholder-picture {
+  background-repeat: no-repeat;
+  background-position: 2% 3px;
+  padding-left: 45px;
+}
+
+
+#placeholder-icon-username {
+  @extend %placeholder-picture;
+  background-image: url('../../../design/icons/profile-blue-32.png');
+}
+
+#placeholder-icon-username:focus {
+  @extend %placeholder-picture;
+  background-image: url('../../../design/icons/profile-32.png');
+  border: 2px solid black;
+}
+
+#placeholder-icon-email {
+  @extend %placeholder-picture;
+  background-image: url('../../../design/icons/envelope-blue-32.png');
+}
+
+#placeholder-icon-email:focus {
+  @extend %placeholder-picture;
+  background-image: url('../../../design/icons/envelope-32.png');
+  border: 2px solid black;
+}
+
+#placeholder-icon-password {
+  @extend %placeholder-picture;
+  background-image: url('../../../design/icons/lock-blue-32.png');
+}
+
+#placeholder-icon-password:focus {
+  @extend %placeholder-picture;
+  background-image: url('../../../design/icons/lock-32.png');
+  border: 2px solid black;
+}
+
+#placeholder-icon-re-password {
+  @extend %placeholder-picture;
+  background-image: url('../../../design/icons/re-lock-blue-32.png');
+}
+
+#placeholder-icon-re-password:focus {
+  @extend %placeholder-picture;
+  background-image: url('../../../design/icons/re-lock-32.png');
+  border: 2px solid black;
+}
+
+.submit-form {
+  display: inline-block;
+  height: auto;
+  width: 88%;
+  margin-left: 6%;
+  margin-top: 5%;
+  padding: 7.55px;
+  font-size: 25px;
+  border: 2px solid black;
+  background-color: $design-dark-blue;
+  font-family: $font;
+  color: white;
+}
+
+.submit-form:hover {
+  background-color: $design-blue;
+  border: 2px solid $design-dark-blue;
+  color: black;
+  cursor: pointer;
+}
+
+.error {
+  border: 2px solid $design-red;
+  background-color: $design-light-red;
+  color: white;
+  text-align: center;
+  display: inline-block;
+  height: auto;
+  width: 83.5%;
+  margin-left: 6%;
+  margin-top: 5%;
+  padding: 7.55px;
+  font-size: 15px;
+  overflow-wrap: break-word;
 }
