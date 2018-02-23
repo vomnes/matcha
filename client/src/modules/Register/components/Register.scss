@@ -1,14 +1,74 @@
+
+
 // Design colors
 $design-red: #e63946;
 $design-white: #ededed;
 $design-light-blue: #a8dadc;
 $design-blue: #457b9d;
 $design-dark-blue: #1d3557;
+$font: Spectral, serif;
+
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: $font;
+}
+
+.background {
+  /* Set position */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* Set background */
+  background-image: url("../../../pictures/Register-robson-hatsukami-morgan-250757-unsplash.jpg");
+  height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
 
 #register {
   background-color: $design-white;
-  border: 1px solid red;
   padding: 5px;
   width: 420px;
+  height: auto;
   font-size: 16px;
+  position: relative;
+  top: 30%;
+  left: 15%;
+  -webkit-box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  font-size: 1.25em;
+}
+
+fieldset {
+  border: none;
+}
+
+.title {
+  text-align: center;
+  font-size: 1.7em;
+  margin: 0px;
+  color: $design-red;
+}
+
+.sub-title {
+  text-align: center;
+  font-size: 1.5em;
+  margin: 0px;
+}
+
+.input-form {
+  display: inline-block;
+  height: 25px;
+  width: 75%;
+  margin-left: 6%;
+  margin-top: 5%;
+  padding: 7.55px;
+  padding-left: 45px;
+  font-size: 25px;
+  border-radius: 5px;
+  border: 1px solid $design-blue;
+  caret-color: white;
+  font-family: $font;
 }

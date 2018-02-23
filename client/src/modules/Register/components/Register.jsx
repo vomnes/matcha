@@ -8,6 +8,7 @@ class Register extends Component {
       name: '',
     }
   }
+
   handleUserInput (e) {
     const name = e.target.name;
     const value = e.target.value;
@@ -18,18 +19,19 @@ class Register extends Component {
   }
   render() {
     return (
-      <div id="register">
-        <h2>Register</h2>
-        <form onSubmit={this.handleSubmit}>
-          <fieldset>
-           <label htmlFor="name">Username</label><input type="text" name="username" value={this.state.name} onChange={(event) => this.handleUserInput(event)}/>
-           {/* <label for="name">Password</label><input type="password" name="password"/> */}
-           {/* <label for="name">Re-enter password</label><input type="password" name="re-password"/> */}
-           {/* <label for="name">Email address</label><input type="email" name="email" required/> */}
-         </fieldset>
-         <input type="submit" value="Registered"/>
-         <p>Content Error</p>
-        </form>
+      <div className="background">
+        <div id="register" class="card card-2">
+          <h2 className="title">Register</h2>
+          <h3 className="sub-title">A simple dating website</h3>
+          <form onSubmit={this.handleSubmit}>
+            <input class="input-form" placeholder="Username" type="text" name="username" value={this.state.name} onChange={(event) => this.handleUserInput(event)}/><br />
+            <input class="input-form" placeholder="Email address" type="email" name="email" required/><br />
+            <input class="input-form" placeholder="Password" type="password" name="password"/><br />
+            <input class="input-form" placeholder="Re-enter Password" type="password" name="re-password"/><br />
+            <input type="submit" value="Registered"/>
+            <p>Content Error</p>
+          </form>
+        </div>
       </div>
     )
   }
