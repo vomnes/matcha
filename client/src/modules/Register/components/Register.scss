@@ -95,6 +95,17 @@ input:focus {
   border-bottom: 3px solid black;
 }
 
+#placeholder-icon-name {
+  @extend %placeholder-picture;
+  background-image: url('../../../design/icons/right-arrow-blue-32.png');
+}
+
+#placeholder-icon-name:focus {
+  @extend %placeholder-picture;
+  background-image: url('../../../design/icons/right-arrow-32.png');
+  border-bottom: 3px solid black;
+}
+
 #placeholder-icon-email {
   @extend %placeholder-picture;
   background-image: url('../../../design/icons/envelope-blue-32.png');

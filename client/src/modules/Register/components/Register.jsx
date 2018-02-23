@@ -25,6 +25,8 @@ class Register extends Component {
           <h3 className="sub-title">A simple dating website</h3>
           <form onSubmit={this.handleSubmit}>
             <input class="input-form" id="placeholder-icon-username" placeholder="Username" type="text" name="username" value={this.state.name} onChange={(event) => this.handleUserInput(event)}/><br />
+            <input class="input-form" id="placeholder-icon-name" placeholder="First name" type="text" name="firstname"/><br />
+            <input class="input-form" id="placeholder-icon-name" placeholder="Last name" type="text" name="lastname"/><br />
             <input class="input-form" id="placeholder-icon-email" placeholder="Email address" type="email" name="email"/><br />
             <input class="input-form" id="placeholder-icon-password" placeholder="Password" type="password" name="password"/><br />
             <input class="input-form" id="placeholder-icon-re-password" placeholder="Re-enter Password" type="password" name="re-password"/><br />
