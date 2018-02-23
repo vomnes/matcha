@@ -24,3 +24,5 @@ yarn-error.log*
 # -- Golang -- #
 _vendor
 bin
+
+*.css
