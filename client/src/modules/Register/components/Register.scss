@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Spectral');
+@import url('https://fonts.googleapis.com/css?family=Roboto');
 
 // Design colors
 $design-red: #e63946;
@@ -7,7 +8,7 @@ $design-white: #ededed;
 $design-light-blue: #a8dadc;
 $design-blue: #457b9d;
 $design-dark-blue: #1d3557;
-$font: Spectral, serif;
+$font: Roboto, serif;
 
 body, html {
     height: 100%;
@@ -30,7 +31,7 @@ body, html {
 }
 
 #register {
-  background-color: $design-white;
+  background-color: white;
   padding: 5px;
   width: 420px;
   height: auto;
@@ -40,16 +41,13 @@ body, html {
   left: 15%;
   -webkit-box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   font-size: 1.25em;
-}
-
-fieldset {
-  border: none;
+  border-radius: 10px;
 }
 
 .title {
   text-align: center;
   font-size: 1.7em;
-  margin: 0px;
+  margin: 15px;
   color: $design-red;
 }
 
@@ -67,8 +65,16 @@ fieldset {
   margin-top: 5%;
   padding: 7.55px;
   font-size: 25px;
-  border: 2px solid $design-blue;
+  border-bottom: 3px solid $design-blue;
   font-family: $font;
+}
+
+input {
+  border: none;
+}
+input:focus {
+  border: none;
+  outline: none;
 }
 
 %placeholder-picture {
@@ -86,7 +92,7 @@ fieldset {
 #placeholder-icon-username:focus {
   @extend %placeholder-picture;
   background-image: url('../../../design/icons/profile-32.png');
-  border: 2px solid black;
+  border-bottom: 3px solid black;
 }
 
 #placeholder-icon-email {
@@ -97,7 +103,7 @@ fieldset {
 #placeholder-icon-email:focus {
   @extend %placeholder-picture;
   background-image: url('../../../design/icons/envelope-32.png');
-  border: 2px solid black;
+  border-bottom: 3px solid black;
 }
 
 #placeholder-icon-password {
@@ -108,7 +114,7 @@ fieldset {
 #placeholder-icon-password:focus {
   @extend %placeholder-picture;
   background-image: url('../../../design/icons/lock-32.png');
-  border: 2px solid black;
+  border-bottom: 3px solid black;
 }
 
 #placeholder-icon-re-password {
@@ -119,28 +125,30 @@ fieldset {
 #placeholder-icon-re-password:focus {
   @extend %placeholder-picture;
   background-image: url('../../../design/icons/re-lock-32.png');
-  border: 2px solid black;
+  border-bottom: 3px solid black;
 }
 
 .submit-form {
   display: inline-block;
-  height: auto;
+  height: 55px;
   width: 88%;
   margin-left: 6%;
   margin-top: 5%;
   padding: 7.55px;
   font-size: 25px;
-  border: 2px solid black;
-  background-color: $design-dark-blue;
+  background: linear-gradient(to right, #1A93DD , #215FDE);
+  -webkit-box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   font-family: $font;
   color: white;
+  border-radius: 25px;
 }
 
 .submit-form:hover {
-  background-color: $design-blue;
-  border: 2px solid $design-dark-blue;
-  color: black;
   cursor: pointer;
+  width: 90%;
+  margin-left: 5%;
+  margin-top: 4.75%;
+  height: 57px;
 }
 
 .error {
