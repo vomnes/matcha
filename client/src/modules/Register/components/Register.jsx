@@ -1,6 +1,19 @@
 import React, { Component } from 'react';
 import './Register.css'
 
+function FormErrors(props) {
+  if (props.content) {
+    return (
+      <div>
+        <p className="error">{props.content}</p>
+      </div>
+    )
+  }
+  return (
+    <div></div>
+  )
+}
+
 class Register extends Component {
   constructor (props) {
     super(props);
@@ -47,7 +60,7 @@ class Register extends Component {
             <input className="input-form" id="placeholder-icon-re-password" placeholder="Re-enter Password" type="password" name="rePassword"
               value={this.state.rePassword} onChange={this.handleUserInput}/><br />
             <input className="submit-form" type="submit" value="Register"/>
-            <p className="error">{this.state.newError}</p>
+            <FormErrors content={this.state.newError}/>
           </form>
         </div>
       </div>
