@@ -67,14 +67,15 @@ body, html {
   font-size: 25px;
   border-bottom: 3px solid $design-blue;
   font-family: $font;
+  color: $design-blue;
 }
 
 input {
   border: none;
-}
-input:focus {
-  border: none;
-  outline: none;
+  &:focus {
+    border: none;
+    outline: none;
+  }
 }
 
 %placeholder-picture {
@@ -87,59 +88,67 @@ input:focus {
 #placeholder-icon-username {
   @extend %placeholder-picture;
   background-image: url('../../../design/icons/profile-blue-32.png');
+  &:focus {
+    background-image: url('../../../design/icons/profile-32.png');
+    border-bottom: 3px solid black;
+    color: black;
+  }
 }
 
-#placeholder-icon-username:focus {
-  @extend %placeholder-picture;
-  background-image: url('../../../design/icons/profile-32.png');
-  border-bottom: 3px solid black;
-}
-
-#placeholder-icon-name {
+.placeholder-icon-name {
   @extend %placeholder-picture;
   background-image: url('../../../design/icons/right-arrow-blue-32.png');
-}
-
-#placeholder-icon-name:focus {
-  @extend %placeholder-picture;
-  background-image: url('../../../design/icons/right-arrow-32.png');
-  border-bottom: 3px solid black;
+  &:focus {
+    background-image: url('../../../design/icons/right-arrow-32.png');
+    border-bottom: 3px solid black;
+    color: black;
+  }
 }
 
 #placeholder-icon-email {
   @extend %placeholder-picture;
   background-image: url('../../../design/icons/envelope-blue-32.png');
-}
-
-#placeholder-icon-email:focus {
-  @extend %placeholder-picture;
-  background-image: url('../../../design/icons/envelope-32.png');
-  border-bottom: 3px solid black;
+  &:focus {
+    background-image: url('../../../design/icons/envelope-32.png');
+    border-bottom: 3px solid black;
+    color: black;
+  }
 }
 
 #placeholder-icon-password {
   @extend %placeholder-picture;
   background-image: url('../../../design/icons/lock-blue-32.png');
-}
-
-#placeholder-icon-password:focus {
-  @extend %placeholder-picture;
-  background-image: url('../../../design/icons/lock-32.png');
-  border-bottom: 3px solid black;
+  &:focus {
+    background-image: url('../../../design/icons/lock-32.png');
+    border-bottom: 3px solid black;
+    color: black;
+  }
 }
 
 #placeholder-icon-re-password {
   @extend %placeholder-picture;
   background-image: url('../../../design/icons/re-lock-blue-32.png');
+  &:focus {
+    background-image: url('../../../design/icons/re-lock-32.png');
+    border-bottom: 3px solid black;
+    color: black;
+  }
 }
 
-#placeholder-icon-re-password:focus {
-  @extend %placeholder-picture;
-  background-image: url('../../../design/icons/re-lock-32.png');
-  border-bottom: 3px solid black;
+/* Gradient Buttons Color */
+$gradient-blue-a: #1A93DD;
+$gradient-blue-b: #215FDE;
+$gradient-red-a: #FF4040;
+$gradient-red-b: #E40A0A;
+
+@mixin gradient-shadow ($color1, $color2, $radius) {
+  background: linear-gradient(to right, $color1 , $color2);
+  -webkit-box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  border-radius: $radius;
 }
 
 .submit-form {
+  @include gradient-shadow($gradient-blue-a, $gradient-blue-b, 25px);
   display: inline-block;
   height: 55px;
   width: 88%;
@@ -147,32 +156,48 @@ input:focus {
   margin-top: 5%;
   padding: 7.55px;
   font-size: 25px;
-  background: linear-gradient(to right, #1A93DD , #215FDE);
-  -webkit-box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   font-family: $font;
   color: white;
-  border-radius: 25px;
-}
-
-.submit-form:hover {
-  cursor: pointer;
-  width: 90%;
-  margin-left: 5%;
-  margin-top: 4.75%;
-  height: 57px;
+  &:hover {
+    cursor: pointer;
+    width: 90%;
+    margin-left: 5%;
+    margin-top: 4.75%;
+    height: 57px;
+  }
 }
 
 .error {
-  border: 2px solid $design-red;
-  background-color: $design-light-red;
+  @include gradient-shadow($gradient-red-a, $gradient-red-b, 5px);
   color: white;
   text-align: center;
   display: inline-block;
-  height: auto;
   width: 83.5%;
   margin-left: 6%;
   margin-top: 5%;
   padding: 7.55px;
   font-size: 15px;
   overflow-wrap: break-word;
+}
+
+#member {
+  @include gradient-shadow($gradient-blue-a, $gradient-blue-b, 35px);
+  position: absolute;
+  top: 1%;
+  right: 1%;
+  color: white;
+  text-align: center;
+  display: inline-block;
+  padding: 25px;
+  font-size: 20px;
+  width: 185px;
+  height: 25px;
+  &:hover {
+    cursor: pointer;
+    width: 190px;
+    height: 27px;
+    top: 0.80%;
+    right: 0.85%;
+    border-radius: 50px;
+  }
 }
