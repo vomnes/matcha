@@ -169,19 +169,6 @@ $gradient-red-b: #E40A0A;
   }
 }
 
-.error {
-  @include gradient-shadow($gradient-red-a, $gradient-red-b, 5px);
-  color: white;
-  text-align: center;
-  display: inline-block;
-  width: 83.5%;
-  margin-left: 6%;
-  margin-top: 5%;
-  padding: 7.55px;
-  font-size: 15px;
-  overflow-wrap: break-word;
-}
-
 #member {
   @include gradient-shadow($gradient-blue-a, $gradient-blue-b, 35px);
   position: absolute;
@@ -202,4 +189,39 @@ $gradient-red-b: #E40A0A;
     right: 0.85%;
     border-radius: 50px;
   }
+}
+
+.error-popup {
+  position: fixed;
+  text-align: center;
+  top: -5px;
+  width: auto;
+  left: 50%;
+  -moz-transform: translateX(-50%);
+  height: auto;
+  padding: 20px;
+  @include gradient-shadow($gradient-red-a, $gradient-red-b, 10px);
+  color:  white;
+}
+
+.error-close {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 30px;
+  line-height: 20px;
+  cursor: pointer;
+  &:hover {
+    color: black;
+  }
+}
+
+.error-warning {
+  margin-right: 15px;
+  color: white;
+  font-weight: bold;
+  float: left;
+  font-size: 40px;
+  line-height: 20px;
 }

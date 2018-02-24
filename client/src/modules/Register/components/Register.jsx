@@ -4,8 +4,10 @@ import './Register.css'
 function FormErrors(props) {
   if (props.content) {
     return (
-      <div>
-        <p className="error">{props.content}</p>
+      <div className="error-popup">
+        <span className="error-warning">&#9888;</span>
+        <span>Error : {props.content}</span>
+        <span className="error-close">&times;</span>
       </div>
     )
   }
@@ -24,7 +26,7 @@ class Register extends Component {
       email: '',
       password: '',
       rePassword: '',
-      newError: '',
+      newError: 'This is an error',
     }
     this.handleUserInput = this.handleUserInput.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -60,9 +62,9 @@ class Register extends Component {
             <input className="input-form" id="placeholder-icon-re-password" placeholder="Re-enter Password" type="password" name="rePassword"
               value={this.state.rePassword} onChange={this.handleUserInput}/><br />
             <input className="submit-form" type="submit" value="Register"/>
-            <FormErrors content={this.state.newError}/>
           </form>
         </div>
+        <FormErrors content={this.state.newError}/>
       </div>
     )
   }
