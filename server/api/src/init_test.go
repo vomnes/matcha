@@ -50,17 +50,17 @@ func newTestServer() *mux.Router {
 			"uuid":     uuid,
 		})
 	}).Methods("GET")
-	r.HandleFunc("/v1/account/login", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/v1/accounts/login", func(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithJSON(w, 200, "OK-Test-Login")
 	}).Methods("POST")
-	r.HandleFunc("/v1/account/register", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/v1/accounts/register", func(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithJSON(w, 200, "OK-Test-Register")
 	}).Methods("POST")
 	return r
 }
 
 func TestWithRightsLogin(t *testing.T) {
-	r, err := http.NewRequest("POST", "/v1/account/login", nil)
+	r, err := http.NewRequest("POST", "/v1/accounts/login", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -75,7 +75,7 @@ func TestWithRightsLogin(t *testing.T) {
 }
 
 func TestWithRightsRegister(t *testing.T) {
-	r, err := http.NewRequest("POST", "/v1/account/register", nil)
+	r, err := http.NewRequest("POST", "/v1/accounts/register", nil)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -1,5 +1,4 @@
 import fetch from 'isomorphic-fetch';
-// npm install --save isomorphic-fetch es6-promise
 
 const login = (params, conf) => {
   return fetch (

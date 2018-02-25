@@ -15,7 +15,7 @@ type accountData struct {
 	Lastname     string `json:"lastname"`
 	Firstname    string `json:"firstname"`
 	Password     string `json:"password"`
-	RePassword   string `json:"re-password"`
+	RePassword   string `json:"rePassword"`
 }
 
 func checkInput(d accountData) (int, string) {

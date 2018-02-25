@@ -1,6 +1,30 @@
 import React, { Component } from 'react';
 import Error from '../../../components/Error'
 import './Register.css'
+import api from '../../../api'
+import  { Redirect } from 'react-router-dom'
+
+const signUp = (username, firstname, lastname, email, password, rePassword, createError) => {
+  api.register({
+      username,
+      firstname,
+      lastname,
+      email,
+      password,
+      rePassword
+  }).then(function(response) {
+    if (response.status >= 500) {
+      throw new Error("Bad response from server");
+    } else if (response.status >= 400) {
+      response.json().then(function(data) {
+        createError(data.error);
+        return;
+      });
+    } else {
+      return <Redirect to='/login'/>
+    }
+  })
+}
 
 class Register extends Component {
   constructor (props) {
@@ -16,7 +40,8 @@ class Register extends Component {
     }
     this.handleUserInput = this.handleUserInput.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.onClose = this.onClose.bind(this);
+    this.createError = this.createError.bind(this);
+    this.closeError = this.closeError.bind(this);
   }
 
   handleUserInput (e) {
@@ -24,16 +49,28 @@ class Register extends Component {
       [e.target.name]: e.target.value,
     });
   }
-  handleSubmit(e) {
-    console.log(this.state)
-    e.preventDefault();
+  createError(content) {
+    this.setState({
+      newError: content,
+    });
   }
-  onClose(event) {
-    console.log('Hello');
+  closeError(event) {
     this.setState({
       newError: '',
     });
     event.preventDefault();
+  }
+  handleSubmit(e) {
+    signUp(
+      this.state.username,
+      this.state.firstname,
+      this.state.lastname,
+      this.state.email,
+      this.state.password,
+      this.state.rePassword,
+      this.createError
+    )
+    e.preventDefault();
   }
   render() {
     return (
@@ -58,12 +95,10 @@ class Register extends Component {
             <input className="submit-form" type="submit" value="Register"/>
           </form>
         </div>
-        <Error content={this.state.newError} onClose={this.onClose}/>
+        <Error content={this.state.newError} onClose={this.closeError}/>
       </div>
     )
   }
 }
-
-// https://learnetto.com/blog/how-to-do-simple-form-validation-in-reactjs
 
 export default Register;

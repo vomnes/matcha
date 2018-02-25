@@ -50,8 +50,8 @@ func withRights() adapter {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			routeURL := *r.URL
 			noCheckJWT := []string{
-				"/v1/account/login",
-				"/v1/account/register",
+				"/v1/accounts/login",
+				"/v1/accounts/register",
 				"/v1/mails/forgotpassword",
 				"/v1/accounts/resetpassword",
 			}

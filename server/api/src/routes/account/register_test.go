@@ -27,7 +27,7 @@ func TestRegisterNoBody(t *testing.T) {
 }
 
 func TestRegisterFieldEmptyBody(t *testing.T) {
-	body := []byte(`{"username": "vomnes", "email": "", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "re-password": "abcABC123"}`)
+	body := []byte(`{"username": "vomnes", "email": "", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "rePassword": "abcABC123"}`)
 	context := tests.ContextData{
 		DB: tests.DB,
 	}
@@ -45,7 +45,7 @@ func TestRegisterFieldEmptyBody(t *testing.T) {
 }
 
 func TestRegisterFieldInvalidUsername(t *testing.T) {
-	body := []byte(`{"username": "vomnes&&", "email": "vomnes@student.42.fr", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "re-password": "abcABC123"}`)
+	body := []byte(`{"username": "vomnes&&", "email": "vomnes@student.42.fr", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "rePassword": "abcABC123"}`)
 	context := tests.ContextData{
 		DB: tests.DB,
 	}
@@ -63,7 +63,7 @@ func TestRegisterFieldInvalidUsername(t *testing.T) {
 }
 
 func TestRegisterFieldInvalidFirstname(t *testing.T) {
-	body := []byte(`{"username": "vomnes", "email": "vomnes@student.42.fr", "firstname": "Valentin..", "lastname": "Omnes", "password": "abcABC123", "re-password": "abcABC123"}`)
+	body := []byte(`{"username": "vomnes", "email": "vomnes@student.42.fr", "firstname": "Valentin..", "lastname": "Omnes", "password": "abcABC123", "rePassword": "abcABC123"}`)
 	context := tests.ContextData{
 		DB: tests.DB,
 	}
@@ -81,7 +81,7 @@ func TestRegisterFieldInvalidFirstname(t *testing.T) {
 }
 
 func TestRegisterFieldInvalidLastname(t *testing.T) {
-	body := []byte(`{"username": "vomnes", "email": "vomnes@student.42.fr", "firstname": "Valentin", "lastname": "Omnes**", "password": "abcABC123", "re-password": "abcABC123"}`)
+	body := []byte(`{"username": "vomnes", "email": "vomnes@student.42.fr", "firstname": "Valentin", "lastname": "Omnes**", "password": "abcABC123", "rePassword": "abcABC123"}`)
 	context := tests.ContextData{
 		DB: tests.DB,
 	}
@@ -99,7 +99,7 @@ func TestRegisterFieldInvalidLastname(t *testing.T) {
 }
 
 func TestRegisterFieldInvalidEmailAddress(t *testing.T) {
-	body := []byte(`{"username": "vomnes", "email": "vomnes", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "re-password": "abcABC123"}`)
+	body := []byte(`{"username": "vomnes", "email": "vomnes", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "rePassword": "abcABC123"}`)
 	context := tests.ContextData{
 		DB: tests.DB,
 	}
@@ -117,7 +117,7 @@ func TestRegisterFieldInvalidEmailAddress(t *testing.T) {
 }
 
 func TestRegisterFieldWrongIndenticalPassword(t *testing.T) {
-	body := []byte(`{"username": "vomnes", "email": "vomnes@s.co", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "re-password": "abcABC123Wrong"}`)
+	body := []byte(`{"username": "vomnes", "email": "vomnes@s.co", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "rePassword": "abcABC123Wrong"}`)
 	context := tests.ContextData{
 		DB: tests.DB,
 	}
@@ -135,7 +135,7 @@ func TestRegisterFieldWrongIndenticalPassword(t *testing.T) {
 }
 
 func TestRegisterFieldInvalidPassword(t *testing.T) {
-	body := []byte(`{"username": "vomnes", "email": "vomnes@s.co", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123**", "re-password": "abcABC123**"}`)
+	body := []byte(`{"username": "vomnes", "email": "vomnes@s.co", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123**", "rePassword": "abcABC123**"}`)
 	context := tests.ContextData{
 		DB: tests.DB,
 	}
@@ -156,7 +156,7 @@ func TestRegisterNotAvailableUsernameEmail(t *testing.T) {
 	tests.DbClean()
 	_ = tests.InsertUser(lib.User{Username: "vomn", Email: "valentin@gmail.com", Lastname: "Omnes", Firstname: "Valentin", Password: "abc"}, tests.DB)
 	_ = tests.InsertUser(lib.User{Username: "vomnes", Email: "valentin.omnes@gmail.com", Lastname: "Omnes", Firstname: "Valentin", Password: "abc"}, tests.DB)
-	body := []byte(`{"username": "vomnes", "email": "valentin.omnes@gmail.com", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "re-password": "abcABC123"}`)
+	body := []byte(`{"username": "vomnes", "email": "valentin.omnes@gmail.com", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "rePassword": "abcABC123"}`)
 	context := tests.ContextData{
 		DB: tests.DB,
 	}
@@ -177,7 +177,7 @@ func TestRegisterNotAvailableUsername(t *testing.T) {
 	tests.DbClean()
 	_ = tests.InsertUser(lib.User{Username: "vomnvv", Email: "valentin@g.com", Lastname: "Omnes", Firstname: "Valentin", Password: "abc"}, tests.DB)
 	_ = tests.InsertUser(lib.User{Username: "vomnes", Email: "valentin@gmail.com", Lastname: "Omnes", Firstname: "Valentin", Password: "abc"}, tests.DB)
-	body := []byte(`{"username": "vomnes", "email": "valentin.omnes@gmail.com", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "re-password": "abcABC123"}`)
+	body := []byte(`{"username": "vomnes", "email": "valentin.omnes@gmail.com", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "rePassword": "abcABC123"}`)
 	context := tests.ContextData{
 		DB: tests.DB,
 	}
@@ -198,7 +198,7 @@ func TestRegisterNotAvailableEmailAddress(t *testing.T) {
 	tests.DbClean()
 	_ = tests.InsertUser(lib.User{Username: "vomnvv", Email: "valentin@g.com", Lastname: "Omnes", Firstname: "Valentin", Password: "abc"}, tests.DB)
 	_ = tests.InsertUser(lib.User{Username: "vomnvv", Email: "valentin.omnes@gmail.com", Lastname: "Omnes", Firstname: "Valentin", Password: "abc"}, tests.DB)
-	body := []byte(`{"username": "vomnes", "email": "valentin.omnes@gmail.com", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "re-password": "abcABC123"}`)
+	body := []byte(`{"username": "vomnes", "email": "valentin.omnes@gmail.com", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "rePassword": "abcABC123"}`)
 	context := tests.ContextData{
 		DB: tests.DB,
 	}
@@ -237,7 +237,7 @@ func TestRegisterNoDatabase(t *testing.T) {
 func TestRegister(t *testing.T) {
 	tests.DbClean()
 	_ = tests.InsertUser(lib.User{Username: "valentin", Email: "valentin@g.com", Lastname: "Omnes", Firstname: "Valentin", Password: "abc"}, tests.DB)
-	body := []byte(`{"username": "vomnes", "email": "valentin.omnes@gmail.com", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "re-password": "abcABC123"}`)
+	body := []byte(`{"username": "vomnes", "email": "valentin.omnes@gmail.com", "firstname": "Valentin", "lastname": "Omnes", "password": "abcABC123", "rePassword": "abcABC123"}`)
 	context := tests.ContextData{
 		DB: tests.DB,
 	}
