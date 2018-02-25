@@ -12,7 +12,7 @@
 .up-title-form {
   position: absolute;
   font-size: 3em;
-  top: -135px;
+  top: -140px;
   font-family: $font-logo;
   @include position-center(50%);
   @include font-color-gradient($gradient-btn-a, $gradient-btn-b);

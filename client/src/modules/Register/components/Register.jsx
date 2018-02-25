@@ -103,6 +103,10 @@ class Register extends Component {
               value={this.state.rePassword} onChange={this.handleUserInput}/><br />
             <input className="submit-form" type="submit" value="Register"/>
           </form>
+          <hr className="form-line"/>
+          <div className="form-link">
+            <a href='/login' className="form-link-click"><span>Already a member ?</span></a>
+          </div>
         </div>
         <Error content={this.state.newError} onClose={this.closeError}/>
       </div>

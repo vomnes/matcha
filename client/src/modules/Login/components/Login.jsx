@@ -63,7 +63,7 @@ class Login extends Component {
               value={this.state.username} onChange={this.handleUserInput}/><br />
             <input className="input-form" id="placeholder-icon-password" placeholder="Password" type="password" name="password"
               value={this.state.password} onChange={this.handleUserInput}/><br />
-            <input className="submit-form" type="submit" value="Register"/>
+            <input className="submit-form" type="submit" value="Enter"/>
             <div className="form-link">
               <a href='/forgotpassword' className="form-link-click"><span>Forgot password ?</span></a> - <a href='/register' className="form-link-click"><span>Not registered yet ?</span></a>
             </div>

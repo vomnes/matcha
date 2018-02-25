@@ -4,14 +4,15 @@
 @import '../../../design/style/forms.scss';
 
 body, html {
-    height: 100%;
+    // height: 100%;
     margin: 0;
     font-family: $font;
 }
 
 #background-register {
   @extend %background;
-  background-image: url("../../../design/pictures/Register-robson-hatsukami-morgan-250757-unsplash.jpg");
+  background-image: url("../../../design/pictures/Register-andrew-welch-229148-unsplash.jpg");
+  // background-image: url("../../../design/pictures/Register-robson-hatsukami-morgan-250757-unsplash.jpg");
 }
 
 #register {
@@ -42,5 +43,40 @@ body, html {
     top: -4px;
     right: 0.75%;
     border-radius: 50px;
+  }
+}
+
+.form-line {
+  visibility: hidden;
+  display: none;
+}
+
+.form-link-click {
+  visibility: hidden;
+  display: none;
+}
+
+@media (max-width: 638px) {
+  #member {
+    visibility: hidden;
+  }
+
+  #register {
+    top: 100px;
+    left: 8%;
+    width: 80%;
+  }
+
+  .form-line {
+    visibility: visible;
+    display: block;
+    height: 0.5px;
+    width: 50%;
+  }
+
+  .form-link-click {
+    visibility: visible;
+    display: block;
+    font-size: 2em;
   }
 }
