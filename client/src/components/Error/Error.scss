@@ -1,0 +1,38 @@
+@import '../../design/style/functions.scss';
+@import '../../design/style/variables.scss';
+
+.error-popup {
+  position: fixed;
+  @include position-center(47%);
+  text-align: center;
+  top: -5px;
+  width: auto;
+  height: auto;
+  padding: 20px;
+  padding-bottom: 15px;
+  @include gradient-shadow($gradient-red-a, $gradient-red-b, 0px);
+  color:  white;
+}
+
+.error-close {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 30px;
+  line-height: 20px;
+  cursor: pointer;
+  &:hover {
+    color: black;
+  }
+}
+
+.error-warning {
+  margin-right: 15px;
+  // margin-top: 5px;
+  color: white;
+  font-weight: bold;
+  float: left;
+  font-size: 40px;
+  line-height: 20px;
+}

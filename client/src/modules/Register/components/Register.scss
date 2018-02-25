@@ -1,14 +1,5 @@
-@import url('https://fonts.googleapis.com/css?family=Spectral');
-@import url('https://fonts.googleapis.com/css?family=Roboto');
-
-// Design colors
-$design-red: #e63946;
-$design-light-red: #ff6b76;
-$design-white: #ededed;
-$design-light-blue: #a8dadc;
-$design-blue: #457b9d;
-$design-dark-blue: #1d3557;
-$font: Roboto, serif;
+@import '../../../design/style/functions.scss';
+@import '../../../design/style/variables.scss';
 
 body, html {
     height: 100%;
@@ -135,20 +126,8 @@ input {
   }
 }
 
-/* Gradient Buttons Color */
-$gradient-blue-a: #ee0979;
-$gradient-blue-b: #ff6a00;
-$gradient-red-a: #e35d5b;
-$gradient-red-b: #e53935;
-
-@mixin gradient-shadow ($color1, $color2, $radius) {
-  background: linear-gradient(to right, $color1 , $color2);
-  -webkit-box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-  border-radius: $radius;
-}
-
 .submit-form {
-  @include gradient-shadow($gradient-blue-a, $gradient-blue-b, 25px);
+  @include gradient-shadow($gradient-btn-a, $gradient-btn-b, 25px);
   display: inline-block;
   height: 55px;
   width: 88%;
@@ -170,9 +149,9 @@ $gradient-red-b: #e53935;
 }
 
 #member {
-  @include gradient-shadow($gradient-blue-a, $gradient-blue-b, 35px);
+  @include gradient-shadow($gradient-btn-a, $gradient-btn-b, 35px);
   position: absolute;
-  top: 1%;
+  top: -5px;
   right: 1%;
   color: white;
   text-align: center;
@@ -185,43 +164,8 @@ $gradient-red-b: #e53935;
     cursor: pointer;
     width: 190px;
     height: 27px;
-    top: 0.80%;
-    right: 0.85%;
+    top: -4px;
+    right: 0.75%;
     border-radius: 50px;
   }
-}
-
-.error-popup {
-  position: fixed;
-  text-align: center;
-  top: -5px;
-  width: auto;
-  left: 50%;
-  -moz-transform: translateX(-50%);
-  height: auto;
-  padding: 20px;
-  @include gradient-shadow($gradient-red-a, $gradient-red-b, 10px);
-  color:  white;
-}
-
-.error-close {
-  margin-left: 15px;
-  color: white;
-  font-weight: bold;
-  float: right;
-  font-size: 30px;
-  line-height: 20px;
-  cursor: pointer;
-  &:hover {
-    color: black;
-  }
-}
-
-.error-warning {
-  margin-right: 15px;
-  color: white;
-  font-weight: bold;
-  float: left;
-  font-size: 40px;
-  line-height: 20px;
 }

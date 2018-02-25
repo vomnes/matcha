@@ -1,20 +1,6 @@
 import React, { Component } from 'react';
+import Error from '../../../components/Error'
 import './Register.css'
-
-function FormErrors(props) {
-  if (props.content) {
-    return (
-      <div className="error-popup">
-        <span className="error-warning">&#9888;</span>
-        <span>Error : {props.content}</span>
-        <span className="error-close">&times;</span>
-      </div>
-    )
-  }
-  return (
-    <div></div>
-  )
-}
 
 class Register extends Component {
   constructor (props) {
@@ -26,10 +12,11 @@ class Register extends Component {
       email: '',
       password: '',
       rePassword: '',
-      newError: 'This is an error',
+      newError: '',
     }
     this.handleUserInput = this.handleUserInput.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.onClose = this.onClose.bind(this);
   }
 
   handleUserInput (e) {
@@ -40,6 +27,13 @@ class Register extends Component {
   handleSubmit(e) {
     console.log(this.state)
     e.preventDefault();
+  }
+  onClose(event) {
+    console.log('Hello');
+    this.setState({
+      newError: '',
+    });
+    event.preventDefault();
   }
   render() {
     return (
@@ -64,7 +58,7 @@ class Register extends Component {
             <input className="submit-form" type="submit" value="Register"/>
           </form>
         </div>
-        <FormErrors content={this.state.newError}/>
+        <Error content={this.state.newError} onClose={this.onClose}/>
       </div>
     )
   }
