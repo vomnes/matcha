@@ -82,11 +82,12 @@ class Register extends Component {
   }
   render() {
     return (
-      <div className="background">
+      <div id="background-register">
         <a href="/login"><p id="member">Already a member ?</p></a>
-        <div id="register" className="card card-2">
-          <h2 className="title">Register</h2>
-          <h3 className="sub-title">A simple dating website</h3>
+        <div id="register">
+          <h1 className="up-title-form">Matcha</h1>
+          <h2 className="title-form">Register</h2>
+          <h3 className="sub-title-form">A simple dating website</h3>
           <form onSubmit={this.handleSubmit}>
             <input className="input-form" id="placeholder-icon-username" placeholder="Username" type="text" name="username"
               value={this.state.username} onChange={this.handleUserInput}/><br />

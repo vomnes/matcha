@@ -1,0 +1,19 @@
+@import '../../../design/style/functions.scss';
+@import '../../../design/style/variables.scss';
+@import '../../../design/style/background.scss';
+@import '../../../design/style/forms.scss';
+@import '../../../design/style/reset.scss';
+
+#background-login {
+  @extend %background;
+  background-image: url("../../../design/pictures/Login-sorasak-217807-unsplash.jpg");
+}
+
+#login {
+  @extend %box-form;
+  width: 420px;
+  height: auto;
+  top: 20%;
+  @include position-center(50%);
+  font-size: 1.35em;
+}

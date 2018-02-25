@@ -6,12 +6,12 @@ import {
 } from 'react-router-dom'
 import PrivateRoute from './PrivateRoute'
 import Register from './Register'
+import Login from './Login'
 
-const Login = () => (
+const Home = () => (
   <div>
-    <h1>Login</h1>
+    <h1>Zelcome Home</h1>
   </div>
-  // localStorage.setItem(`matcha_token`, `<token>`);
 )
 
 const Main = () => (
@@ -19,7 +19,8 @@ const Main = () => (
     <Switch>
       <Route exact path='/' component={Register}/>
       <Route exact path='/login' component={Login}/>
-      <PrivateRoute exact path='/home' component={Register}/>
+      <Route exact path='/register' component={Register}/>
+      <PrivateRoute exact path='/home' component={Home}/>
     </Switch>
   </Router>
 )

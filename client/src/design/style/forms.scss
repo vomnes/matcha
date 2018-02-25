@@ -1,0 +1,147 @@
+@import './functions.scss';
+@import './variables.scss';
+
+%box-form {
+  background-color: white;
+  padding: 5px;
+  position: relative;
+  -webkit-box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  border-radius: 10px;
+}
+
+.up-title-form {
+  position: absolute;
+  font-size: 3em;
+  top: -135px;
+  font-family: $font-logo;
+  @include position-center(50%);
+  @include font-color-gradient($gradient-btn-a, $gradient-btn-b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.title-form {
+  text-align: center;
+  font-size: 1.7em;
+  margin: 15px;
+  color: $design-red;
+}
+
+.sub-title-form {
+  text-align: center;
+  font-size: 1.5em;
+  margin: 0px;
+}
+
+.input-form {
+  display: inline-block;
+  height: 25px;
+  width: 75%;
+  margin-left: 6%;
+  margin-top: 5%;
+  padding: 7.55px;
+  font-size: 25px;
+  border-bottom: 3px solid $design-blue;
+  font-family: $font;
+  color: $design-blue;
+}
+
+input {
+  border: none;
+  &:focus {
+    border: none;
+    outline: none;
+  }
+}
+
+%placeholder-picture {
+  background-repeat: no-repeat;
+  background-position: 2% 3px;
+  padding-left: 45px;
+}
+
+
+#placeholder-icon-username {
+  @extend %placeholder-picture;
+  background-image: url('../../../design/icons/profile-blue-32.png');
+  &:focus {
+    background-image: url('../../../design/icons/profile-32.png');
+    border-bottom: 3px solid black;
+    color: black;
+  }
+}
+
+.placeholder-icon-name {
+  @extend %placeholder-picture;
+  background-image: url('../../../design/icons/right-arrow-blue-32.png');
+  &:focus {
+    background-image: url('../../../design/icons/right-arrow-32.png');
+    border-bottom: 3px solid black;
+    color: black;
+  }
+}
+
+#placeholder-icon-email {
+  @extend %placeholder-picture;
+  background-image: url('../../../design/icons/envelope-blue-32.png');
+  &:focus {
+    background-image: url('../../../design/icons/envelope-32.png');
+    border-bottom: 3px solid black;
+    color: black;
+  }
+}
+
+#placeholder-icon-password {
+  @extend %placeholder-picture;
+  background-image: url('../../../design/icons/lock-blue-32.png');
+  &:focus {
+    background-image: url('../../../design/icons/lock-32.png');
+    border-bottom: 3px solid black;
+    color: black;
+  }
+}
+
+#placeholder-icon-re-password {
+  @extend %placeholder-picture;
+  background-image: url('../../../design/icons/re-lock-blue-32.png');
+  &:focus {
+    background-image: url('../../../design/icons/re-lock-32.png');
+    border-bottom: 3px solid black;
+    color: black;
+  }
+}
+
+.submit-form {
+  @include gradient-shadow($gradient-btn-a, $gradient-btn-b, 25px);
+  display: inline-block;
+  height: 55px;
+  width: 88%;
+  margin-left: 6%;
+  margin-top: 5%;
+  margin-bottom: 2%;
+  padding: 7.55px;
+  font-size: 25px;
+  font-family: $font;
+  color: white;
+  &:hover {
+    cursor: pointer;
+    width: 90%;
+    margin-left: 5%;
+    margin-top: 4.75%;
+    margin-bottom: 1.75%;
+    height: 57px;
+  }
+}
+
+.form-link {
+  position: relative;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 15px;
+  text-align: center;
+  font-family: $font-sub;
+}
+
+.form-link-click:hover {
+  text-decoration: underline;
+}

@@ -1,5 +1,7 @@
 @import '../../../design/style/functions.scss';
 @import '../../../design/style/variables.scss';
+@import '../../../design/style/background.scss';
+@import '../../../design/style/forms.scss';
 
 body, html {
     height: 100%;
@@ -7,145 +9,18 @@ body, html {
     font-family: $font;
 }
 
-.background {
-  /* Set position */
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  /* Set background */
+#background-register {
+  @extend %background;
   background-image: url("../../../design/pictures/Register-robson-hatsukami-morgan-250757-unsplash.jpg");
-  height: 100%;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
 }
 
 #register {
-  background-color: white;
-  padding: 5px;
+  @extend %box-form;
   width: 420px;
   height: auto;
-  font-size: 16px;
-  position: relative;
   top: 30%;
   left: 15%;
-  -webkit-box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-  font-size: 1.25em;
-  border-radius: 10px;
-}
-
-.title {
-  text-align: center;
-  font-size: 1.7em;
-  margin: 15px;
-  color: $design-red;
-}
-
-.sub-title {
-  text-align: center;
-  font-size: 1.5em;
-  margin: 0px;
-}
-
-.input-form {
-  display: inline-block;
-  height: 25px;
-  width: 75%;
-  margin-left: 6%;
-  margin-top: 5%;
-  padding: 7.55px;
-  font-size: 25px;
-  border-bottom: 3px solid $design-blue;
-  font-family: $font;
-  color: $design-blue;
-}
-
-input {
-  border: none;
-  &:focus {
-    border: none;
-    outline: none;
-  }
-}
-
-%placeholder-picture {
-  background-repeat: no-repeat;
-  background-position: 2% 3px;
-  padding-left: 45px;
-}
-
-
-#placeholder-icon-username {
-  @extend %placeholder-picture;
-  background-image: url('../../../design/icons/profile-blue-32.png');
-  &:focus {
-    background-image: url('../../../design/icons/profile-32.png');
-    border-bottom: 3px solid black;
-    color: black;
-  }
-}
-
-.placeholder-icon-name {
-  @extend %placeholder-picture;
-  background-image: url('../../../design/icons/right-arrow-blue-32.png');
-  &:focus {
-    background-image: url('../../../design/icons/right-arrow-32.png');
-    border-bottom: 3px solid black;
-    color: black;
-  }
-}
-
-#placeholder-icon-email {
-  @extend %placeholder-picture;
-  background-image: url('../../../design/icons/envelope-blue-32.png');
-  &:focus {
-    background-image: url('../../../design/icons/envelope-32.png');
-    border-bottom: 3px solid black;
-    color: black;
-  }
-}
-
-#placeholder-icon-password {
-  @extend %placeholder-picture;
-  background-image: url('../../../design/icons/lock-blue-32.png');
-  &:focus {
-    background-image: url('../../../design/icons/lock-32.png');
-    border-bottom: 3px solid black;
-    color: black;
-  }
-}
-
-#placeholder-icon-re-password {
-  @extend %placeholder-picture;
-  background-image: url('../../../design/icons/re-lock-blue-32.png');
-  &:focus {
-    background-image: url('../../../design/icons/re-lock-32.png');
-    border-bottom: 3px solid black;
-    color: black;
-  }
-}
-
-.submit-form {
-  @include gradient-shadow($gradient-btn-a, $gradient-btn-b, 25px);
-  display: inline-block;
-  height: 55px;
-  width: 88%;
-  margin-left: 6%;
-  margin-top: 5%;
-  margin-bottom: 2%;
-  padding: 7.55px;
-  font-size: 25px;
-  font-family: $font;
-  color: white;
-  &:hover {
-    cursor: pointer;
-    width: 90%;
-    margin-left: 5%;
-    margin-top: 4.75%;
-    margin-bottom: 1.75%;
-    height: 57px;
-  }
+  font-size: 1.35em;
 }
 
 #member {
