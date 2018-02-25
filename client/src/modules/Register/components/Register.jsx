@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import Error from '../../../components/Error'
 import './Register.css'
 import api from '../../../api'
-import  { Redirect } from 'react-router-dom'
 
-const signUp = (username, firstname, lastname, email, password, rePassword, createError) => {
+const signUp = (username, firstname, lastname, email, password, rePassword, createError, redirectLogin) => {
   api.register({
       username,
       firstname,
@@ -21,7 +20,8 @@ const signUp = (username, firstname, lastname, email, password, rePassword, crea
         return;
       });
     } else {
-      return <Redirect to='/login'/>
+      redirectLogin();
+      return;
     }
   })
 }
@@ -42,6 +42,7 @@ class Register extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.createError = this.createError.bind(this);
     this.closeError = this.closeError.bind(this);
+    this.redirectLogin = this.redirectLogin.bind(this);
   }
 
   handleUserInput (e) {
@@ -60,7 +61,13 @@ class Register extends Component {
     });
     event.preventDefault();
   }
+  redirectLogin() {
+    this.props.history.push("/login?code=1");
+  }
   handleSubmit(e) {
+    this.setState({
+      newError: '',
+    });
     signUp(
       this.state.username,
       this.state.firstname,
@@ -68,7 +75,8 @@ class Register extends Component {
       this.state.email,
       this.state.password,
       this.state.rePassword,
-      this.createError
+      this.createError,
+      this.redirectLogin
     )
     e.preventDefault();
   }
