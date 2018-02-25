@@ -136,10 +136,10 @@ input {
 }
 
 /* Gradient Buttons Color */
-$gradient-blue-a: #1A93DD;
-$gradient-blue-b: #215FDE;
-$gradient-red-a: #FF4040;
-$gradient-red-b: #E40A0A;
+$gradient-blue-a: #ee0979;
+$gradient-blue-b: #ff6a00;
+$gradient-red-a: #e35d5b;
+$gradient-red-b: #e53935;
 
 @mixin gradient-shadow ($color1, $color2, $radius) {
   background: linear-gradient(to right, $color1 , $color2);
