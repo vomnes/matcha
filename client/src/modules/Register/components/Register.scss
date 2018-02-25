@@ -19,8 +19,8 @@ body, html {
   @extend %box-form;
   width: 420px;
   height: auto;
-  top: 30%;
-  left: 15%;
+  top: 333px;
+  left: 17.5%;
   font-size: 1.35em;
 }
 
@@ -47,18 +47,17 @@ body, html {
 }
 
 .form-line {
-  visibility: hidden;
-  display: none;
+  @include hide;
 }
 
-.form-link-click {
-  visibility: hidden;
-  display: none;
+.form-link-btn {
+  @include hide;
 }
 
 @media (max-width: 638px) {
+
   #member {
-    visibility: hidden;
+    @include hide;
   }
 
   #register {
@@ -68,15 +67,16 @@ body, html {
   }
 
   .form-line {
-    visibility: visible;
-    display: block;
+    @include show;
     height: 0.5px;
     width: 50%;
   }
 
-  .form-link-click {
-    visibility: visible;
-    display: block;
+  .form-link-btn {
+    @include show;
     font-size: 2em;
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }

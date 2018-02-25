@@ -82,7 +82,8 @@ class Register extends Component {
   }
   render() {
     return (
-      <div id="background-register">
+      <div>
+        <div id="background-register"></div>
         <a href="/login"><p id="member">Already a member ?</p></a>
         <div id="register">
           <h1 className="up-title-form">Matcha</h1>
@@ -105,7 +106,7 @@ class Register extends Component {
           </form>
           <hr className="form-line"/>
           <div className="form-link">
-            <a href='/login' className="form-link-click"><span>Already a member ?</span></a>
+            <a href='/login' className="form-link-btn"><span>Already a member ?</span></a>
           </div>
         </div>
         <Error content={this.state.newError} onClose={this.closeError}/>

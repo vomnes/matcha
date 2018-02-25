@@ -10,7 +10,7 @@
   height: auto;
   padding: 20px;
   padding-bottom: 15px;
-  @include gradient-shadow($gradient-red-a, $gradient-red-b, 0px);
+  @include gradient-shadow($gradient-red-a, $gradient-red-b, 5px);
   color:  white;
 }
 
@@ -29,10 +29,16 @@
 
 .error-warning {
   margin-right: 15px;
-  // margin-top: 5px;
+  margin-top: 5px;
   color: white;
   font-weight: bold;
   float: left;
   font-size: 40px;
   line-height: 20px;
+}
+
+@media (max-width: 638px) {
+  .error-warning {
+    @include hide;
+  }
 }

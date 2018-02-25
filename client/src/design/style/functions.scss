@@ -13,3 +13,13 @@
   left: $position;
   transform: translateX(-$position);
 }
+
+@mixin show {
+  visibility: visible;
+  display: block;
+}
+
+@mixin hide {
+  visibility: hidden;
+  display: none;
+}
