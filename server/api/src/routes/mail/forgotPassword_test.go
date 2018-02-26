@@ -155,7 +155,7 @@ func TestForgotPassword(t *testing.T) {
 	}
 	expectedJSONResponse := map[string]interface{}{
 		"email":             "valentin.omnes@gmail.com",
-		"forgotPasswordUrl": "http://localhost:8080/resetpassword?token=" + user.RandomToken,
+		"forgotPasswordUrl": "http://localhost:3000/resetpassword/" + user.RandomToken,
 		"fullname":          "Valentin Omnes",
 	}
 	if compare := pretty.Compare(&expectedJSONResponse, response); compare != "" {

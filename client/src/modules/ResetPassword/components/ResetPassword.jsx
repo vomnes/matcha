@@ -81,7 +81,7 @@ class ResetPassword extends Component {
   }
   render() {
     return (
-      <div id="background-forgotpassword">
+      <div id="background-resetpassword">
         <div id="box-center-top-form">
           <h1 className="up-title-form">Matcha</h1>
           <h2 className="title-form">Reset password</h2>
