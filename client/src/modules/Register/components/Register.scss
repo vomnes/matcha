@@ -4,7 +4,6 @@
 @import '../../../design/style/forms.scss';
 
 body, html {
-    // height: 100%;
     margin: 0;
     font-family: $font;
 }
@@ -13,15 +12,6 @@ body, html {
   @extend %background;
   // background-image: url("../../../design/pictures/Register-andrew-welch-229148-unsplash.jpg");
   background-image: url("../../../design/pictures/Register-robson-hatsukami-morgan-250757-unsplash.jpg");
-}
-
-#register {
-  @extend %box-form;
-  width: 420px;
-  height: auto;
-  top: 333px;
-  left: 17.5%;
-  font-size: 1.35em;
 }
 
 #member {
@@ -60,7 +50,7 @@ body, html {
     @include hide;
   }
 
-  #register {
+  #box-left-side-form {
     top: 100px;
     left: 8%;
     width: 80%;

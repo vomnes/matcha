@@ -9,19 +9,3 @@
   // background-image: url("../../../design/pictures/Login-frank-mckenna-219857-unsplash.jpg");
   background-image: url("../../../design/pictures/Login-sorasak-217807-unsplash.jpg");
 }
-
-#login {
-  @extend %box-form;
-  width: 420px;
-  height: auto;
-  top: 10%;
-  @include position-center(50%);
-  font-size: 1.35em;
-}
-
-@media (max-width: 500px) {
-  #login {
-    top: 100px;
-    width: 80%;
-  }
-}

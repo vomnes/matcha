@@ -88,7 +88,7 @@ class Register extends Component {
       <div>
         <div id="background-register"></div>
         <a href="/login"><p id="member">Already a member ?</p></a>
-        <div id="register">
+        <div id="box-left-side-form">
           <h1 className="up-title-form">Matcha</h1>
           <h2 className="title-form">Register</h2>
           <h3 className="sub-title-form">A simple dating website</h3>

@@ -88,7 +88,7 @@ class Login extends Component {
   render() {
     return (
       <div id="background-login">
-        <div id="login">
+        <div id="box-center-top-form">
           <h1 className="up-title-form">Matcha</h1>
           <h2 className="title-form">Login</h2>
           <h3 className="sub-title-form">Welcome back !</h3>

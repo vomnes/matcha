@@ -76,14 +76,14 @@ class ForgotPassword extends Component {
   }
   render() {
     return (
-      <div id="background-login">
-        <div id="login">
+      <div id="background-forgotpassword">
+        <div id="box-center-top-form">
           <h1 className="up-title-form">Matcha</h1>
           <h2 className="title-form" style={{ fontSize: "35px" }}>Forgot your password ?</h2>
           <h3 className="sub-title-form" style={{ fontSize: "20px" }}>Enter your email address and we will send you a link to reset your password.</h3>
           <form onSubmit={this.handleSubmit}>
             <input className="input-form" id="placeholder-icon-email" placeholder="Email address" type="email" name="email"
-              value={this.state.email} onChange={this.handleUserInput}/><br />
+              value={this.state.email} onChange={this.handleUserInput} required/><br />
             <input className="submit-form" type="submit" value="Send"/>
             <div className="form-link">
               <a href='/login' className="form-link-click"><span>Go back on login page</span></a>

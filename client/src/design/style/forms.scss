@@ -9,6 +9,39 @@
   border-radius: 10px;
 }
 
+#box-left-side-form {
+  @extend %box-form;
+  width: 420px;
+  height: auto;
+  top: 333px;
+  left: 17.5%;
+  font-size: 1.35em;
+}
+
+@media (max-width: 638px) {
+  #box-left-side-form {
+    top: 100px;
+    left: 8%;
+    width: 80%;
+  }
+}
+
+#box-center-top-form {
+  @extend %box-form;
+  width: 420px;
+  height: auto;
+  top: 10%;
+  @include position-center(50%);
+  font-size: 1.35em;
+}
+
+@media (max-width: 500px) {
+  #box-center-top-form {
+    top: 100px;
+    width: 80%;
+  }
+}
+
 .up-title-form {
   position: absolute;
   font-size: 3em;
@@ -44,6 +77,9 @@
   border-bottom: 3px solid $design-blue;
   font-family: $font;
   color: $design-blue;
+  &:invalid {
+    border-bottom: 3px solid $design-red;
+  }
 }
 
 input {
@@ -51,6 +87,12 @@ input {
   &:focus {
     border: none;
     outline: none;
+  }
+  &:required {
+    box-shadow: none;
+  }
+  &:invalid {
+    box-shadow: none;
   }
 }
 
