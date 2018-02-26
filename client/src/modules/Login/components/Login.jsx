@@ -28,8 +28,8 @@ const signIn = (username, password, createError, redirectHome) => {
     } else {
       response.json().then(function(data) {
         localStorage.setItem('matcha_token', data.token);
+        redirectHome();
       });
-      redirectHome();
       return;
     }
   })
