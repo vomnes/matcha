@@ -28,6 +28,7 @@ const formatInput = (fieldName, data) => {
     data = data.toLowerCase();
     return blockForbiddenKeys(data, /[a-zA-Z@.]/i, 254);
   }
+  return data
 }
 
 export default { formatName, blockForbiddenKeys, formatInput };

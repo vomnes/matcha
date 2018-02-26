@@ -89,10 +89,10 @@ class ResetPassword extends Component {
           <form onSubmit={this.handleSubmit}>
             <input className="input-form" id="placeholder-icon-password" placeholder="Password" type="password" name="password"
               pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,100}$" title="Must contain only and at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
-              value={this.state.password} onChange={this.handleUserInput}/><br />
+              value={this.state.password} onChange={this.handleUserInput} required/><br />
             <input className="input-form" id="placeholder-icon-re-password" placeholder="Re-enter password" type="password" name="rePassword"
               pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,100}$" title="Must contain only and at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
-              value={this.state.rePassword} onChange={this.handleUserInput}/><br />
+              value={this.state.rePassword} onChange={this.handleUserInput} required/><br />
             <input className="submit-form" type="submit" value="Reset"/>
             <div className="form-link">
               <a href='/login' className="form-link-click"><span>Go back on login page</span></a>

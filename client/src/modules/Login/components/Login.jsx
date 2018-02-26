@@ -101,11 +101,9 @@ class Login extends Component {
           <h3 className="sub-title-form">Welcome back !</h3>
           <form onSubmit={this.handleSubmit}>
             <input className="input-form" id="placeholder-icon-username" placeholder="Username" type="text" name="username"
-              pattern="[a-zA-Z0-9\.\-_]{6,64}" title="Username must be between 6 and 64 characters and contain only lowercase and uppercase characters, digit, dot, dash and underscore."
-              value={this.state.username} onChange={this.handleUserInput}/><br />
+              value={this.state.username} onChange={this.handleUserInput} required/><br />
             <input className="input-form" id="placeholder-icon-password" placeholder="Password" type="password" name="password"
-              pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,100}$" title="Must contain only and at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
-              value={this.state.password} onChange={this.handleUserInput}/><br />
+              value={this.state.password} onChange={this.handleUserInput} required/><br />
             <input className="submit-form" type="submit" value="Enter"/>
             <div className="form-link">
               <a href='/forgotpassword' className="form-link-click"><span>Forgot password ?</span></a> - <a href='/register' className="form-link-click"><span>Not registered yet ?</span></a>
