@@ -88,8 +88,10 @@ class ResetPassword extends Component {
           <h3 className="sub-title-form" style={{ fontSize: "20px" }}>Enter your new password.</h3>
           <form onSubmit={this.handleSubmit}>
             <input className="input-form" id="placeholder-icon-password" placeholder="Password" type="password" name="password"
+              pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,100}$" title="Must contain only and at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
               value={this.state.password} onChange={this.handleUserInput}/><br />
             <input className="input-form" id="placeholder-icon-re-password" placeholder="Re-enter password" type="password" name="rePassword"
+              pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,100}$" title="Must contain only and at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
               value={this.state.rePassword} onChange={this.handleUserInput}/><br />
             <input className="submit-form" type="submit" value="Reset"/>
             <div className="form-link">

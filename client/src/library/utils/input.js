@@ -18,4 +18,16 @@ const blockForbiddenKeys = (data, pattern, maxLength) => {
   return data
 }
 
-export default { formatName, blockForbiddenKeys };
+const formatInput = (fieldName, data) => {
+  if (fieldName === "username") {
+    return blockForbiddenKeys(data, /[0-9a-zA-Z.\-_]/i, 64);
+  } else if (fieldName === "firstname" || fieldName === "lastname") {
+    data = formatName(data);
+    return blockForbiddenKeys(data, /[a-zA-Z-]/i, 64);
+  } else if (fieldName === "email") {
+    data = data.toLowerCase();
+    return blockForbiddenKeys(data, /[a-zA-Z@.]/i, 254);
+  }
+}
+
+export default { formatName, blockForbiddenKeys, formatInput };

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Modal from '../../../components/Modal'
 import './ForgotPassword.css'
 import api from '../../../library/api'
+import utils from '../../../library/utils/input.js'
 
 const sendForgotPasswordEmail = (email, createError, createSuccess) => {
   api.forgotpassword({
@@ -40,8 +41,14 @@ class ForgotPassword extends Component {
   }
 
   handleUserInput (e) {
+    const fieldName = e.target.name
+    var data = e.target.value
+    data = utils.formatInput(fieldName, data)
+    if (data === -1) {
+      return;
+    }
     this.setState({
-      [e.target.name]: e.target.value,
+      [fieldName]: data,
     });
   }
   createError(content) {
@@ -82,7 +89,7 @@ class ForgotPassword extends Component {
           <h2 className="title-form" style={{ fontSize: "35px" }}>Forgot your password ?</h2>
           <h3 className="sub-title-form" style={{ fontSize: "20px" }}>Enter your email address and we will send you a link to reset your password.</h3>
           <form onSubmit={this.handleSubmit}>
-            <input className="input-form" id="placeholder-icon-email" placeholder="Email address" type="email" name="email"
+            <input className="input-form" id="placeholder-icon-email" placeholder="Email address" minLength="6" maxLength="254" type="email" name="email"
               value={this.state.email} onChange={this.handleUserInput} required/><br />
             <input className="submit-form" type="submit" value="Send"/>
             <div className="form-link">

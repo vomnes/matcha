@@ -27,18 +27,6 @@ const signUp = (username, firstname, lastname, email, password, rePassword, crea
   })
 }
 
-const formatInput = (fieldName, data) => {
-  if (fieldName === "username") {
-    return utils.blockForbiddenKeys(data, /[0-9a-zA-Z.\-_]/i, 64);
-  } else if (fieldName === "firstname" || fieldName === "lastname") {
-    data = utils.formatName(data);
-    return utils.blockForbiddenKeys(data, /[a-zA-Z-]/i, 64);
-  } else if (fieldName === "email") {
-    data = data.toLowerCase();
-    return utils.blockForbiddenKeys(data, /[a-zA-Z@.]/i, 254);
-  }
-}
-
 class Register extends Component {
   constructor (props) {
     super(props);
@@ -64,7 +52,7 @@ class Register extends Component {
   handleUserInput (e) {
     const fieldName = e.target.name
     var data = e.target.value
-    data = formatInput(fieldName, data)
+    data = utils.formatInput(fieldName, data)
     if (data === -1) {
       return;
     }
