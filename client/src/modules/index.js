@@ -7,6 +7,7 @@ import {
 import PrivateRoute from './PrivateRoute'
 import Register from './Register'
 import Login from './Login'
+import ForgotPassword from './ForgotPassword'
 
 const Home = () => (
   <div>
@@ -20,6 +21,7 @@ const Main = () => (
       <Route exact path='/' component={Register}/>
       <Route exact path='/login' component={Login}/>
       <Route exact path='/register' component={Register}/>
+      <Route exact path='/forgotpassword' component={ForgotPassword}/>
       <PrivateRoute exact path='/home' component={Home}/>
     </Switch>
   </Router>
