@@ -8,6 +8,7 @@ import PrivateRoute from './PrivateRoute'
 import Register from './Register'
 import Login from './Login'
 import ForgotPassword from './ForgotPassword'
+import ResetPassword from './ResetPassword'
 
 const Home = () => (
   <div>
@@ -18,11 +19,12 @@ const Home = () => (
 const Main = () => (
   <Router>
     <Switch>
-      <Route exact path='/' component={Register}/>
       <Route exact path='/login' component={Login}/>
       <Route exact path='/register' component={Register}/>
       <Route exact path='/forgotpassword' component={ForgotPassword}/>
+      <Route exact path='/resetpassword/:token' component={ResetPassword}/>
       <PrivateRoute exact path='/home' component={Home}/>
+      <Route path='/' component={Register}/>
     </Switch>
   </Router>
 )
