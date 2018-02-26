@@ -10,6 +10,7 @@ class PageLayout extends Component {
     return (
       <div className="general-layout">
         <div className="nav-top">
+          <a href='/logout'><span>Logout</span></a>
         </div>
         <div className="content">
           { children }

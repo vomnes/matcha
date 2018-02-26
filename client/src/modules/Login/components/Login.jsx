@@ -20,7 +20,7 @@ const signIn = (username, password, createError, redirectHome) => {
       'uuid': window.navigator.userAgent.replace(/\D+/g, ''),
   }).then(function(response) {
     if (response.status >= 500) {
-      throw new Error("Bad response from server");
+      throw new Error("Bad response from server - SignIn has failed");
     } else if (response.status >= 400) {
       response.json().then(function(data) {
         createError(data.error);

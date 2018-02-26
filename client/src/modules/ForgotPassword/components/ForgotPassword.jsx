@@ -9,7 +9,7 @@ const sendForgotPasswordEmail = (email, createError, createSuccess) => {
       email,
   }).then(function(response) {
     if (response.status >= 500) {
-      throw new Error("Bad response from server");
+      throw new Error("Bad response from server - SendForgotPasswordEmail has failed");
     } else if (response.status >= 400) {
       response.json().then(function(data) {
         createError(data.error);
