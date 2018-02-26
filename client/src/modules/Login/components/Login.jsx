@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import Modal from '../../../components/Modal'
 import './Login.css'
-// import api from '../../../api'
+import api from '../../../library/api'
 
-function getSuccessContent() {
+const getSuccessContent = () => {
   const query = new URLSearchParams(window.location.search);
   const value = query.get('code');
   if (value === '1') {
@@ -12,16 +12,38 @@ function getSuccessContent() {
   return "";
 }
 
+const signIn = (username, password, createError, redirectHome) => {
+  api.login({
+      username,
+      password,
+      'uuid': window.navigator.userAgent.replace(/\D+/g, ''),
+  }).then(function(response) {
+    if (response.status >= 500) {
+      throw new Error("Bad response from server");
+    } else if (response.status >= 400) {
+      response.json().then(function(data) {
+        createError(data.error);
+        return;
+      });
+    } else {
+      response.json().then(function(data) {
+        localStorage.setItem('matcha_token', data.token);
+      });
+      redirectHome();
+      return;
+    }
+  })
+}
+
 class Login extends Component {
   constructor (props) {
     super(props);
+    if (localStorage.getItem(`matcha_token`)) {
+      this.props.history.push("/home");
+    }
     this.state = {
       username: '',
-      firstname: '',
-      lastname: '',
-      email: '',
       password: '',
-      rePassword: '',
       newError: '',
       newSuccess: getSuccessContent(),
     }
@@ -29,9 +51,8 @@ class Login extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.createError = this.createError.bind(this);
     this.closeModal = this.closeModal.bind(this);
-    this.redirectLogin = this.redirectLogin.bind(this);
+    this.redirectHome = this.redirectHome.bind(this);
   }
-
   handleUserInput (e) {
     this.setState({
       [e.target.name]: e.target.value,
@@ -49,17 +70,19 @@ class Login extends Component {
     });
     event.preventDefault();
   }
-  redirectLogin() {
+  redirectHome() {
     this.props.history.push("/home");
   }
   handleSubmit(e) {
     this.setState({
       newError: '',
     });
-    // signUp(
-    //   this.state.username,
-    //   this.state.password,
-    // )
+    signIn(
+      this.state.username,
+      this.state.password,
+      this.createError,
+      this.redirectHome,
+    )
     e.preventDefault();
   }
   render() {

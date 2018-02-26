@@ -102,6 +102,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
+	if inputData.Username == "" || inputData.Password == "" {
+		lib.RespondWithErrorHTTP(w, 403, "Cannot have an empty field")
+		return
+	}
 	u, errCode, errContent := checkUserSecret(inputData, db)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)

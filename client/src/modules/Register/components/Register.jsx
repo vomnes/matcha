@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Modal from '../../../components/Modal'
 import './Register.css'
-import api from '../../../api'
+import api from '../../../library/api'
 
 const signUp = (username, firstname, lastname, email, password, rePassword, createError, redirectLogin) => {
   api.register({
@@ -29,6 +29,9 @@ const signUp = (username, firstname, lastname, email, password, rePassword, crea
 class Register extends Component {
   constructor (props) {
     super(props);
+    if (localStorage.getItem(`matcha_token`)) {
+      this.props.history.push("/home");
+    }
     this.state = {
       username: '',
       firstname: '',

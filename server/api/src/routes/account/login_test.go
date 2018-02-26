@@ -59,6 +59,25 @@ func TestLoginNoDatabaseRedis(t *testing.T) {
 	}
 }
 
+func TestLoginEmptyFields(t *testing.T) {
+	body := []byte(`{"username": "vomnes", "password": ""}`)
+	context := tests.ContextData{
+		DB:     tests.DB,
+		Client: tests.RedisClient,
+	}
+	r := tests.CreateRequest("POST", "/v1/account/login", body, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	Login(w, r)
+	resp := w.Result()
+	statusContent := tests.ReadBodyError(w.Body)
+	expectedCode := 403
+	expectedContent := "Cannot have an empty field"
+	if resp.StatusCode != expectedCode || statusContent != expectedContent {
+		t.Errorf("Must return an error with http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m and status content '\x1b[1;32m%s\033[0m' not '\x1b[1;31m%s\033[0m'.", expectedCode, resp.StatusCode, expectedContent, statusContent)
+	}
+}
+
 func TestLoginWrongUsername(t *testing.T) {
 	body := []byte(`{"username": "vomnes", "password": "abcABC123"}`)
 	context := tests.ContextData{
