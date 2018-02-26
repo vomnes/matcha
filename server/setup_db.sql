@@ -17,7 +17,7 @@ CREATE TABLE Users (
   random_token VARCHAR (254) DEFAULT ''
 );
 
-INSERT INTO Users (username, email, lastname, firstname, password) VALUES ('vomnes', 'valentin.omnes@gmail.com', 'Omnes', 'Valentin', 'abc');
+-- INSERT INTO Users (username, email, lastname, firstname, password) VALUES ('vomnes', 'valentin.omnes@gmail.com', 'Omnes', 'Valentin', 'abc');
 
 \echo '----- Initialize db_matcha_tests -----'
 
