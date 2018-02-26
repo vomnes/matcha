@@ -1,7 +1,16 @@
 import React, { Component } from 'react';
-import Error from '../../../components/Error'
+import Modal from '../../../components/Modal'
 import './Login.css'
 // import api from '../../../api'
+
+function getSuccessContent() {
+  const query = new URLSearchParams(window.location.search);
+  const value = query.get('code');
+  if (value === '1') {
+    return "Account created";
+  }
+  return "";
+}
 
 class Login extends Component {
   constructor (props) {
@@ -14,11 +23,12 @@ class Login extends Component {
       password: '',
       rePassword: '',
       newError: '',
+      newSuccess: getSuccessContent(),
     }
     this.handleUserInput = this.handleUserInput.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.createError = this.createError.bind(this);
-    this.closeError = this.closeError.bind(this);
+    this.closeModal = this.closeModal.bind(this);
     this.redirectLogin = this.redirectLogin.bind(this);
   }
 
@@ -32,9 +42,10 @@ class Login extends Component {
       newError: content,
     });
   }
-  closeError(event) {
+  closeModal(event) {
     this.setState({
       newError: '',
+      newSuccess: ''
     });
     event.preventDefault();
   }
@@ -69,7 +80,8 @@ class Login extends Component {
             </div>
           </form>
         </div>
-        <Error content={this.state.newError} onClose={this.closeError}/>
+        <Modal type="error" content={this.state.newError} onClose={this.closeModal}/>
+        <Modal type="success" content={this.state.newSuccess} onClose={this.closeModal}/>
       </div>
     )
   }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Error from '../../../components/Error'
+import Modal from '../../../components/Modal'
 import './Register.css'
 import api from '../../../api'
 
@@ -109,7 +109,7 @@ class Register extends Component {
             <a href='/login' className="form-link-btn"><span>Already a member ?</span></a>
           </div>
         </div>
-        <Error content={this.state.newError} onClose={this.closeError}/>
+        <Modal type="error" content={this.state.newError} onClose={this.closeError}/>
       </div>
     )
   }
