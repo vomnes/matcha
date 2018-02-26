@@ -1,25 +1,27 @@
 import React, { Component } from 'react';
 import Modal from '../../../components/Modal'
 import './ResetPassword.css'
-// import api from '../../../library/api'
+import api from '../../../library/api'
 
-// const resetPassword = (email, createError, crateSuccess) => {
-//   api.forgotpassword({
-//       email,
-//   }).then(function(response) {
-//     if (response.status >= 500) {
-//       throw new Error("Bad response from server");
-//     } else if (response.status >= 400) {
-//       response.json().then(function(data) {
-//         createError(data.error);
-//         return;
-//       });
-//     } else {
-//       crateSuccess("Reset password email sent to " + email + ".")
-//       return;
-//     }
-//   })
-// }
+const resetPassword = (randomToken, password, rePassword, createError, createSuccess) => {
+  api.resetpassword({
+      randomToken,
+      password,
+      rePassword
+  }).then(function(response) {
+    if (response.status >= 500) {
+      throw new Error("Bad response from server");
+    } else if (response.status >= 400) {
+      response.json().then(function(data) {
+        createError(data.error);
+        return;
+      });
+    } else {
+      createSuccess("Your password has been reset.")
+      return;
+    }
+  })
+}
 
 class ResetPassword extends Component {
   constructor(props) {
@@ -38,7 +40,6 @@ class ResetPassword extends Component {
     this.createSuccess = this.createSuccess.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.closeModal = this.closeModal.bind(this);
-    console.log(this.props.match.params.token);
   }
 
   handleUserInput (e) {
@@ -69,12 +70,13 @@ class ResetPassword extends Component {
     this.setState({
       newError: '',
     });
-    // resetPassword(
-    //   this.state.password,
-    //   this.state.rePassword,
-    //   this.createError,
-    //   this.createSuccess
-    // )
+    resetPassword(
+      this.props.match.params.token,
+      this.state.password,
+      this.state.rePassword,
+      this.createError,
+      this.createSuccess
+    )
     e.preventDefault();
   }
   render() {

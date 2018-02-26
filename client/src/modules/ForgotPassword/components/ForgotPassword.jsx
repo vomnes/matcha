@@ -3,7 +3,7 @@ import Modal from '../../../components/Modal'
 import './ForgotPassword.css'
 import api from '../../../library/api'
 
-const sendForgotPasswordEmail = (email, createError, crateSuccess) => {
+const sendForgotPasswordEmail = (email, createError, createSuccess) => {
   api.forgotpassword({
       email,
   }).then(function(response) {
@@ -15,7 +15,7 @@ const sendForgotPasswordEmail = (email, createError, crateSuccess) => {
         return;
       });
     } else {
-      crateSuccess("Reset password email sent to " + email + ".")
+      createSuccess("Reset password email sent to " + email + ".")
       return;
     }
   })

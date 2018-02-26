@@ -44,7 +44,7 @@ func TestResetPasswordNoRandomToken(t *testing.T) {
 	context := tests.ContextData{
 		DB: tests.DB,
 	}
-	body := []byte(`{"random_token": "", "password": "abcABC123", "re-password": "abcABC123"}`)
+	body := []byte(`{"randomToken": "", "password": "abcABC123", "rePassword": "abcABC123"}`)
 	r := tests.CreateRequest("POST", "/v1/account/resetpassword", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
@@ -62,7 +62,7 @@ func TestResetPasswordNoPassword(t *testing.T) {
 	context := tests.ContextData{
 		DB: tests.DB,
 	}
-	body := []byte(`{"random_token": "myAwesomeToken", "password": "", "re-password": "abcABC123"}`)
+	body := []byte(`{"randomToken": "myAwesomeToken", "password": "", "rePassword": "abcABC123"}`)
 	r := tests.CreateRequest("POST", "/v1/account/resetpassword", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
@@ -80,7 +80,7 @@ func TestResetPasswordNoRePassword(t *testing.T) {
 	context := tests.ContextData{
 		DB: tests.DB,
 	}
-	body := []byte(`{"random_token": "myAwesomeToken", "password": "abcABC123", "re-password": ""}`)
+	body := []byte(`{"randomToken": "myAwesomeToken", "password": "abcABC123", "rePassword": ""}`)
 	r := tests.CreateRequest("POST", "/v1/account/resetpassword", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
@@ -98,7 +98,7 @@ func TestResetPasswordNoIdenticalPassword(t *testing.T) {
 	context := tests.ContextData{
 		DB: tests.DB,
 	}
-	body := []byte(`{"random_token": "myAwesomeToken", "password": "abcABC123", "re-password": "abcABC"}`)
+	body := []byte(`{"randomToken": "myAwesomeToken", "password": "abcABC123", "rePassword": "abcABC"}`)
 	r := tests.CreateRequest("POST", "/v1/account/resetpassword", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
@@ -116,7 +116,7 @@ func TestResetPasswordNoAValidPassword(t *testing.T) {
 	context := tests.ContextData{
 		DB: tests.DB,
 	}
-	body := []byte(`{"random_token": "myAwesomeToken", "password": "abcABC123==", "re-password": "abcABC123=="}`)
+	body := []byte(`{"randomToken": "myAwesomeToken", "password": "abcABC123==", "rePassword": "abcABC123=="}`)
 	r := tests.CreateRequest("POST", "/v1/account/resetpassword", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
@@ -134,7 +134,7 @@ func TestResetPasswordNoTokenInTheDB(t *testing.T) {
 	context := tests.ContextData{
 		DB: tests.DB,
 	}
-	body := []byte(`{"random_token": "myAwesomeToken", "password": "abcABC123", "re-password": "abcABC123"}`)
+	body := []byte(`{"randomToken": "myAwesomeToken", "password": "abcABC123", "rePassword": "abcABC123"}`)
 	r := tests.CreateRequest("POST", "/v1/account/resetpassword", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
@@ -155,7 +155,7 @@ func TestResetPassword(t *testing.T) {
 		DB: tests.DB,
 	}
 	newPassword := "NewABCabc123"
-	body := []byte(`{"random_token": "myAwesomeToken", "password": "` + newPassword + `", "re-password": "` + newPassword + `"}`)
+	body := []byte(`{"randomToken": "myAwesomeToken", "password": "` + newPassword + `", "rePassword": "` + newPassword + `"}`)
 	r := tests.CreateRequest("POST", "/v1/account/resetpassword", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()

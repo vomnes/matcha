@@ -11,9 +11,9 @@ import (
 )
 
 type dataBody struct {
-	RandomToken   string `json:"random_token"`
+	RandomToken   string `json:"randomToken"`
 	NewPassword   string `json:"password"`
-	NewRePassword string `json:"re-password"`
+	NewRePassword string `json:"rePassword"`
 }
 
 func checkInputBody(inputData dataBody) (int, string) {

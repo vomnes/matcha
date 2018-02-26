@@ -14,7 +14,7 @@ JSON Body :
     "lastname": string,
     "firstname": string,
     "password": string,
-    "re-password": string
+    "rePassword": string
   }
 ```
 This route allows to handle the user registration by using the data sent in the body  
@@ -106,9 +106,9 @@ This route allows to an user to update his password, using a unique url.
 ```
 JSON Body :
   {
-    "random_token": string,
+    "randomToken": string,
     "password": string,
-    "re-password": string,
+    "rePassword": string,
   }
 ```
 If random_token, password or re-password is empty, passwords doesn't match or password is not valid  
