@@ -20,7 +20,6 @@ class ProfilePicture extends Component {
     super(props);
     this.state = {
       moreInformationOpen: false,
-      reportedAsFakeAccount: this.props.reportedAsFakeAccount
     }
     this.openInformation = this.openInformation.bind(this);
   }
@@ -38,11 +37,11 @@ class ProfilePicture extends Component {
           <span className="more" onClick={this.openInformation}>{this.state.moreInformationOpen ? '-' : '+'}</span>
         </div>
         <div className="information-area" style={{ visibility: this.state.moreInformationOpen ? "visible" :  "hidden" } }>
-            {!this.state.reportedAsFakeAccount ?
+            {this.props.reportedAsFakeAccount ?
               <span onClick={() => this.props.updateState("reportedAsFakeAccount", "You have just invalide you fake account report.")}>Invalidate fake account report</span> :
               <span onClick={() => this.props.updateState("reportedAsFakeAccount", "This profile has been declared as fake account.")}>Report as a fake account</span>
             }<br />
-          <span>Unlike profile</span>
+            {this.props.liked ? <span onClick={() => this.props.updateState("liked", "You have just unliked this profile")}>Unlike profile</span> : null}
         </div>
         <IndexPictures pictureArrayLength={this.props.pictureArrayLength} index={index}/>
         <div id="picture-previous" style={{ visibility: (index === 0) ? "hidden" :  "visible" }}>
@@ -55,7 +54,9 @@ class ProfilePicture extends Component {
           onClick={() => this.props.likeUser()}
           style={{
             background: (this.props.liked ? "white" :  "#F80759"),
-            color: (this.props.liked ? "#F80759" :  "white") }}>
+            color: (this.props.liked ? "#F80759" :  "white"),
+            cursor: (this.props.liked ? "default" :  "pointer") }}
+          >
           <span className="like-heart">&#9829;</span>
         </div>
       </div>
@@ -103,7 +104,6 @@ class SeeProfile extends Component {
     });
   }
   updateState(key, successContent) {
-    console.log(key, !this.state[key])
     this.setState({
       [key]: !this.state[key],
       newSuccess: successContent
@@ -132,7 +132,7 @@ class SeeProfile extends Component {
           liked={this.state.liked}
           likeUser={this.likeUser}
           updateState={this.updateState}
-          reportedAsFakeAccount={this.reportedAsFakeAccount}
+          reportedAsFakeAccount={this.state.reportedAsFakeAccount}
         />
         <div className="data-area">
           <span>Valentin Omnes - vomnes</span>
