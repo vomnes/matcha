@@ -5,12 +5,12 @@
   position: fixed;
   @include position-center(50%);
   text-align: center;
-  top: -5px;
   width: auto;
   height: auto;
   padding: 20px;
   padding-bottom: 15px;
   color:  white;
+  z-index: 999;
 }
 
 .error-color {
