@@ -1,6 +1,10 @@
 @import '../design/style/functions.scss';
 @import '../design/style/variables.scss';
 
+body {
+  background: $background-color;
+}
+
 %content-center {
   @include position-center(50%);
   max-width: 1000px;

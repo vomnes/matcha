@@ -1,0 +1,74 @@
+@import '../../../design/style/variables.scss';
+
+.picture-area{
+  position: relative;
+  width: 45%;
+  height: 325px;
+  margin: 15px;
+  left: 3%;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+  border-radius: 10px;
+  background: white;
+  z-index: 1;
+}
+
+.picture-user-background {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 10px;
+  height: 100%;
+  right: 0;
+  left: 0;
+  top: 0;
+}
+
+%picture-change {
+  background: white;
+  opacity: 0.55;
+  position: absolute;
+  top: 42.5%;
+  font-size: 30px;
+  font-family: $font-sub;
+  border: 2px solid white;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  text-align: center;
+  cursor: pointer;
+  &:hover {
+    opacity: 0.30;
+    border: 2px solid white;
+  }
+}
+
+#picture-previous {
+  @extend %picture-change;
+  left: 10px;
+}
+
+#picture-next {
+  @extend %picture-change;
+  right: 10px;
+}
+
+.arrow {
+  position: relative;
+  top: 3px;
+  left: 1px;
+}
+
+.data-area {
+  position: absolute;
+  width: 45%;
+  height: 297px;
+  padding: 5px;
+  top: 28px;
+  right: 5%;
+  background: white;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16),
+  1px 3px 6px rgba(0,0,0,0.05),
+  2px 4px 7px rgba(0,0,0,0.05),
+  3px 5px 8px rgba(0,0,0,0.05),
+  4px 6px 9px rgba(0,0,0,0.05);
+}
