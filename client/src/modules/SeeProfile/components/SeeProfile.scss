@@ -1,4 +1,5 @@
 @import '../../../design/style/variables.scss';
+@import '../../../design/style/functions.scss';
 
 .picture-area{
   position: relative;
@@ -21,6 +22,24 @@
   right: 0;
   left: 0;
   top: 0;
+}
+
+#picture-index {
+  position: absolute;
+  height: 10px;
+  background: white;
+  opacity: 0.55;
+  top: 1.5%;
+  font-size: 30px;
+  @include position-center(50%);
+  padding: 0 1px 0 1px;
+  border-radius: 12px;
+}
+
+#picture-index span {
+  color: grey;
+  position: relative;
+  top: -12px;
 }
 
 %picture-change {
