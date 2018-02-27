@@ -1,0 +1,111 @@
+@import '../../../design/style/variables.scss';
+@import '../../../design/style/functions.scss';
+@import './SeeProfile.scss';
+
+.picture-area{
+  position: relative;
+  width: 45%;
+  height: 335px;
+  margin: 15px;
+  left: 3%;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+  border-radius: 10px;
+  background: white;
+  z-index: 1;
+}
+
+.picture-user-background {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 10px;
+  height: 100%;
+  right: 0;
+  left: 0;
+  top: 0;
+}
+
+#picture-index {
+  position: absolute;
+  height: 10px;
+  background: white;
+  opacity: 0.55;
+  top: 1.5%;
+  font-size: 30px;
+  @include position-center(50%);
+  padding: 0 1px 0 1px;
+  border-radius: 12px;
+  cursor: default;
+}
+
+#picture-index span {
+  color: grey;
+  position: relative;
+  top: -12px;
+}
+
+%picture-change {
+  background: white;
+  opacity: 0.55;
+  position: absolute;
+  top: 42.5%;
+  font-size: 30px;
+  font-family: $font-sub;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  text-align: center;
+  cursor: pointer;
+  &:hover {
+    opacity: 0.30;
+  }
+}
+
+#picture-previous {
+  @extend %picture-change;
+  left: 10px;
+}
+
+#picture-next {
+  @extend %picture-change;
+  right: 10px;
+}
+
+.arrow {
+  position: relative;
+  top: 3px;
+  left: 1px;
+}
+
+.btn-like {
+  @extend %bottom-btn;
+  box-shadow: 0 3px 6px rgba(#F80759,0.16), 0 3px 6px rgba(#F80759,0.33);
+  color: white;
+  font-size: 50px;
+}
+
+.btn-like span {
+  position: relative;
+  top: -5px;
+  &:hover {
+    text-shadow: 0 3px 6px rgba(0,0,0,0.33);
+  }
+}
+
+.profiles-linked {
+  @extend %bottom-btn;
+  background: linear-gradient(#11998e, #38ef7d);
+  box-shadow: 0 3px 6px rgba(#0F9B0F,0.16), 0 3px 6px rgba(#0F9B0F,0.33);
+  color: white;
+  font-size: 35px;
+  cursor: pointer;
+  &:hover {
+    text-shadow: 0 1.5px 3px rgba(0,0,0,0.33);
+    opacity: 0.95;
+  }
+}
+
+.profiles-linked span {
+  position: relative;
+  top: 3.5px;
+}
