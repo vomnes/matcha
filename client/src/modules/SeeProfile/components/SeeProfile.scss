@@ -157,3 +157,70 @@
     cursor: pointer;
   }
 }
+
+.profile-id {
+  position: absolute;
+  @include position-center(50%);
+  // border: 1px solid red;
+  text-align: center;
+  width: 95%;
+  height: auto;
+  cursor: default;
+}
+
+.profile-title {
+  position: relative;
+  font-family: $font;
+  font-size: 2em;
+  top: 5px;
+}
+
+.profile-username {
+  position: relative;
+  color: #005C97;
+  font-size: 12.5px;
+}
+
+.profile-bio {
+  font-family: $font-sub;
+  font-size: 15px;
+  padding-left: 2.5px;
+  padding-right: 2.5px;
+}
+
+.profile-data-list {
+  position: relative;
+  width: 95%;
+  text-align: left;
+  font-size: 15px;
+  @include position-center(50%);
+}
+
+.profile-data-list img {
+  position: relative;
+  width: 20px;
+}
+
+.profile-data-list span {
+  position: relative;
+  top: -3.5px;
+  left: 5px;
+}
+
+#picture-tags {
+  position: relative;
+  word-wrap: break-word;
+  line-height: 215%;
+  padding-top: 5px;
+  text-align: left;
+  padding-left: 10px;
+}
+
+.picture-tag {
+  background: $design-red;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  border-radius: 2px;
+  color: white;
+  margin: 2px;
+  padding: 5px;
+}

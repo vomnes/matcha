@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
 import './SeeProfile.css'
 import Modal from '../../../components/Modal'
+import ConnectedLogo from '../../../design/icons/connected-128.png'
+import GenderLogo from '../../../design/icons/gender-128.png'
+import HeartLogo from '../../../design/icons/heart-128.png'
+import LocationLogo from '../../../design/icons/location-128.png'
+import Star from '../../../design/icons/star-128.png'
 
 const IndexPictures = (props) => {
   var elements = [];
@@ -64,6 +69,50 @@ class ProfilePicture extends Component {
   }
 }
 
+const ShowTags = (props) => {
+  var index = 0;
+  var elements = [];
+  props.tags.forEach(function (tag) {
+    elements.push(<span key={index} className="picture-tag">#{tag}</span>);
+    index += 1;
+  });
+  return (
+    <div id="picture-tags">
+      {elements}
+    </div>
+  )
+}
+
+class DateArea extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+    }
+  }
+  render() {
+    return (
+      <div className="data-area">
+        <div className="profile-id">
+          <span className="profile-title">Valentin Omnes</span><br />
+          <span className="profile-username"> @{this.props.username}</span><br />
+          <div className="profile-bio">
+            <span>Greatly hearted has who believe...</span>
+          </div>
+          <div className="profile-data-list">
+            <img alt="Connected status logo" title="Connected status" src={ConnectedLogo}/>
+            <span>{this.props.online ? "Online" : "Offline - Last connection 60 minutes ago"}</span><br />
+            <img alt="Gender logo" title="Gender" src={GenderLogo}/><span>Male</span><br />
+            <img alt="Preferred gender logo" title="Preferred gender" src={HeartLogo}/><span>Female</span><br />
+            <img alt="Location logo" title="Location" src={LocationLogo}/><span>Paris, France</span><br />
+            <img alt="Rating logo" title="Rating" src={Star}/><span>95/100</span><br />
+          </div>
+          <ShowTags tags={this.props.tags}/>
+        </div>
+      </div>
+    )
+  }
+}
+
 class SeeProfile extends Component {
   constructor(props) {
     super(props);
@@ -73,6 +122,7 @@ class SeeProfile extends Component {
       liked: false,
       reportedAsFakeAccount: false,
       newSuccess: '',
+      online: true
     }
     this.changePicture = this.changePicture.bind(this);
     this.updateState = this.updateState.bind(this);
@@ -122,6 +172,17 @@ class SeeProfile extends Component {
       require('../../../design/pictures/Profile-molly-belle-73279-unsplash.jpg'),
       require('../../../design/pictures/Login-sorasak-217807-unsplash.jpg'),
     ];
+    var tags = [
+      "hello",
+      "bonjour",
+      "play",
+      "tennis",
+      "bye",
+      "tag",
+      "myTag",
+      "awesome",
+      "yes"
+    ]
     return (
       <div>
         <ProfilePicture
@@ -134,9 +195,11 @@ class SeeProfile extends Component {
           updateState={this.updateState}
           reportedAsFakeAccount={this.state.reportedAsFakeAccount}
         />
-        <div className="data-area">
-          <span>Valentin Omnes - vomnes</span>
-        </div>
+        <DateArea
+          username="vomnes"
+          tags={tags}
+          online={this.state.online}
+        />
         <Modal type="success" online="true" content={this.state.newSuccess} onClose={this.closeModal}/>
       </div>
     )
