@@ -6,6 +6,7 @@ import GenderLogo from '../../../design/icons/gender-128.png'
 import HeartLogo from '../../../design/icons/heart-128.png'
 import LocationLogo from '../../../design/icons/location-128.png'
 import Star from '../../../design/icons/star-128.png'
+import Linked from '../../../design/icons/link-128.png'
 
 const IndexPictures = (props) => {
   var elements = [];
@@ -62,7 +63,7 @@ class ProfilePicture extends Component {
             color: (this.props.liked ? "#F80759" :  "white"),
             cursor: (this.props.liked ? "default" :  "pointer") }}
           >
-          <span className="like-heart">&#9829;</span>
+          <span>&#9829;</span>
         </div>
       </div>
     )
@@ -93,7 +94,7 @@ class DateArea extends Component {
     return (
       <div className="data-area">
         <div className="profile-id">
-          <span className="profile-title">Valentin Omnes</span><br />
+          <span className="profile-title">{this.props.firstname + ' ' + this.props.lastname}</span><br />
           <span className="profile-username"> @{this.props.username}</span><br />
           <div className="profile-bio">
             <span>Greatly hearted has who believe...</span>
@@ -108,6 +109,11 @@ class DateArea extends Component {
           </div>
           <ShowTags tags={this.props.tags}/>
         </div>
+        {this.props.usersAreConnected ? (
+          <div className="profiles-linked">
+            <span title={'You are connected with ' + this.props.firstname + ' - Click here to take contact ;)' }>&#x1F517;</span>
+          </div>
+        ) : null}
       </div>
     )
   }
@@ -122,7 +128,8 @@ class SeeProfile extends Component {
       liked: false,
       reportedAsFakeAccount: false,
       newSuccess: '',
-      online: true
+      online: false,
+      usersAreConnected: true
     }
     this.changePicture = this.changePicture.bind(this);
     this.updateState = this.updateState.bind(this);
@@ -181,6 +188,10 @@ class SeeProfile extends Component {
       "tag",
       "myTag",
       "awesome",
+      "bye",
+      "tag",
+      "myTag",
+      "awesome",
       "yes"
     ]
     return (
@@ -196,9 +207,12 @@ class SeeProfile extends Component {
           reportedAsFakeAccount={this.state.reportedAsFakeAccount}
         />
         <DateArea
+          firstname="Valentin"
+          lastname="Omnes"
           username="vomnes"
           tags={tags}
           online={this.state.online}
+          usersAreConnected={this.state.usersAreConnected}
         />
         <Modal type="success" online="true" content={this.state.newSuccess} onClose={this.closeModal}/>
       </div>

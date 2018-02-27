@@ -4,7 +4,7 @@
 .picture-area{
   position: relative;
   width: 45%;
-  height: 325px;
+  height: 335px;
   margin: 15px;
   left: 3%;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16);
@@ -79,7 +79,7 @@
 .data-area {
   position: absolute;
   width: 45%;
-  height: 297px;
+  height: 308px;
   padding: 5px;
   top: 28px;
   right: 5%;
@@ -89,27 +89,6 @@
   2px 4px 7px rgba(0,0,0,0.05),
   3px 5px 8px rgba(0,0,0,0.05),
   4px 6px 9px rgba(0,0,0,0.05);
-}
-
-.btn-like {
-  position: absolute;
-  box-shadow: 0 3px 6px rgba(#F80759,0.16), 0 3px 6px rgba(#F80759,0.33);
-  color: white;
-  top: 92%;
-  @include position-center(50%);
-  font-size: 50px;
-  width: 50px;
-  height: 50px;
-  border-radius: 25px;
-  text-align: center;
-}
-
-.like-heart {
-  position: relative;
-  top: -5px;
-  &:hover {
-    text-shadow: 0 3px 6px rgba(0,0,0,0.33);
-  }
 }
 
 %information-position {
@@ -223,4 +202,47 @@
   color: white;
   margin: 2px;
   padding: 5px;
+}
+
+%bottom-btn {
+  position: absolute;
+  top: 92%;
+  @include position-center(50%);
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  text-align: center;
+}
+
+.btn-like span {
+  position: relative;
+  top: -5px;
+  &:hover {
+    text-shadow: 0 3px 6px rgba(0,0,0,0.33);
+  }
+}
+
+.profiles-linked {
+  @extend %bottom-btn;
+  background: linear-gradient(#11998e, #38ef7d);
+  box-shadow: 0 3px 6px rgba(#0F9B0F,0.16), 0 3px 6px rgba(#0F9B0F,0.33);
+  color: white;
+  font-size: 35px;
+  cursor: pointer;
+  &:hover {
+    text-shadow: 0 1.5px 3px rgba(0,0,0,0.33);
+    opacity: 0.95;
+  }
+}
+
+.btn-like {
+  @extend %bottom-btn;
+  box-shadow: 0 3px 6px rgba(#F80759,0.16), 0 3px 6px rgba(#F80759,0.33);
+  color: white;
+  font-size: 50px;
+}
+
+.profiles-linked span {
+  position: relative;
+  top: 3.5px;
 }
