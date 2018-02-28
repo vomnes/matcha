@@ -14,7 +14,7 @@ class SeeProfile extends Component {
       reportedAsFakeAccount: false,
       newSuccess: '',
       online: false,
-      usersAreConnected: true
+      usersAreConnected: false
     }
     this.changePicture = this.changePicture.bind(this);
     this.updateState = this.updateState.bind(this);
@@ -90,6 +90,8 @@ class SeeProfile extends Component {
           likeUser={this.likeUser}
           updateState={this.updateState}
           reportedAsFakeAccount={this.state.reportedAsFakeAccount}
+          usersAreConnected={this.state.usersAreConnected}
+          firstname="Valentin"
         />
         <DataArea
           firstname="Valentin"

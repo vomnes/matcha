@@ -32,7 +32,7 @@ class PictureArea extends Component {
     return (
       <div className="picture-area">
         <div className="picture-user-background" style={{ backgroundImage: "url(" + this.props.picture + ")" }}></div>
-        <div className="more-information">
+        <div className="more-information" title={ 'See ' + (this.state.moreInformationOpen ? "less" :  "more") + ' options' }>
           <span className="more" onClick={this.openInformation}>{this.state.moreInformationOpen ? '-' : '+'}</span>
         </div>
         <div className="information-area" style={{ visibility: this.state.moreInformationOpen ? "visible" :  "hidden" } }>
@@ -57,6 +57,14 @@ class PictureArea extends Component {
             cursor: (this.props.liked ? "default" :  "pointer") }}
           >
           <span>&#9829;</span>
+        </div>
+        <div>
+        {this.props.usersAreConnected ? (
+          <div className="profiles-linked-picture">
+            <span
+              role="img" aria-labelledby="Connected with" title={'You are connected with ' + this.props.firstname + ' - Click here to take contact ;)' }>&#x1F517;</span>
+          </div>
+        ) : null}
         </div>
       </div>
     )
