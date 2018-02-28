@@ -82,11 +82,14 @@ class SeeProfile extends Component {
       "myTag",
       "awesome"
     ]
-    var leftPicture = require('../../../design/pictures/Side-Picture-aziz-acharki-253909-unsplash.jpg')
+    var leftPicture = require('../../../design/pictures/Profile-molly-belle-73279-unsplash.jpg');
+    var rightPicture = require('../../../design/pictures/Side-Picture-aziz-acharki-253909-unsplash.jpg');
     return (
       <div>
         <div className="left-side-profile">
           <div style={{ backgroundImage: "url(" + leftPicture + ")" }}></div>
+          <span className="side-username">Valentin Omnès</span>
+          <span className="side-see-profile" style={{ left: "40px" }}>&larr;</span>
         </div>
         <PictureArea
           picture={profilePictures[this.state.indexProfilePictures]}
@@ -101,7 +104,9 @@ class SeeProfile extends Component {
           firstname="Valentin"
         />
         <div className="right-side-profile">
-          <div style={{ backgroundImage: "url(" + leftPicture + ")" }}></div>
+          <div style={{ backgroundImage: "url(" + rightPicture + ")" }}></div>
+          <span className="side-username">Emma Thaero</span>
+          <span className="side-see-profile" style={{ right: "40px" }}>&rarr;</span>
         </div>
         <DataArea
           firstname="Valentin"
