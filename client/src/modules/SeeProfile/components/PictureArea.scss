@@ -4,10 +4,11 @@
 
 .picture-area{
   position: relative;
-  width: 45%;
-  height: 335px;
-  margin: 15px;
-  left: 3%;
+  width: 95%;
+  max-width: 500px;
+  height: 350px;
+  margin: 0;
+  @include position-center(50%);
   box-shadow: 0 3px 6px rgba(0,0,0,0.16);
   border-radius: 10px;
   background: white;
@@ -125,6 +126,7 @@
 
 .btn-like {
   @extend %bottom-btn;
+  left: 35%;
   box-shadow: 0 3px 6px rgba(#F80759,0.16), 0 3px 6px rgba(#F80759,0.33);
   color: white;
   font-size: 50px;
@@ -139,7 +141,6 @@
 }
 
 .profiles-linked-picture  {
-  @include hide;
   @extend %bottom-btn;
   background: linear-gradient(#11998e, #38ef7d);
   box-shadow: 0 3px 6px rgba(#0F9B0F,0.16), 0 3px 6px rgba(#0F9B0F,0.33);
@@ -150,25 +151,10 @@
     text-shadow: 0 1.5px 3px rgba(0,0,0,0.33);
     opacity: 0.95;
   }
+  left: 65%;
 }
 
 .profiles-linked-picture  span {
   position: relative;
   top: 3.5px;
-}
-
-@media (max-width: 800px) {
-  .picture-area {
-    width: 95%;
-    max-width: 500px;
-    margin: 0;
-    @include position-center(50%);
-  }
-  .btn-like {
-    left: 35%;
-  }
-  .profiles-linked-picture {
-    @include show;
-    left: 65%;
-  }
 }

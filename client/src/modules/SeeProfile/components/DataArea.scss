@@ -3,28 +3,31 @@
 @import './SeeProfile.scss';
 
 .data-area {
-  position: absolute;
-  width: 45%;
+  position: relative;
+  width: 88%;
+  max-width: 750px;
   height: auto;
   padding: 5px;
-  top: 28px;
-  right: 5%;
+  top: -15px;
+  @include position-center(50%);
   background: white;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16),
   1px 3px 6px rgba(0,0,0,0.05),
   2px 4px 7px rgba(0,0,0,0.05),
   3px 5px 8px rgba(0,0,0,0.05),
   4px 6px 9px rgba(0,0,0,0.05);
+  border-radius: 5px;
 }
 
 .profile-id {
   position: relative;
   @include position-center(50%);
-  // border: 1px solid red;
   text-align: center;
   width: 95%;
   height: auto;
   cursor: default;
+  top: 30px;
+  padding-bottom: 35px;
 }
 
 .profile-title {
@@ -66,17 +69,24 @@
   left: 5px;
 }
 
-#picture-tags {
+.limit {
+  position: relative;
+  @include position-center(50%);
+  margin-top: 10px;
+  margin-bottom: 5px;
+  border: 0.5px solid #EEF2F3;
+}
+
+#data-tags {
   position: relative;
   word-wrap: break-word;
   line-height: 215%;
-  padding-top: 5px;
   text-align: left;
   padding-left: 10px;
+  padding-top: 27.5px;
 }
 
 .picture-tag {
-  background: $design-red;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   border-radius: 2px;
   color: white;
@@ -84,38 +94,24 @@
   padding: 5px;
 }
 
-.profiles-linked {
-  @extend %bottom-btn;
-  background: linear-gradient(#11998e, #38ef7d);
-  box-shadow: 0 3px 6px rgba(#0F9B0F,0.16), 0 3px 6px rgba(#0F9B0F,0.33);
-  color: white;
-  font-size: 35px;
-  cursor: pointer;
-  &:hover {
-    text-shadow: 0 1.5px 3px rgba(0,0,0,0.33);
-    opacity: 0.95;
-  }
+.matched-tag {
+  background: $design-red;
 }
 
-.profiles-linked span {
-  position: relative;
-  top: 3.5px;
+.other-tag {
+  background: #EEF2F3;
+  color: #434343;
+}
+
+.tag-title {
+  position: absolute;
+  left: 20px;
+  padding-top: 5px;
+  font-family: $font-header;
 }
 
 @media (max-width: 800px) {
   .data-area {
-    position: relative;
-    width: 90%;
-    top: -15px;
-    border-radius: 5px;
-    @include position-center(50%);
-  }
-  .profile-id {
-    position: relative;
-    top: 25px;
-    padding-bottom: 25px;
-  }
-  .profiles-linked {
-    @include hide;
+    width: 105%;
   }
 }

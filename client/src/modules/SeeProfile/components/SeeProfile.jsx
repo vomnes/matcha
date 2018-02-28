@@ -14,7 +14,7 @@ class SeeProfile extends Component {
       reportedAsFakeAccount: false,
       newSuccess: '',
       online: false,
-      usersAreConnected: false
+      usersAreConnected: true
     }
     this.changePicture = this.changePicture.bind(this);
     this.updateState = this.updateState.bind(this);
@@ -64,20 +64,22 @@ class SeeProfile extends Component {
       require('../../../design/pictures/Profile-molly-belle-73279-unsplash.jpg'),
       require('../../../design/pictures/Login-sorasak-217807-unsplash.jpg'),
     ];
-    var tags = [
+    var matchedTags = [
       "hello",
       "bonjour",
       "play",
       "tennis",
-      "bye",
-      "tag",
-      "myTag",
-      "awesome",
-      "bye",
-      "tag",
-      "myTag",
-      "awesome",
       "yes"
+    ]
+    var otherTags = [
+      "bye",
+      "tag",
+      "myTag",
+      "awesome",
+      "bye",
+      "tag",
+      "myTag",
+      "awesome"
     ]
     return (
       <div>
@@ -97,9 +99,9 @@ class SeeProfile extends Component {
           firstname="Valentin"
           lastname="Omnes"
           username="vomnes"
-          tags={tags}
           online={this.state.online}
-          usersAreConnected={this.state.usersAreConnected}
+          matchedTags={matchedTags}
+          otherTags={otherTags}
         />
         <Modal type="success" online="true" content={this.state.newSuccess} onClose={this.closeModal}/>
       </div>

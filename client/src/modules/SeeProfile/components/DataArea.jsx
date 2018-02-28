@@ -9,14 +9,26 @@ import './DataArea.css';
 
 const ShowTags = (props) => {
   var index = 0;
-  var elements = [];
-  props.tags.forEach(function (tag) {
-    elements.push(<span key={index} className="picture-tag">#{tag}</span>);
+  var matchedTags = [];
+  var otherTags = [];
+  props.matchedTags.forEach(function (tag) {
+    matchedTags.push(<span key={index} className="picture-tag matched-tag">#{tag}</span>);
+    index += 1;
+  });
+  props.otherTags.forEach(function (tag) {
+    otherTags.push(<span key={index} className="picture-tag other-tag">#{tag}</span>);
     index += 1;
   });
   return (
-    <div id="picture-tags">
-      {elements}
+    <div >
+      <span className="tag-title">I like as you</span>
+      <div id="data-tags">
+        {matchedTags}
+      </div>
+      <span className="tag-title">I like also</span>
+      <div id="data-tags">
+        {otherTags}
+      </div>
     </div>
   )
 }
@@ -36,6 +48,7 @@ class DataArea extends Component {
           <div className="profile-bio">
             <span>Greatly hearted has who believe...</span>
           </div>
+          <div className="limit" style={{ width: "10%" }}></div>
           <div className="profile-data-list">
             <img alt="Age logo" title="Age" src={AgeLogo}/><span>22 years old</span><br />
             <img alt="Gender logo" title="Gender" src={GenderLogo}/><span>Male</span><br />
@@ -45,14 +58,9 @@ class DataArea extends Component {
             <img alt="Connected status logo" title="Connected status" src={ConnectedLogo}/>
             <span>{this.props.online ? "Online" : "Offline - Last connection 60 minutes ago"}</span><br />
           </div>
-          <ShowTags tags={this.props.tags}/>
+          <div className="limit" style={{ width: "10%" }}></div>
+          <ShowTags matchedTags={this.props.matchedTags} otherTags={this.props.otherTags}/>
         </div>
-        {this.props.usersAreConnected ? (
-          <div className="profiles-linked">
-            <span
-              role="img" aria-labelledby="Connected with" title={'You are connected with ' + this.props.firstname + ' - Click here to take contact ;)' }>&#x1F517;</span>
-          </div>
-        ) : null}
       </div>
     )
   }
