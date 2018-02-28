@@ -49,6 +49,7 @@ class PictureArea extends Component {
         <div id="picture-next" style={{ visibility: (index === (this.props.pictureArrayLength - 1)) ? "hidden" :  "visible" } }>
           <span className="arrow" onClick={() => this.props.changePicture(1, this.props.pictureArrayLength)}>&#x21AA;</span>
         </div>
+        {!this.props.usersAreConnected ? (
         <div title="Like profile" className="btn-like"
           onClick={() => this.props.likeUser()}
           style={{
@@ -58,13 +59,16 @@ class PictureArea extends Component {
           >
           <span>&#9829;</span>
         </div>
+        ) : null }
         <div>
         {this.props.usersAreConnected ? (
           <div className="profiles-linked-picture">
             <span
-              role="img" aria-labelledby="Connected with" title={'You are connected with ' + this.props.firstname + ' - Click here to take contact ;)' }>&#x1F517;</span>
+              role="img" aria-labelledby="Connected with"
+              title={'You are connected with ' + this.props.firstname + ' - Click here to take contact ;)' }
+            >&#x1f525;</span>
           </div>
-        ) : null}
+        ) : null }
         </div>
       </div>
     )

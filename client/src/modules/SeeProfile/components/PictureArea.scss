@@ -124,9 +124,6 @@
 
 .btn-like {
   @extend %bottom-btn;
-  left: 35%;
-  box-shadow: 0 3px 6px rgba(#F80759,0.16), 0 3px 6px rgba(#F80759,0.33);
-  color: white;
   font-size: 50px;
 }
 
@@ -140,16 +137,12 @@
 
 .profiles-linked-picture  {
   @extend %bottom-btn;
-  background: linear-gradient(#11998e, #38ef7d);
-  box-shadow: 0 3px 6px rgba(#0F9B0F,0.16), 0 3px 6px rgba(#0F9B0F,0.33);
-  color: white;
+  background: #F80759;
   font-size: 35px;
   cursor: pointer;
   &:hover {
     text-shadow: 0 1.5px 3px rgba(0,0,0,0.33);
-    opacity: 0.95;
   }
-  left: 65%;
 }
 
 .profiles-linked-picture  span {
