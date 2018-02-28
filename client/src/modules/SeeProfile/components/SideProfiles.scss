@@ -1,0 +1,79 @@
+%left-side-effect{
+  -webkit-transform: rotateY(25deg) translateX(-320px) skewY(-5deg) scale(0.4, 0.6);
+  -moz-transform: rotateY(0) translateX(0) skewY(20deg) scale(0.3, 0.5);
+  -o-transform: rotateY(25deg) translateX(-320px) skewY(-5deg) scale(0.4, 0.6);
+}
+
+.left-side-profile {
+  position: absolute;
+  width: 95%;
+  max-width: 500px;
+  height: 500px;
+  margin: 0;
+  left: -10%;
+  top: -11.5%;
+  border-radius: 10px;
+  background: white;
+  @extend %left-side-effect;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+  &:hover {
+    opacity: 0.9;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16),
+    1px 3px 6px rgba(0,0,0,0.05),
+    2px 4px 7px rgba(0,0,0,0.05),
+    3px 5px 8px rgba(0,0,0,0.05),
+    4px 6px 9px rgba(0,0,0,0.05);
+    cursor: pointer;
+  }
+}
+
+.left-side-profile div {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 10px;
+  height: 100%;
+  right: 0;
+  left: 0;
+  top: 0;
+}
+
+%right-side-effect{
+  -webkit-transform: rotateY(25deg) translateX(-320px) skewY(-5deg) scale(0.4, 0.6);
+  -moz-transform: rotateY(0) translateX(0) skewY(-20deg) scale(0.3, 0.5);
+  -o-transform: rotateY(25deg) translateX(-320px) skewY(-5deg) scale(0.4, 0.6);
+}
+
+.right-side-profile {
+  position: absolute;
+  width: 95%;
+  max-width: 500px;
+  height: 500px;
+  margin: 0;
+  left: 60%;
+  top: -11.5%;
+  border-radius: 10px;
+  background: white;
+  @extend %right-side-effect;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+  &:hover {
+    opacity: 0.9;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16),
+    1px 3px 6px rgba(0,0,0,0.05),
+    2px 4px 7px rgba(0,0,0,0.05),
+    3px 5px 8px rgba(0,0,0,0.05),
+    4px 6px 9px rgba(0,0,0,0.05);
+    cursor: pointer;
+  }
+}
+
+.right-side-profile div {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 10px;
+  height: 100%;
+  right: 0;
+  left: 0;
+  top: 0;
+}

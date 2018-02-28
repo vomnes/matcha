@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './SeeProfile.css';
+import './SideProfiles.css';
 import Modal from '../../../components/Modal';
 import PictureArea from './PictureArea.jsx'
 import DataArea from './DataArea.jsx'
@@ -81,8 +82,12 @@ class SeeProfile extends Component {
       "myTag",
       "awesome"
     ]
+    var leftPicture = require('../../../design/pictures/Side-Picture-aziz-acharki-253909-unsplash.jpg')
     return (
       <div>
+        <div className="left-side-profile">
+          <div style={{ backgroundImage: "url(" + leftPicture + ")" }}></div>
+        </div>
         <PictureArea
           picture={profilePictures[this.state.indexProfilePictures]}
           changePicture={this.changePicture}
@@ -95,6 +100,9 @@ class SeeProfile extends Component {
           usersAreConnected={this.state.usersAreConnected}
           firstname="Valentin"
         />
+        <div className="right-side-profile">
+          <div style={{ backgroundImage: "url(" + leftPicture + ")" }}></div>
+        </div>
         <DataArea
           firstname="Valentin"
           lastname="Omnes"
