@@ -11,6 +11,7 @@ import ForgotPassword from './ForgotPassword'
 import ResetPassword from './ResetPassword'
 import Logout from './Logout'
 import SeeProfile from './SeeProfile'
+import MyProfile from './MyProfile'
 
 const Home = () => (
   <div>
@@ -28,7 +29,7 @@ const Main = () => (
       <Route exact path='/logout' component={Logout}/>
       <PrivateRoute exact path='/home' component={Home}/>
       <PrivateRoute exact path='/profile/:userId' component={SeeProfile}/>
-      {/* <PrivateRoute path='/profile' component={MyProfile}/> */}
+      <PrivateRoute path='/profile' component={MyProfile}/>
       <Route path='/' component={Register}/>
     </Switch>
   </Router>

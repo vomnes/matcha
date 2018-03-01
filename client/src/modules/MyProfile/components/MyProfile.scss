@@ -1,0 +1,86 @@
+@import '../../../design/style/variables.scss';
+@import '../../../design/style/functions.scss';
+
+.pictures {
+  border: 1px solid blue;
+  padding: 5px;
+}
+
+%setting-picture {
+  position: relative;
+  margin: 0;
+  @include position-center(50%);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+  background: white;
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.profile-picture-one {
+  @extend %setting-picture;
+  width: 75%;
+  max-width: 500px;
+  height: 350px;
+}
+
+.picture-sub-area {
+  position: relative;
+  top: -10px;
+  height: 115px;
+  width: 80%;
+  @include position-center(51%);
+}
+
+%sub-picture {
+  @extend %setting-picture;
+  position: absolute;
+  width: 24%;
+  height: 115px;
+}
+
+.profile-picture-two {
+  @extend %sub-picture;
+  left: 12.1%;
+}
+
+.profile-picture-three {
+  @extend %sub-picture;
+  left: 37%;
+}
+
+.profile-picture-four {
+  @extend %sub-picture;
+  left: 62%;
+}
+
+.profile-picture-five {
+  @extend %sub-picture;
+  left: 87%;
+}
+
+.picture-background-profile {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 100%;
+  right: 0;
+  left: 0;
+  top: 0;
+}
+
+#over {
+  position: absolute;
+  color: white;
+  padding: 3.5px;
+  border: 1px solid white;
+  margin: 5px;
+  border-radius: 15px;
+  cursor: pointer;
+  &:hover {
+    background: white;
+    opacity: 0.5;
+    color: black;
+    border: 1px solid black;
+  }
+}
