@@ -9,10 +9,10 @@
 %side-profile {
   position: absolute;
   width: 95%;
-  max-width: 500px;
-  height: 500px;
+  max-width: 25%;
+  height: 32%;
   margin: 0;
-  top: -11.5%;
+  top: 5%;
   border-radius: 10px;
   background: white;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16);
@@ -25,18 +25,20 @@
     3px 5px 8px rgba(0,0,0,0.05),
     4px 6px 9px rgba(0,0,0,0.05);
   }
+  margin-left: 2%;
+  margin-right: 2%;
 }
 
 .left-side-profile {
-  left: -10%;
+  left: 0;
   @extend %side-profile;
-  @include side-effect(0, 0, 25deg);
+  // @include side-effect(0, 0, 25deg);
 }
 
 .right-side-profile {
-  left: 60%;
+  right: 0;
   @extend %side-profile;
-  @include side-effect(0, 0, -20deg);
+  // @include side-effect(0, 0, -20deg);
 }
 
 %side-profile-div {
@@ -62,7 +64,7 @@
   position: absolute;
   top: 35%;
   @include position-center(50%);
-  font-size: 40px;
+  font-size: 150%;
   font-family: $font-picture;
   color: #EEF2F3;
   text-align: center;
@@ -73,7 +75,7 @@
 .side-see-profile {
   position: absolute;
   bottom: 3%;
-  font-size: 50px;
+  font-size: 35px;
   font-family: $font-header;
   color: #EEF2F3;
   cursor: pointer;
@@ -82,11 +84,8 @@
   }
 }
 
-@media (max-width: 1050px) {
-  .left-side-profile {
-    @include hide;
-  }
-  .right-side-profile {
+@media (max-width: 560px) {
+  .side-username {
     @include hide;
   }
 }

@@ -89,7 +89,7 @@ class SeeProfile extends Component {
         <div className="left-side-profile">
           <div style={{ backgroundImage: "url(" + leftPicture + ")" }}></div>
           <span className="side-username">Valentin Omnès</span>
-          <span className="side-see-profile" style={{ left: "40px" }}>&larr;</span>
+          <span className="side-see-profile" style={{ left: "25px" }}>&larr;</span>
         </div>
         <PictureArea
           picture={profilePictures[this.state.indexProfilePictures]}
@@ -106,7 +106,7 @@ class SeeProfile extends Component {
         <div className="right-side-profile">
           <div style={{ backgroundImage: "url(" + rightPicture + ")" }}></div>
           <span className="side-username">Emma Thaero</span>
-          <span className="side-see-profile" style={{ right: "40px" }}>&rarr;</span>
+          <span className="side-see-profile" style={{ right: "25px" }}>&rarr;</span>
         </div>
         <DataArea
           firstname="Valentin"
