@@ -19,7 +19,7 @@
 
 .profile-picture-one {
   @extend %setting-picture;
-  width: 75%;
+  width: 90%;
   max-width: 500px;
   height: 350px;
 }
@@ -28,7 +28,7 @@
   position: relative;
   top: -10px;
   height: 115px;
-  width: 80%;
+  width: 95%;
   @include position-center(51%);
 }
 
