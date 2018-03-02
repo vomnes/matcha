@@ -2,7 +2,6 @@
 @import '../../../design/style/functions.scss';
 
 .pictures {
-  border: 1px solid blue;
   padding: 5px;
 }
 
@@ -12,9 +11,6 @@
   @include position-center(50%);
   box-shadow: 0 3px 6px rgba(0,0,0,0.16);
   background: white;
-  &:hover {
-    opacity: 0.9;
-  }
 }
 
 .profile-picture-one {
@@ -67,6 +63,24 @@
   right: 0;
   left: 0;
   top: 0;
+}
+
+.no-picture {
+  position: absolute;
+  height: 100%;
+  right: 0;
+  left: 0;
+  top: 0;
+  border: 1px dashed grey;
+}
+
+.no-picture span {
+  position: relative;
+  top: 35%;
+  left: 48%;
+  font-size: 25px;
+  font-family: $font-sub;
+  cursor: pointer;
 }
 
 .over-edit {
