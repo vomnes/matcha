@@ -1,10 +1,31 @@
 import React, { Component } from 'react';
 import './MyProfile.css';
+import InfoLogo from '../../../design/icons/information-128.png'
+
+const ConfirmModal = (props) => {
+  if (props.number) {
+    var content;
+    if (props.type === "deletePicture") {
+        content = "Delete the picture number " + props.number;
+    }
+    return (
+      <div className="modal-confirm-area">
+        <div className="modal-confirm">
+          <img alt="Information logo" className="modal-confirm-icon" width="32px" src={InfoLogo}/>
+          <span className="modal-confirm-content">{content}</span>
+          <span className="modal-confirm-cancel" onClick={props.cancelAction}>Cancel</span>
+          <span className="modal-confirm-confirm" onClick={props.confirmAction}>Confirm</span>
+        </div>
+      </div>
+    )
+  }
+  return null;
+}
 
 const ButtonEdit = (props) => {
   var deleteBtn = null;
   if (props.deleteAvailable) {
-    deleteBtn = <span className="over-delete" title="Delete picture" onClick={props.uploadPicture}>x</span>;
+    deleteBtn = <span className="over-delete" title="Delete picture" onClick={() => props.deletePicture(props.id)}>x</span>;
   }
   if (props.pictureVisible) {
     return (
@@ -70,6 +91,8 @@ class EditPicture extends Component {
           pictureVisible={this.state.pictureVisible}
           uploadPicture={this.uploadPicture}
           deleteAvailable={this.props.deleteAvailable}
+          deletePicture={this.props.deletePicture}
+          id={this.props.className}
         />
         <input type="hidden" style={{display:"none"}} name="MAX_FILE_SIZE" value="30000" />
         <input
@@ -92,7 +115,27 @@ class MyProfile extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      variableModal: '1',
     }
+    this.clickDeletePicture = this.clickDeletePicture.bind(this);
+    this.cancelAction = this.cancelAction.bind(this);
+    this.confirmDeletePicture = this.confirmDeletePicture.bind(this);
+  }
+  cancelAction() {
+    this.setState({
+      variableModal: '',
+    })
+  }
+  clickDeletePicture(id) {
+    this.setState({
+      variableModal: id,
+    })
+  }
+  confirmDeletePicture() {
+    console.log("Picture " + this.state.variableModal + " deleted");
+    this.setState({
+      variableModal: '',
+    })
   }
   render() {
     var profilePictures = [
@@ -104,14 +147,18 @@ class MyProfile extends Component {
       <div>
         <h1>My profile</h1>
         <div className="pictures">
-          <EditPicture className="one" urlPicture={null} />
+          <EditPicture className="one" urlPicture={profilePictures[2]} />
           <div className="picture-sub-area">
-            <EditPicture className="two" urlPicture={profilePictures[2]} deleteAvailable="true" />
-            <EditPicture className="three" urlPicture={profilePictures[1]} deleteAvailable="true" />
-            <EditPicture className="four" deleteAvailable="true" />
-            <EditPicture className="five" urlPicture={null} deleteAvailable="true" />
+            <EditPicture className="two" urlPicture={profilePictures[2]} deleteAvailable="true" deletePicture={this.clickDeletePicture}/>
+            <EditPicture className="three" urlPicture={profilePictures[0]} deleteAvailable="true" deletePicture={this.clickDeletePicture}/>
+            <EditPicture className="four" deleteAvailable="true" deletePicture={this.clickDeletePicture}/>
+            <EditPicture className="five" urlPicture={null} deleteAvailable="true" deletePicture={this.clickDeletePicture}/>
           </div>
         </div>
+        <ConfirmModal type="deletePicture" number={this.state.variableModal}
+          cancelAction={this.cancelAction}
+          confirmAction={this.confirmDeletePicture}
+        />
       </div>
     )
   }
