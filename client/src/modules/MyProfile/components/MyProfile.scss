@@ -125,12 +125,13 @@
   @include position-center(50%);
   background: #EAEAEA;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  border-radius: 10px;
 }
 
 .modal-confirm-icon {
   position: absolute;
   @include position-center(50%);
-  padding: 5px;
+  padding: 15px;
 }
 
 .modal-confirm-content {
@@ -170,4 +171,29 @@
   }
   border-radius: 16px;
   right: 20%;
+}
+
+.myprofile-data {
+  position: relative;
+  width: 90%;
+  max-width: 500px;
+  @include position-center(50%);
+  height: 200px;
+  top: -120px;
+  z-index: -1;
+  background: white;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  padding-bottom: 130px;
+  margin-bottom: -100px;
+}
+
+.myprofile-id {
+  position: relative;
+  @include position-center(50%);
+  text-align: center;
+  width: 95%;
+  height: 100%;
+  cursor: default;
+  top: 120px;
+  border: 1px solid blue;
 }

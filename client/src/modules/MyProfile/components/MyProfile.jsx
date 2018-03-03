@@ -115,7 +115,7 @@ class MyProfile extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      variableModal: '1',
+      variableModal: '',
     }
     this.clickDeletePicture = this.clickDeletePicture.bind(this);
     this.cancelAction = this.cancelAction.bind(this);
@@ -153,6 +153,14 @@ class MyProfile extends Component {
             <EditPicture className="three" urlPicture={profilePictures[0]} deleteAvailable="true" deletePicture={this.clickDeletePicture}/>
             <EditPicture className="four" deleteAvailable="true" deletePicture={this.clickDeletePicture}/>
             <EditPicture className="five" urlPicture={null} deleteAvailable="true" deletePicture={this.clickDeletePicture}/>
+          </div>
+        </div>
+        <div className="myprofile-data">
+          <div className="myprofile-id">
+            <span className="profile-title">Valentin Omnes</span><br />
+            <span className="profile-username"> @vomnes</span><br />
+            <span>Biography: </span><span>Greatly hearted has who believe...</span><br />
+            <span>Genre: </span><span></span><br />
           </div>
         </div>
         <ConfirmModal type="deletePicture" number={this.state.variableModal}
