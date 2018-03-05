@@ -115,11 +115,20 @@ class MyProfile extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      firstname: 'mynameis',
       variableModal: '',
     }
+    this.handleUserInput = this.handleUserInput.bind(this);
     this.clickDeletePicture = this.clickDeletePicture.bind(this);
     this.cancelAction = this.cancelAction.bind(this);
     this.confirmDeletePicture = this.confirmDeletePicture.bind(this);
+  }
+  handleUserInput (e) {
+    const fieldName = e.target.name
+    var data = e.target.value
+    this.setState({
+      [fieldName]: data,
+    });
   }
   cancelAction() {
     this.setState({
@@ -165,9 +174,9 @@ class MyProfile extends Component {
               <span className="field-name">Username: </span>
               <span>vomnes</span><br />
               <form>
-                <span className="field-name">Firstname: </span>
-                <input type="text" name="firstname" placeholder="Valentin"/><br />
-                {/* <input className="field-input" placeholder="Valentin" type="text" name="firstname" value="" required/><br /> */}
+                <span className="field-name">Firstname:
+                <input className="field-input" placeholder="Valentin" type="text" name="firstname"
+                  value={this.state.firstname} onChange={this.handleUserInput}/></span><br />
                 <span className="field-name">Lastname: </span><span>Omnes</span><br />
                 <span className="field-name">Email address: </span><span>valentin.omnes@gmail.com</span><br />
                 <span className="field-name">Biography: </span><span>Greatly hearted has who believe...</span><br />
