@@ -26,6 +26,7 @@
   height: 115px;
   width: 95%;
   @include position-center(51%);
+  z-index: 2;
 }
 
 %sub-picture {
@@ -180,10 +181,10 @@
   @include position-center(50%);
   height: 200px;
   top: -120px;
-  z-index: -1;
+  z-index: 1;
   background: white;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-  padding-bottom: 130px;
+  padding-bottom: 550px;
   margin-bottom: -100px;
 }
 
@@ -193,9 +194,8 @@
   text-align: center;
   width: 95%;
   height: 100%;
-  cursor: auto;
+  cursor: default;
   top: 120px;
-  border: 1px solid blue;
   font-family: $font-sub;
   font-size: 15px;
 }
@@ -207,16 +207,13 @@
 }
 
 .fields-area {
+  position: relative;
   text-align: left;
 }
 
 .field-name {
   font-weight: bold;
   padding-left: 10px;
-}
-
-.field-input {
-  cursor: text;
 }
 
 .field-title {
@@ -226,4 +223,22 @@
   font-size: 17.5px;
   color: grey;
   text-align: center;
+}
+
+.field-input {
+  border: 1px solid gray;
+  padding: 3px;
+  padding-left: 10px;
+  margin-left: 5px;
+  margin-top: 2.5px;
+  margin-bottom: 2.5px;
+  font-size: 15px;
+  border-radius: 15px;
+  &:focus {
+    border: 1px solid black;
+  }
+  &:active {
+    border: 1px solid black;
+  }
+  width: 90%;
 }
