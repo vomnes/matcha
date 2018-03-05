@@ -184,7 +184,7 @@
   z-index: 1;
   background: white;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-  padding-bottom: 550px;
+  padding-bottom: 800px;
   margin-bottom: -100px;
 }
 
@@ -241,4 +241,41 @@
     border: 1px solid black;
   }
   width: 90%;
+}
+
+.submit-profile {
+  font-size: 20px;
+  margin: 5px;
+  border-radius: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  color: white;
+  @include gradient-shadow($gradient-btn-a, $gradient-btn-b, 30px);
+  font-family: $font-sub;
+  position: relative;
+  @include position-center(50%);
+  cursor: pointer;
+}
+
+#data-profile-tags {
+  position: relative;
+  word-wrap: break-word;
+  line-height: 40px;
+  text-align: left;
+  padding-left: 10px;
+  padding-top: 5px;
+}
+
+.picture-profile-tag {
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  border-radius: 2px;
+  color: white;
+  margin: 2px;
+  padding: 5px;
+}
+
+.matched-tag {
+  background: $design-red;
 }

@@ -111,6 +111,22 @@ class EditPicture extends Component {
   }
 }
 
+const ShowTags = (props) => {
+  var index = 0;
+  var tags = [];
+  props.tags.forEach(function (tag) {
+    tags.push(<div key={index} className="picture-profile-tag matched-tag">#{tag} | x</div>);
+    index += 1;
+  });
+  return (
+    <div >
+      <div id="data-profile-tags">
+        {tags}
+      </div>
+    </div>
+  )
+}
+
 class MyProfile extends Component {
   constructor(props) {
     super(props);
@@ -160,6 +176,21 @@ class MyProfile extends Component {
       require('../../../design/pictures/Profile-molly-belle-73279-unsplash.jpg'),
       require('../../../design/pictures/Login-sorasak-217807-unsplash.jpg'),
     ];
+    var tags = [
+      "hello",
+      "bonjour",
+      "play",
+      "tennis",
+      "hello",
+      "bonjour",
+      "play",
+      "tennis",
+      "hello",
+      "bonjour",
+      "play",
+      "tennis",
+      "yes"
+    ]
     return (
       <div>
         <h1 className="top-title">Your profile</h1>
@@ -196,7 +227,7 @@ class MyProfile extends Component {
                 <span className="field-name">Birthday :
                 <input className="field-input" type="date" name="birthday"
                   value={this.state.birthday} onChange={this.handleUserInput}/></span><br />
-                <input type="submit" value="Save"/>
+                <input className="submit-profile" type="submit" value="Save"/>
                 <div className="limit" style={{ width: "10%" }}></div>
                 <span className="field-name">Genre :
                   <select style={{ marginLeft: '5px' }} name="genre" value={this.state.genre} onChange={this.handleUserInput}>
@@ -211,7 +242,7 @@ class MyProfile extends Component {
                     <option value="bisexual">Bisexual</option>
                   </select>
                 </span><br />
-                <input type="submit" value="Save"/>
+                <input className="submit-profile" className="submit-profile" type="submit" value="Save"/>
                 <div className="limit" style={{ width: "10%" }}></div>
                 <div className="field-title">Set your password<br /></div>
                 <span className="field-name">New password :
@@ -220,9 +251,10 @@ class MyProfile extends Component {
                 <span className="field-name">Type it again :
                   <input className="field-input" type="password" name="rePassword"
                     value={this.state.rePassword} onChange={this.handleUserInput}/></span><br />
-                <input type="submit" value="Update password"/>
+                <input className="submit-profile" type="submit" value="Update password"/>
                 <div className="limit" style={{ width: "10%" }}></div>
                 <div className="field-title">Update your tags<br /></div>
+                <ShowTags tags={tags} />
               </form>
             </div>
           </div>
