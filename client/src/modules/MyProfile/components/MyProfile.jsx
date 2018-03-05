@@ -145,7 +145,7 @@ class MyProfile extends Component {
     ];
     return (
       <div>
-        <h1>My profile</h1>
+        <h1 className="top-title">Your profile</h1>
         <div className="pictures">
           <EditPicture className="one" urlPicture={profilePictures[2]} />
           <div className="picture-sub-area">
@@ -157,10 +157,24 @@ class MyProfile extends Component {
         </div>
         <div className="myprofile-data">
           <div className="myprofile-id">
-            <span className="profile-title">Valentin Omnes</span><br />
-            <span className="profile-username"> @vomnes</span><br />
-            <span>Biography: </span><span>Greatly hearted has who believe...</span><br />
-            <span>Genre: </span><span></span><br />
+            <div className="fields-area">
+              <div className="field-title">
+                Edit your personal settings<br />
+              </div>
+              <div className="limit" style={{ width: "10%" }}></div>
+              <span className="field-name">Username: </span>
+              <span>vomnes</span><br />
+              <form>
+                <span className="field-name">Firstname: </span>
+                <input type="text" name="firstname" placeholder="Valentin"/><br />
+                {/* <input className="field-input" placeholder="Valentin" type="text" name="firstname" value="" required/><br /> */}
+                <span className="field-name">Lastname: </span><span>Omnes</span><br />
+                <span className="field-name">Email address: </span><span>valentin.omnes@gmail.com</span><br />
+                <span className="field-name">Biography: </span><span>Greatly hearted has who believe...</span><br />
+                <span className="field-name">Genre: </span><span></span><br />
+                <input type="submit" value="Update information"/>
+              </form>
+            </div>
           </div>
         </div>
         <ConfirmModal type="deletePicture" number={this.state.variableModal}

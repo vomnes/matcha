@@ -193,7 +193,37 @@
   text-align: center;
   width: 95%;
   height: 100%;
-  cursor: default;
+  cursor: auto;
   top: 120px;
   border: 1px solid blue;
+  font-family: $font-sub;
+  font-size: 15px;
+}
+
+.top-title {
+  text-align: center;
+  font-family: $font-sub;
+  font-size: 30px;
+}
+
+.fields-area {
+  text-align: left;
+}
+
+.field-name {
+  font-weight: bold;
+  padding-left: 10px;
+}
+
+.field-input {
+  cursor: text;
+}
+
+.field-title {
+  position: relative;
+  width: auto;
+  padding: 5px;
+  font-size: 17.5px;
+  color: grey;
+  text-align: center;
 }
