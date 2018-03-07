@@ -274,8 +274,23 @@
   color: white;
   margin: 2px;
   padding: 5px;
+  float: left;
+  height: 19.5px;
 }
 
 .matched-tag {
   background: $design-red;
+  cursor: url('../../../design/icons/delete-16.png'), pointer;
+}
+
+.clear-tag {
+  position: relative;
+  top: -10px;
+}
+
+.delete-tag {
+  cursor: pointer;
+  &:hover {
+    color: grey;
+  }
 }

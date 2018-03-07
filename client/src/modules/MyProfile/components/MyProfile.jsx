@@ -74,7 +74,7 @@ class EditPicture extends Component {
     const file = e.target.files[0];
     var base64;
     var reader = new FileReader();
-    reader.onloadend = function () {
+    reader.onloadend = () => {
       base64 = reader.result;
       console.log(base64);
     };
@@ -111,17 +111,32 @@ class EditPicture extends Component {
   }
 }
 
+const MyTag = (props) => {
+  return (
+    <div key={props.index} title={'Click here to remove the tag ' + props.tag} className="picture-profile-tag matched-tag">
+      <span
+        onClick={() => props.deleteTag(props.tag)}
+        className="clear-tag">
+        #{props.tag}
+      </span>
+    </div>
+  )
+}
+
 const ShowTags = (props) => {
   var index = 0;
   var tags = [];
-  props.tags.forEach(function (tag) {
-    tags.push(<div key={index} className="picture-profile-tag matched-tag">#{tag} | x</div>);
+  props.tags.forEach((tag) => {
+    tags.push(<MyTag deleteTag={props.deleteTag} key={index} index={index} tag={tag}/>);
     index += 1;
   });
   return (
     <div >
       <div id="data-profile-tags">
         {tags}
+        <div className="picture-profile-tag matched-tag">
+          <input className="clear-tag" placeholder="New tag" type="text"/>
+        </div>
       </div>
     </div>
   )
@@ -146,29 +161,33 @@ class MyProfile extends Component {
     this.clickDeletePicture = this.clickDeletePicture.bind(this);
     this.cancelAction = this.cancelAction.bind(this);
     this.confirmDeletePicture = this.confirmDeletePicture.bind(this);
+    this.deleteTag = this.deleteTag.bind(this);
   }
-  handleUserInput (e) {
+  handleUserInput = (e) => {
     const fieldName = e.target.name;
     var data = e.target.value;
     this.setState({
       [fieldName]: data,
     });
   }
-  cancelAction() {
+  cancelAction = () => {
     this.setState({
       variableModal: '',
     })
   }
-  clickDeletePicture(id) {
+  clickDeletePicture = (id) => {
     this.setState({
       variableModal: id,
     })
   }
-  confirmDeletePicture() {
+  confirmDeletePicture = () => {
     console.log("Picture " + this.state.variableModal + " deleted");
     this.setState({
       variableModal: '',
     })
+  }
+  deleteTag = (tag) => {
+    console.log(tag + ' removed');
   }
   render() {
     var profilePictures = [
@@ -254,7 +273,7 @@ class MyProfile extends Component {
                 <input className="submit-profile" type="submit" value="Update password"/>
                 <div className="limit" style={{ width: "10%" }}></div>
                 <div className="field-title">Update your tags<br /></div>
-                <ShowTags tags={tags} />
+                <ShowTags tags={tags} deleteTag={this.deleteTag}/>
               </form>
             </div>
           </div>
