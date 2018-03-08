@@ -1,179 +1,6 @@
 @import '../../../design/style/variables.scss';
 @import '../../../design/style/functions.scss';
 
-.pictures {
-  padding: 5px;
-}
-
-%setting-picture {
-  position: relative;
-  margin: 0;
-  @include position-center(50%);
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16);
-  background: white;
-}
-
-.profile-picture-one {
-  @extend %setting-picture;
-  width: 90%;
-  max-width: 500px;
-  height: 350px;
-}
-
-.picture-sub-area {
-  position: relative;
-  top: -10px;
-  height: 115px;
-  width: 95%;
-  @include position-center(51%);
-  z-index: 2;
-}
-
-%sub-picture {
-  @extend %setting-picture;
-  position: absolute;
-  width: 24%;
-  height: 115px;
-}
-
-.profile-picture-two {
-  @extend %sub-picture;
-  left: 12.1%;
-}
-
-.profile-picture-three {
-  @extend %sub-picture;
-  left: 37%;
-}
-
-.profile-picture-four {
-  @extend %sub-picture;
-  left: 62%;
-}
-
-.profile-picture-five {
-  @extend %sub-picture;
-  left: 87%;
-}
-
-.picture-background-profile {
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  height: 100%;
-  right: 0;
-  left: 0;
-  top: 0;
-}
-
-.no-picture {
-  position: absolute;
-  height: 100%;
-  right: 0;
-  left: 0;
-  top: 0;
-  border: 1px dashed grey;
-}
-
-.no-picture span {
-  position: relative;
-  top: 35%;
-  left: 48%;
-  font-size: 25px;
-  font-family: $font-sub;
-  cursor: pointer;
-}
-
-.over-edit {
-  position: absolute;
-  color: white;
-  font-size: 10px;
-  padding: 3.5px;
-  border: 1px solid white;
-  margin: 5px;
-  cursor: pointer;
-  &:hover {
-    color: grey;
-    border: 1px solid grey;
-  }
-}
-
-.over-delete {
-  position: absolute;
-  color: white;
-  font-size: 12.5px;
-  cursor: pointer;
-  bottom: 3px;
-  right: 5px;
-  &:hover {
-    color: grey;
-  }
-}
-
-.modal-confirm-area {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.modal-confirm {
-  position: absolute;
-  min-width: 300px;
-  height: 20%;
-  top: 30%;
-  @include position-center(50%);
-  background: #EAEAEA;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-  border-radius: 10px;
-}
-
-.modal-confirm-icon {
-  position: absolute;
-  @include position-center(50%);
-  padding: 15px;
-}
-
-.modal-confirm-content {
-  position: absolute;
-  @include position-center(50%);
-  top: 35%;
-  width: 90%;
-  text-align: center;
-  padding: 5px;
-}
-
-.modal-confirm-cancel {
-  position: absolute;
-  top: 65%;
-  padding: 5px;
-  border: 2px solid black;
-  cursor: pointer;
-  font-size: 15px;
-  &:hover {
-    background-color: white;
-    color: $design-red;
-  }
-  border-radius: 16px;
-  left: 20%;
-}
-
-.modal-confirm-confirm {
-  position: absolute;
-  top: 65%;
-  padding: 5px;
-  border: 2px solid black;
-  cursor: pointer;
-  font-size: 15px;
-  &:hover {
-    background-color: white;
-    color: green;
-  }
-  border-radius: 16px;
-  right: 20%;
-}
-
 .myprofile-data {
   position: relative;
   width: 90%;
@@ -268,7 +95,7 @@
   padding-top: 5px;
 }
 
-.picture-profile-tag {
+.profile-tag {
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   border-radius: 2px;
   color: white;
@@ -283,14 +110,33 @@
   cursor: url('../../../design/icons/delete-16.png'), pointer;
 }
 
+.new-tag {
+  background: $design-red;
+}
+
 .clear-tag {
   position: relative;
   top: -10px;
+}
+
+input.clear-tag {
+  background: none;
+  font-family: $font-sub;
+  font-size: 15px;
+  color: white;
+  width: 100px;
 }
 
 .delete-tag {
   cursor: pointer;
   &:hover {
     color: grey;
+  }
+}
+
+.valid {
+  cursor: pointer;
+  &:hover {
+    color: #E2E2E2;
   }
 }

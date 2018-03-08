@@ -1,0 +1,67 @@
+@import '../../design/style/variables.scss';
+@import '../../design/style/functions.scss';
+
+.modal-confirm-area {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.modal-confirm {
+  position: absolute;
+  min-width: 300px;
+  height: 8%;
+  top: 10%;
+  @include position-center(50%);
+  background: #EAEAEA;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  border-radius: 10px;
+  z-index: 999;
+}
+
+.modal-confirm-icon {
+  position: absolute;
+  @include position-center(50%);
+  padding: 15px;
+}
+
+.modal-confirm-content {
+  position: absolute;
+  @include position-center(50%);
+  top: 35%;
+  width: 90%;
+  text-align: center;
+  padding: 5px;
+}
+
+.modal-confirm-cancel {
+  position: absolute;
+  top: 65%;
+  padding: 5px;
+  border: 2px solid black;
+  cursor: pointer;
+  font-size: 15px;
+  &:hover {
+    background-color: white;
+    color: $design-red;
+  }
+  border-radius: 16px;
+  left: 20%;
+}
+
+.modal-confirm-confirm {
+  position: absolute;
+  top: 65%;
+  padding: 5px;
+  border: 2px solid black;
+  cursor: pointer;
+  font-size: 15px;
+  &:hover {
+    background-color: white;
+    color: green;
+  }
+  border-radius: 16px;
+  right: 20%;
+}
