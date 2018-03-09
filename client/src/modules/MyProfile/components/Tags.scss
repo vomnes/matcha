@@ -1,0 +1,48 @@
+@import '../../../design/style/variables.scss';
+@import '../../../design/style/functions.scss';
+
+#data-profile-tags {
+  display: inline-block;
+  padding: 5px;
+}
+
+.profile-tag {
+  float: left;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  border-radius: 2px;
+  color: white;
+  margin: 2px;
+  padding: 5px;
+  height: 19.5px;
+}
+
+.profile-matched-tag {
+  background: $design-red;
+  cursor: url('../../../design/icons/delete-16.png'), pointer;
+}
+
+.new-tag {
+  background: $design-red;
+}
+
+input#new-tag {
+  background: none;
+  font-family: $font-sub;
+  font-size: 15px;
+  color: white;
+  width: 100px;
+}
+
+.delete-tag {
+  cursor: pointer;
+  &:hover {
+    color: grey;
+  }
+}
+
+.valid {
+  cursor: pointer;
+  &:hover {
+    color: #E2E2E2;
+  }
+}

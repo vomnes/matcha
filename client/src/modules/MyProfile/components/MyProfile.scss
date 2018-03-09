@@ -6,13 +6,11 @@
   width: 90%;
   max-width: 500px;
   @include position-center(50%);
-  height: 200px;
   top: -120px;
   z-index: 1;
   background: white;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-  padding-bottom: 800px;
-  margin-bottom: -100px;
+  padding-bottom: 120px;
 }
 
 .myprofile-id {
@@ -20,7 +18,6 @@
   @include position-center(50%);
   text-align: center;
   width: 95%;
-  height: 100%;
   cursor: default;
   top: 120px;
   font-family: $font-sub;
@@ -33,14 +30,20 @@
   font-size: 30px;
 }
 
+.profile-personal-data {
+  position: relative;
+  @include position-center(50%);
+  display: inline-block;
+}
+
 .fields-area {
   position: relative;
   text-align: left;
 }
 
 .field-name {
-  font-weight: bold;
-  padding-left: 10px;
+  margin-top: 5px;
+  font-size: 12.5px;
 }
 
 .field-title {
@@ -54,89 +57,25 @@
 
 .field-input {
   border: 1px solid gray;
-  padding: 3px;
-  padding-left: 10px;
-  margin-left: 5px;
-  margin-top: 2.5px;
-  margin-bottom: 2.5px;
   font-size: 15px;
-  border-radius: 15px;
   &:focus {
     border: 1px solid black;
   }
   &:active {
     border: 1px solid black;
   }
-  width: 90%;
+  width: 99%;
 }
 
 .submit-profile {
-  font-size: 20px;
-  margin: 5px;
-  border-radius: 5px;
-  padding-left: 15px;
-  padding-right: 15px;
-  padding-top: 5px;
-  padding-bottom: 5px;
+  position: relative;
+  @include position-center(50%);
+  font-size: 15px;
+  margin-top: 10px;
+  padding: 2.5px;
+  padding-left: 10px;
+  padding-right: 10px;
   color: white;
   @include gradient-shadow($gradient-btn-a, $gradient-btn-b, 30px);
   font-family: $font-sub;
-  position: relative;
-  @include position-center(50%);
-  cursor: pointer;
-}
-
-#data-profile-tags {
-  position: relative;
-  word-wrap: break-word;
-  line-height: 40px;
-  text-align: left;
-  padding-left: 10px;
-  padding-top: 5px;
-}
-
-.profile-tag {
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-  border-radius: 2px;
-  color: white;
-  margin: 2px;
-  padding: 5px;
-  float: left;
-  height: 19.5px;
-}
-
-.matched-tag {
-  background: $design-red;
-  cursor: url('../../../design/icons/delete-16.png'), pointer;
-}
-
-.new-tag {
-  background: $design-red;
-}
-
-.clear-tag {
-  position: relative;
-  top: -10px;
-}
-
-input.clear-tag {
-  background: none;
-  font-family: $font-sub;
-  font-size: 15px;
-  color: white;
-  width: 100px;
-}
-
-.delete-tag {
-  cursor: pointer;
-  &:hover {
-    color: grey;
-  }
-}
-
-.valid {
-  cursor: pointer;
-  &:hover {
-    color: #E2E2E2;
-  }
 }

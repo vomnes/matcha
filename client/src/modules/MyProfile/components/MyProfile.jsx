@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './MyProfile.css';
 import Pictures  from './Pictures.jsx'
 import Tags  from './Tags.jsx'
+import Location  from './Location.jsx'
 import ConfirmModal from '../../../components/ConfirmModal'
 import utils from '../../../library/utils/array.js'
 
@@ -99,51 +100,57 @@ class MyProfile extends Component {
                 Edit your personal settings<br />
                 <span className="profile-username">@vomnes</span><br />
               </div>
-              <form>
-                <span className="field-name">Firstname :
+              <form className="profile-personal-data">
+                <span className="field-name">Firstname</span><br />
                 <input className="field-input" placeholder="Valentin" type="text" name="firstname"
-                  value={this.state.firstname} onChange={this.handleUserInput}/></span><br />
-                <span className="field-name">Lastname :
+                  value={this.state.firstname} onChange={this.handleUserInput}/><br />
+                <span className="field-name">Lastname</span><br />
                 <input className="field-input" placeholder="Omnes" type="text" name="lastname"
-                  value={this.state.lastname} onChange={this.handleUserInput}/></span><br />
-                <span className="field-name">Email address :
+                  value={this.state.lastname} onChange={this.handleUserInput}/><br />
+                <span className="field-name">Email address</span><br />
                 <input className="field-input" placeholder="valentin.omnes@gmail.com" type="text" name="email"
-                  value={this.state.email} onChange={this.handleUserInput}/></span><br />
-                <span className="field-name">Biography :
+                  value={this.state.email} onChange={this.handleUserInput}/><br />
+                <span className="field-name">Biography</span><br />
                 <input className="field-input" placeholder="Greatly hearted has who believe..." type="text" name="biography"
-                  value={this.state.biography} onChange={this.handleUserInput}/></span><br />
-                <span className="field-name">Birthday :
+                  value={this.state.biography} onChange={this.handleUserInput}/><br />
+                <span className="field-name">Birthday</span><br />
                 <input className="field-input" type="date" name="birthday"
-                  value={this.state.birthday} onChange={this.handleUserInput}/></span><br />
+                  value={this.state.birthday} onChange={this.handleUserInput}/><br />
                 <input className="submit-profile" type="submit" value="Save"/>
-                <div className="limit" style={{ width: "10%" }}></div>
-                <span className="field-name">Genre :
-                  <select style={{ marginLeft: '5px' }} name="genre" value={this.state.genre} onChange={this.handleUserInput}>
-                    <option value="female">Female</option>
-                    <option value="male">Male</option>
-                  </select>
-                </span><br />
-                <span className="field-name">Interesting in :
-                  <select style={{ marginLeft: '5px' }} name="preference" value={this.state.preference} onChange={this.handleUserInput}>
-                    <option value="female">Female</option>
-                    <option value="male">Male</option>
-                    <option value="bisexual">Bisexual</option>
-                  </select>
-                </span><br />
-                <input className="submit-profile" type="submit" value="Save"/>
-                <div className="limit" style={{ width: "10%" }}></div>
-                <div className="field-title">Set your password<br /></div>
-                <span className="field-name">New password :
-                <input className="field-input" type="password" name="password"
-                  value={this.state.password} onChange={this.handleUserInput}/></span><br />
-                <span className="field-name">Type it again :
-                  <input className="field-input" type="password" name="rePassword"
-                    value={this.state.rePassword} onChange={this.handleUserInput}/></span><br />
-                <input className="submit-profile" type="submit" value="Update password"/>
-                <div className="limit" style={{ width: "10%" }}></div>
-                <div className="field-title">Update your tags<br /></div>
-                <Tags tags={this.state.tags} deleteTag={this.deleteTag} newTag={this.state.newTag} appendTag={this.appendTag} handleUserInput={this.handleUserInput}/>
               </form>
+              <div className="limit" style={{ width: "10%" }}></div>
+              <form className="profile-personal-data">
+                <span className="field-name">Genre</span><br />
+                <select name="genre" value={this.state.genre} onChange={this.handleUserInput}>
+                  <option value="female">Female</option>
+                  <option value="male">Male</option>
+                </select><br />
+                <span className="field-name">Interesting in</span><br />
+                <select name="preference" value={this.state.preference} onChange={this.handleUserInput}>
+                  <option value="female">Female</option>
+                  <option value="male">Male</option>
+                  <option value="bisexual">Bisexual</option>
+                </select><br />
+                <input className="submit-profile" type="submit" value="Save"/>
+              </form>
+              <div className="limit" style={{ width: "10%" }}></div>
+              <div className="field-title">Set your password</div>
+              <form className="profile-personal-data">
+                <span className="field-name">New password</span><br />
+                <input className="field-input" type="password" name="password"
+                  value={this.state.password} onChange={this.handleUserInput}/><br />
+                <span className="field-name">Type it again</span><br />
+                  <input className="field-input" type="password" name="rePassword"
+                    value={this.state.rePassword} onChange={this.handleUserInput}/><br />
+                <input className="submit-profile" type="submit" value="Update password"/>
+              </form>
+              <div className="limit" style={{ width: "10%" }}></div>
+              <div className="field-title">Set your location</div>
+              <Location />
+              <div className="limit" style={{ width: "10%" }}></div>
+              <div className="field-title">Update your tags<br />
+                <Tags tags={this.state.tags} deleteTag={this.deleteTag} newTag={this.state.newTag} appendTag={this.appendTag} handleUserInput={this.handleUserInput}/>
+              </div>
             </div>
           </div>
         </div>
