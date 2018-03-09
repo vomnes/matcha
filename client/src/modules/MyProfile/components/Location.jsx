@@ -9,10 +9,15 @@ const GetGeocode = (address, updateDate) => {
       return response.json();
     })
     .then(data => {
+      if (!data.results[0] || !data.results[0].geometry.location) {
+        updateDate('error', 'Error: Invalid address');
+        return;
+      }
       const location = data.results[0].geometry.location;
       updateDate('lat', location.lat);
       updateDate('lng', location.lng);
       updateDate('address', '');
+      updateDate('error', '');
     })
 }
 
@@ -54,9 +59,9 @@ class Location extends Component {
     super(props);
     this.state = {
       address: '',
-      lat: '',
-      lng: '',
-      center: {lat: 48.856614, lng: 2.3522219},
+      lat: 0,
+      lng: 0,
+      error: '',
     }
     this.handleUserInput = this.handleUserInput.bind(this);
   }
@@ -80,6 +85,8 @@ class Location extends Component {
           <input className="field-input" placeholder="Enter your location address" type="text" name="address"
             value={this.state.address} onChange={this.handleUserInput}/>
           <span id="search-location" onClick={() => GetGeocode(this.state.address, this.updateDate)} title="Search for address location">{this.state.address ? '↪' : null}</span>
+          <span id="map-error">{this.state.error}</span>
+          <input className="submit-profile" type="submit" value="Set"/>
         </div>
       </div>
     );

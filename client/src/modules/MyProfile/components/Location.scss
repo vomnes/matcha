@@ -26,3 +26,11 @@
     cursor: pointer;
   }
 }
+
+#map-error {
+  position: absolute;
+  color: $design-red;
+  font-size: 10px;
+  top: 21.5px;
+  left: 5px;
+}

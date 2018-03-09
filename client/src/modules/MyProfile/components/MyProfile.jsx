@@ -116,17 +116,14 @@ class MyProfile extends Component {
                 <span className="field-name">Birthday</span><br />
                 <input className="field-input" type="date" name="birthday"
                   value={this.state.birthday} onChange={this.handleUserInput}/><br />
-                <input className="submit-profile" type="submit" value="Save"/>
-              </form>
-              <div className="limit" style={{ width: "10%" }}></div>
-              <form className="profile-personal-data">
+                <div className="limit" style={{ width: "10%" }}></div>
                 <span className="field-name">Genre</span><br />
-                <select name="genre" value={this.state.genre} onChange={this.handleUserInput}>
+                <select className="field-input" name="genre" value={this.state.genre} onChange={this.handleUserInput}>
                   <option value="female">Female</option>
                   <option value="male">Male</option>
                 </select><br />
                 <span className="field-name">Interesting in</span><br />
-                <select name="preference" value={this.state.preference} onChange={this.handleUserInput}>
+                <select className="field-input" name="preference" value={this.state.preference} onChange={this.handleUserInput}>
                   <option value="female">Female</option>
                   <option value="male">Male</option>
                   <option value="bisexual">Bisexual</option>
@@ -145,7 +142,7 @@ class MyProfile extends Component {
                 <input className="submit-profile" type="submit" value="Update password"/>
               </form>
               <div className="limit" style={{ width: "10%" }}></div>
-              <div className="field-title">Set your location</div>
+              <div className="field-title">Update your location</div>
               <Location />
               <div className="limit" style={{ width: "10%" }}></div>
               <div className="field-title">Update your tags<br />
