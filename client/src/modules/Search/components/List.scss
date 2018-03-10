@@ -11,12 +11,12 @@
 
 #view-list {
   position: relative;
-  height: 95.75%;
-  margin-top: 5px;
+  height: 100%;
   background: white;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   padding-top: 5px;
   overflow-x: scroll;
+  max-width: 375px;
 }
 
 .picture-list {
@@ -56,13 +56,22 @@
 
 .name-list {
   position: absolute;
-  top: 17px;
+  top: 12.5px;
   left: 60px;
   font-family: $font-sub;
+  font-size: 1.8vw;
   &:hover {
     font-weight: bold;
     cursor: pointer;
   }
+}
+
+.age-list {
+  position: absolute;
+  top: 32px;
+  left: 65px;
+  font-family: $font-sub;
+  font-size: 1.25vw;
 }
 
 .distance-list {
@@ -91,4 +100,50 @@
   font-family: $font-sub;
   font-size: 12.5px;
   top: -4px;
+}
+
+@media (min-width: 925px) {
+  .name-list {
+    font-size: 15px;
+  }
+  .age-list {
+    font-size: 12.5px;
+  }
+}
+
+@media (max-width: 850px) {
+  .distance-list {
+    top: 7.5px;
+    right: 0px;
+  }
+  .rating-list {
+    top: 30px;
+    right: 13px;
+  }
+}
+
+@media (max-width: 650px) {
+  #list {
+    position: relative;
+    top: 0px;
+    width: 100%;
+    margin-top: 10px;
+  }
+  #view-list {
+    @include position-center(50%);
+  }
+  .distance-list {
+    top: 17px;
+    right: 55px;
+  }
+  .rating-list {
+    top: 17px;
+    right: 5px;
+  }
+  .name-list {
+    font-size: 15px;
+  }
+  .age-list {
+    font-size: 12.5px;
+  }
 }

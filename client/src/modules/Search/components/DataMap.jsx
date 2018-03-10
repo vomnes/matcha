@@ -54,7 +54,7 @@ class DataMap extends Component {
   }
   render() {
     return (
-      <div id="data-map" style={{ height:  this.state.mapHeight}}>
+      <div id="data-map" style={{ height: window.innerWidth > 650 ? this.state.mapHeight : 200 }}>
         <Map lat={48.4083868} lng={-4.5696403}/>
       </div>
     )

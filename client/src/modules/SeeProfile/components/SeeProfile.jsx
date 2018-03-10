@@ -14,8 +14,8 @@ class SeeProfile extends Component {
       liked: false,
       reportedAsFakeAccount: false,
       newSuccess: '',
-      online: false,
-      usersAreConnected: true
+      online: true,
+      usersAreConnected: false
     }
     this.changePicture = this.changePicture.bind(this);
     this.updateState = this.updateState.bind(this);
