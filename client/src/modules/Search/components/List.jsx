@@ -1,5 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import './List.css';
+import Pin from '../../../design/icons/map-pin-64.png';
+import Star from '../../../design/icons/star-128.png';
 
 const List = () => {
   var profilePictures = [
@@ -15,7 +17,15 @@ const List = () => {
           <div className="picture-list">
             <div className="picture-list-background" style={{ backgroundImage: "url(" + profilePictures[0] + ")" }}></div>
           </div>
-          <span>Valentin Omnes 23 year old 1km 5/5</span>
+          <a href="/profile/vomnes"><span className="name-list">Valentin Omnes</span></a>
+          <div className="distance-list">
+            <img alt="Distance icon" src={Pin} className="list-icon"/>
+            <span className="list-value">10 km</span>
+          </div>
+          <div className="rating-list">
+            <img alt="Rating icon" src={Star} className="list-icon"/>
+            <span className="list-value"> 5/5</span>
+          </div>
         </div>
       </div>
     </div>

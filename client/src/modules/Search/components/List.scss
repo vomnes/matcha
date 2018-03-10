@@ -1,3 +1,6 @@
+@import '../../../design/style/variables.scss';
+@import '../../../design/style/functions.scss';
+
 #list {
   position: absolute;
   height: 99.5%;
@@ -8,13 +11,12 @@
 
 #view-list {
   position: relative;
-  height: 96%;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
+  height: 95.75%;
   margin-top: 5px;
   background: white;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   padding-top: 5px;
+  overflow-x: scroll;
 }
 
 .picture-list {
@@ -50,4 +52,43 @@
   right: 0;
   left: 0;
   top: 0;
+}
+
+.name-list {
+  position: absolute;
+  top: 17px;
+  left: 60px;
+  font-family: $font-sub;
+  &:hover {
+    font-weight: bold;
+    cursor: pointer;
+  }
+}
+
+.distance-list {
+  position: absolute;
+  top: 17px;
+  right: 55px;
+  width: auto;
+  height: 20px;
+}
+
+.rating-list {
+  position: absolute;
+  top: 17px;
+  right: 5px;
+  width: auto;
+  height: 20px;
+}
+
+.list-icon {
+  position: relative;
+  width: 20px;
+}
+
+.list-value {
+  position: relative;
+  font-family: $font-sub;
+  font-size: 12.5px;
+  top: -4px;
 }
