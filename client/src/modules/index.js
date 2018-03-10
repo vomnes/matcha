@@ -12,12 +12,7 @@ import ResetPassword from './ResetPassword'
 import Logout from './Logout'
 import SeeProfile from './SeeProfile'
 import MyProfile from './MyProfile'
-
-const Home = () => (
-  <div>
-    <h1>Zelcome Home</h1>
-  </div>
-)
+import Search from './Search'
 
 const Main = () => (
   <Router>
@@ -27,7 +22,7 @@ const Main = () => (
       <Route exact path='/forgotpassword' component={ForgotPassword}/>
       <Route exact path='/resetpassword/:token' component={ResetPassword}/>
       <Route exact path='/logout' component={Logout}/>
-      <PrivateRoute exact path='/home' component={Home}/>
+      <PrivateRoute exact path='/home' component={Search}/>
       <PrivateRoute exact path='/profile/:userId' component={SeeProfile}/>
       <PrivateRoute path='/profile' component={MyProfile}/>
       <Route path='/' component={Register}/>

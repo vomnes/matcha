@@ -1,0 +1,53 @@
+#list {
+  position: absolute;
+  height: 99.5%;
+  width: 38.5%;
+  top: 0px;
+  right: 0px;
+}
+
+#view-list {
+  position: relative;
+  height: 96%;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  margin-top: 5px;
+  background: white;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  padding-top: 5px;
+}
+
+.picture-list {
+  position: relative;
+  width: 50px;
+}
+
+.profile-element {
+  position: relative;
+  height: 55px;
+  margin-left: 10px;
+  margin-right: 10px;
+  border-bottom: 1px solid #DBDBDB;
+}
+
+.picture-list{
+  position: relative;
+  width: 45px;
+  height: 45px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+  border-radius: 25px;
+  background: white;
+  top: 5px;
+  left: 5px;
+}
+
+.picture-list-background {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 25px;
+  height: 100%;
+  right: 0;
+  left: 0;
+  top: 0;
+}
