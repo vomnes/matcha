@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -14,6 +15,7 @@ import (
 
 	"github.com/go-redis/redis"
 	"github.com/jmoiron/sqlx"
+	"github.com/kylelemons/godebug/pretty"
 	mailjet "github.com/mailjet/mailjet-apiv3-go"
 )
 
@@ -74,4 +76,25 @@ func ReadBodyError(r io.Reader) string {
 		return ""
 	}
 	return responseBody.Error
+}
+
+// CompareResponseJSONCode check the http response in the tests
+// Check the http code
+// Check the http json
+// Return an error, nil if the are no error
+func CompareResponseJSONCode(w *httptest.ResponseRecorder, expectedCode int, expectedJSONResponse interface{}) []string {
+	var errorArray []string
+	if w.Result().StatusCode != expectedCode {
+		errorArray = append(errorArray, fmt.Sprintf("Must return an error with http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m.\n", expectedCode, w.Result().StatusCode))
+	}
+	var response map[string]interface{}
+	if err := ChargeResponse(w, &response); err != nil {
+		if err.Error() != "EOF" {
+			errorArray = append(errorArray, "\x1b[1;31m"+err.Error()+"\033[0m\n")
+		}
+	}
+	if compare := pretty.Compare(&expectedJSONResponse, response); compare != "" {
+		errorArray = append(errorArray, compare)
+	}
+	return errorArray
 }

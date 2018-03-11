@@ -10,6 +10,7 @@ import (
 	"../../lib"
 	"./routes/account"
 	"./routes/mail"
+	"./routes/profile"
 
 	"github.com/gorilla/mux"
 )
@@ -28,6 +29,7 @@ func handleAPIRoutes() *mux.Router {
 	api.HandleFunc("/v1/accounts/logout", account.Logout).Methods("POST")
 	api.HandleFunc("/v1/accounts/resetpassword", account.ResetPassword).Methods("POST")
 	api.HandleFunc("/v1/mails/forgotpassword", mail.ForgotPassword).Methods("POST")
+	api.HandleFunc("/v1/profiles/picture/{number}", profile.Picture)
 	return api
 }
 
