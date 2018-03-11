@@ -4,9 +4,9 @@ import './Browsing.css';
 const Browsing = () => {
   return (
     <div id="browsing">
-      <span>+ Browsing</span>
+      <span>Browsing</span>
       <div id="parameters">
-        
+
       </div>
     </div>
   )
