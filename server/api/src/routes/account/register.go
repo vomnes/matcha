@@ -23,26 +23,26 @@ func checkInput(d accountData) (int, string) {
 		d.Lastname == "" || d.Password == "" || d.RePassword == "" {
 		return 406, "At least one field of the body is empty"
 	}
-	right := IsValidUsername(d.Username)
+	right := lib.IsValidUsername(d.Username)
 	if right == false {
 		return 406, "Not a valid username"
 	}
-	right = IsValidFirstLastName(d.Firstname)
+	right = lib.IsValidFirstLastName(d.Firstname)
 	if right == false {
 		return 406, "Not a valid firstname"
 	}
-	right = IsValidFirstLastName(d.Lastname)
+	right = lib.IsValidFirstLastName(d.Lastname)
 	if right == false {
 		return 406, "Not a valid lastname"
 	}
-	right = IsValidEmailAddress(d.EmailAddress)
+	right = lib.IsValidEmailAddress(d.EmailAddress)
 	if right == false {
 		return 406, "Not a valid email address"
 	}
 	if d.Password != d.RePassword {
 		return 406, "Both password entered must be identical"
 	}
-	right = IsValidPassword(d.Password)
+	right = lib.IsValidPassword(d.Password)
 	if right == false {
 		return 406, "Not a valid password"
 	}

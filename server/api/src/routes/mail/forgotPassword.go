@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"../../../../lib"
-	a "../account"
 	"github.com/jmoiron/sqlx"
 	mailjet "github.com/mailjet/mailjet-apiv3-go"
 )
@@ -111,7 +110,7 @@ func ForgotPassword(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, 400, "Email address can't be empty")
 		return
 	}
-	if !a.IsValidEmailAddress(inputData.EmailAddress) {
+	if !lib.IsValidEmailAddress(inputData.EmailAddress) {
 		lib.RespondWithErrorHTTP(w, 400, "Email address is not valid")
 		return
 	}

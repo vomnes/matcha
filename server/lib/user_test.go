@@ -1,4 +1,4 @@
-package account
+package lib
 
 import "testing"
 
@@ -113,6 +113,74 @@ func TestIsValidPassword(t *testing.T) {
 		actual := IsValidPassword(tt.str)
 		if actual != tt.expected {
 			t.Errorf("IsValidPassword(%s): expected %t, actual %t - Test type: \033[31m%s\033[0m", tt.str, tt.expected, actual, tt.testContent)
+		}
+	}
+}
+
+var textTests = []struct {
+	str         string // input
+	length      int    // length max
+	expected    bool   // expected result
+	testContent string // test details
+}{
+	{"Hello world ? 42 .,?!&-_*-+@#$%", 255, true, "Valid"},
+	{"Hello world ? 42", 255, true, "Valid"},
+	{"aaaaa bbbbb ccccc", 255, true, "Only lowercases"},
+	{"AAAAA BBBBB CCCCC", 255, true, "Only uppercases"},
+	{"123456789", 255, true, "Only digits"},
+	{"Hello world ? 42 .,?!&-_*-+@#$%", 5, false, "Too long"},
+	{"Hello world ? ", 255, true, "Valid"},
+	{"Hello world ? ≤", 255, false, "Invalid char ≤"},
+	{"Hello world ? <", 255, false, "Invalid char <"},
+	{"Hello world ? >", 255, false, "Invalid char >"},
+	{"Hello world ? &", 255, true, "Valid char &"},
+	{"I&#39;m Valentin Omnes", 255, true, "Valid with escaped char"},
+}
+
+func TestIsValidText(t *testing.T) {
+	for _, tt := range textTests {
+		actual := IsValidText(tt.str, tt.length)
+		if actual != tt.expected {
+			t.Errorf("IsValidText(%s): expected %t, actual %t - Test type: \033[31m%s\033[0m", tt.str, tt.expected, actual, tt.testContent)
+		}
+	}
+}
+
+var letterTests = []struct {
+	str         string // input
+	length      int    // length max
+	expected    bool   // expected result
+	testContent string // test details
+}{
+	{"hello", 32, true, "Valid"},
+	{"hello", 2, false, "Too long"},
+	{"hello123456789", 32, false, "Contains digit"},
+	{"Hello", 32, false, "Contains uppercase"},
+	{"Hello?@", 32, false, "Contains uppercase"},
+}
+
+func TestIsOnlyLowercaseLetters(t *testing.T) {
+	for _, tt := range letterTests {
+		actual := IsOnlyLowercaseLetters(tt.str, tt.length)
+		if actual != tt.expected {
+			t.Errorf("IsOnlyLowercaseLetters(%s): expected %t, actual %t - Test type: \033[31m%s\033[0m", tt.str, tt.expected, actual, tt.testContent)
+		}
+	}
+}
+
+var dateTests = []struct {
+	str         string // input
+	expected    bool   // expected result
+	testContent string // test details
+}{
+	{"06/03/1995", true, "Valid"},
+}
+
+func TestIsValidDate(t *testing.T) {
+	for _, tt := range dateTests {
+		actual := IsValidDate(tt.str)
+		if actual != tt.expected {
+			t.Errorf("IsValidDate(%s): expected %t, actual %t - Test type: \033[31m%s\033[0m", tt.str, tt.expected, actual, tt.testContent)
 		}
 	}
 }

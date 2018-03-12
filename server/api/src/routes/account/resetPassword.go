@@ -24,7 +24,7 @@ func checkInputBody(inputData dataBody) (int, string) {
 	if inputData.NewPassword != inputData.NewRePassword {
 		return 406, "Both password entered must be identical"
 	}
-	if !IsValidPassword(inputData.NewPassword) {
+	if !lib.IsValidPassword(inputData.NewPassword) {
 		return 406, "Not a valid password"
 	}
 	return 0, ""
