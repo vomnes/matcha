@@ -1,13 +1,13 @@
 package profile
 
 import (
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"strings"
 	"testing"
 
+	"../../../../lib"
 	"../../../../tests"
 	"github.com/gorilla/mux"
 )
@@ -72,9 +72,10 @@ func TestPictureUploadFailedToDecodeBody(t *testing.T) {
 
 func TestPictureUploadFailToGeneratePng(t *testing.T) {
 	tests.DbClean()
+	testDirectory := "test_SjzjhD5dbEmjhB6GEhZui7es3oWbi9_wyL5Zo7kDbs7"
 	context := tests.ContextData{
 		DB:       tests.DB,
-		Username: "test",
+		Username: testDirectory,
 	}
 	body := []byte(`{"picture_base64": "data:image/png;base64,iVBORw0KGgoAAAANS"}`)
 	r := tests.CreateRequest("POST", "/v1/profiles/picture/"+"1", body, context)
@@ -91,9 +92,10 @@ func TestPictureUploadFailToGeneratePng(t *testing.T) {
 
 func TestPictureUploadFailToGenerateJpg(t *testing.T) {
 	tests.DbClean()
+	testDirectory := "test_SjzjhD5dbEmjhB6GEhZui7es3oWbi9_wyL5Zo7kDbs7"
 	context := tests.ContextData{
 		DB:       tests.DB,
-		Username: "test",
+		Username: testDirectory,
 	}
 	body := []byte(`{"picture_base64": "data:image/jpg;base64,iVBORw0KGgoAAAANS"}`)
 	r := tests.CreateRequest("POST", "/v1/profiles/picture/"+"1", body, context)
@@ -110,9 +112,10 @@ func TestPictureUploadFailToGenerateJpg(t *testing.T) {
 
 func TestPictureUploadFailToGenerateJpeg(t *testing.T) {
 	tests.DbClean()
+	testDirectory := "test_SjzjhD5dbEmjhB6GEhZui7es3oWbi9_wyL5Zo7kDbs7"
 	context := tests.ContextData{
 		DB:       tests.DB,
-		Username: "test",
+		Username: testDirectory,
 	}
 	body := []byte(`{"picture_base64": "data:image/jpeg;base64,iVBORw0KGgoAAAANS"}`)
 	r := tests.CreateRequest("POST", "/v1/profiles/picture/"+"1", body, context)
@@ -129,9 +132,10 @@ func TestPictureUploadFailToGenerateJpeg(t *testing.T) {
 
 func TestPictureUploadBody(t *testing.T) {
 	tests.DbClean()
+	testDirectory := "test_SjzjhD5dbEmjhB6GEhZui7es3oWbi9_wyL5Zo7kDbs7"
 	context := tests.ContextData{
 		DB:       tests.DB,
-		Username: "test",
+		Username: testDirectory,
 	}
 	body := []byte(`{"picture_base64": "data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADdcAAA3XAUIom3gAAAAHdElNRQfiAwcPEjOBVwS4AAAA70lEQVQoz13RQUoCYRjG8Z+mgxpCQTnSwgu4a9mqaBHkppauPIoH6BJ2gg7hDVq5KwoGFYIiUpiSafHN5OT/3b38eR6+96OgYirLZ6qyXRfE5kZe0HOvaxHWNVduQQvX3nGAOyvwsKfvwlAiM5NpaGCm6shQ4hGOZfp2OZVpU8WbjVhk7MSNGz1jkdjaZ2HPDUUyZyYmzmUiI8+EBBZiqY0maNpIdcI7grAUY62VC2vElrvCKhcaVuiUhUUuFBVB+FfRLSUEIa+olRISPz7wLdkmBAbSnTNVpC63CUt1A18lYV89VAQOvf59dTFP2vALI8pQKcosrXkAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTgtMDMtMDdUMTU6MTg6NTErMDE6MDCZx6j3AAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE4LTAzLTA3VDE1OjE4OjUxKzAxOjAw6JoQSwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAAASUVORK5CYII="}`)
 	r := tests.CreateRequest("POST", "/v1/profiles/picture/"+"1", body, context)
@@ -154,41 +158,117 @@ func getPathNameTest(t *testing.T) string {
 	return strings.TrimSuffix(path, "/api/src/routes/profile")
 }
 
-func isEmpty(name string) (bool, error) {
-	f, err := os.Open(name)
-	if err != nil {
-		return false, err
-	}
-	defer f.Close()
-	_, err = f.Readdirnames(1)
-	if err == io.EOF {
-		return true, nil
-	}
-	return false, err // Either not empty or error, suits both cases
-}
+// func TestPictureUploadNoOldPicture(t *testing.T) {
+// 	tests.DbClean()
+// 	path := getPathNameTest(t)
+// 	testDirectory := "test_SjzjhD5dbEmjhB6GEhZui7es3oWbi9_wyL5Zo7kDbs7"
+// 	userData := tests.InsertUser(lib.User{Username: testDirectory, PictureURL_1: "", PictureURL_2: "thisIsTheUrl2"}, tests.DB)
+// 	context := tests.ContextData{
+// 		DB:       tests.DB,
+// 		Username: testDirectory,
+// 		UserID:   userData.ID,
+// 	}
+// 	body := []byte(`{"picture_base64": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADdcAAA3XAUIom3gAAAAHdElNRQfiAwcPEjOBVwS4AAAA70lEQVQoz13RQUoCYRjG8Z+mgxpCQTnSwgu4a9mqaBHkppauPIoH6BJ2gg7hDVq5KwoGFYIiUpiSafHN5OT/3b38eR6+96OgYirLZ6qyXRfE5kZe0HOvaxHWNVduQQvX3nGAOyvwsKfvwlAiM5NpaGCm6shQ4hGOZfp2OZVpU8WbjVhk7MSNGz1jkdjaZ2HPDUUyZyYmzmUiI8+EBBZiqY0maNpIdcI7grAUY62VC2vElrvCKhcaVuiUhUUuFBVB+FfRLSUEIa+olRISPz7wLdkmBAbSnTNVpC63CUt1A18lYV89VAQOvf59dTFP2vALI8pQKcosrXkAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTgtMDMtMDdUMTU6MTg6NTErMDE6MDCZx6j3AAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE4LTAzLTA3VDE1OjE4OjUxKzAxOjAw6JoQSwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAAASUVORK5CYII="}`)
+// 	r := tests.CreateRequest("POST", "/v1/profiles/picture/"+"1", body, context)
+// 	r.Header.Add("Content-Type", "application/json")
+// 	w := httptest.NewRecorder()
+// 	output := tests.CaptureOutput(func() {
+// 		testApplicantServer().ServeHTTP(w, r)
+// 	})
+// 	// Check : Content stardard output
+// 	if strings.Contains(output, "[OS] Failed to remove old picture - "+testDirectory) {
+// 		t.Error("Must not try to delete old picture file")
+// 	}
+// 	// Check : File created
+// 	empty, err := tests.IsEmpty(path + "/storage/tests/" + testDirectory)
+// 	if err != nil {
+// 		t.Error(err)
+// 	}
+// 	if empty {
+// 		t.Error("Directory must not be empty, the file hasn't been created")
+// 	}
+// 	os.RemoveAll(path + "/storage/tests")
+// 	// Check : HTTP Response
+// 	var response map[string]interface{}
+// 	if err := tests.ChargeResponse(w, &response); err != nil {
+// 		t.Error("\x1b[1;31m" + err.Error() + "\033[0m\n")
+// 	}
+// 	expectedCode := 200
+// 	if w.Result().StatusCode != expectedCode {
+// 		t.Errorf("Must return an error with http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m.\n", expectedCode, w.Result().StatusCode)
+// 		t.Errorf("%+v\n", response)
+// 	}
+// 	// Check : Picture url updated in database
+// 	var user lib.User
+// 	err = tests.DB.Get(&user, "SELECT * FROM Users WHERE username = $1", testDirectory)
+// 	if err != nil {
+// 		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
+// 		return
+// 	}
+// 	if user.PictureURL_1 != response["picture_url"] {
+// 		t.Error("The new picture url path hasn't been inserted in the database")
+// 	}
+// }
 
 func TestPictureUpload(t *testing.T) {
 	tests.DbClean()
+	path := getPathNameTest(t)
+	testDirectory := "test_SjzjhD5dbEmjhB6GEhZui7es3oWbi9_wyL5Zo7kDbs7"
+	oldPicturePath := path + "/storage/tests/" + "thisIsTheUrl"
+	userData := tests.InsertUser(lib.User{Username: testDirectory, PictureURL_1: oldPicturePath, PictureURL_2: "thisIsTheUrl2"}, tests.DB)
 	context := tests.ContextData{
 		DB:       tests.DB,
-		Username: "test",
+		Username: testDirectory,
+		UserID:   userData.ID,
 	}
+	f, err := os.Create(oldPicturePath)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	defer f.Close()
 	body := []byte(`{"picture_base64": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADdcAAA3XAUIom3gAAAAHdElNRQfiAwcPEjOBVwS4AAAA70lEQVQoz13RQUoCYRjG8Z+mgxpCQTnSwgu4a9mqaBHkppauPIoH6BJ2gg7hDVq5KwoGFYIiUpiSafHN5OT/3b38eR6+96OgYirLZ6qyXRfE5kZe0HOvaxHWNVduQQvX3nGAOyvwsKfvwlAiM5NpaGCm6shQ4hGOZfp2OZVpU8WbjVhk7MSNGz1jkdjaZ2HPDUUyZyYmzmUiI8+EBBZiqY0maNpIdcI7grAUY62VC2vElrvCKhcaVuiUhUUuFBVB+FfRLSUEIa+olRISPz7wLdkmBAbSnTNVpC63CUt1A18lYV89VAQOvf59dTFP2vALI8pQKcosrXkAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTgtMDMtMDdUMTU6MTg6NTErMDE6MDCZx6j3AAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE4LTAzLTA3VDE1OjE4OjUxKzAxOjAw6JoQSwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAAASUVORK5CYII="}`)
 	r := tests.CreateRequest("POST", "/v1/profiles/picture/"+"1", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
-	testApplicantServer().ServeHTTP(w, r)
-	path := getPathNameTest(t)
-	empty, err := isEmpty(path + "/storage/tests/test")
+	output := tests.CaptureOutput(func() {
+		testApplicantServer().ServeHTTP(w, r)
+	})
+	// Check : Content stardard output
+	if strings.Contains(output, "[OS] Failed to remove old picture - "+testDirectory) {
+		t.Error("Failed to delete old picture")
+	}
+	// Check : File created
+	empty, err := tests.IsEmpty(path + "/storage/tests/" + testDirectory)
 	if err != nil {
 		t.Error(err)
 	}
 	if empty {
 		t.Error("Directory must not be empty, the file hasn't been created")
 	}
+	// Check : Old file deleted
+	if _, err := os.Stat(oldPicturePath); err == nil {
+		t.Error("Old picture must not exists, the file hasn't been deleted")
+	}
 	os.RemoveAll(path + "/storage/tests")
-	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{})
-	if strError != nil {
-		t.Errorf("%v", strError)
+	// Check : HTTP Response
+	var response map[string]interface{}
+	if err := tests.ChargeResponse(w, &response); err != nil {
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m\n")
+	}
+	expectedCode := 200
+	if w.Result().StatusCode != expectedCode {
+		t.Errorf("Must return an error with http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m.\n", expectedCode, w.Result().StatusCode)
+		t.Errorf("%+v\n", response)
+	}
+	// Check : Picture url updated in database
+	var user lib.User
+	err = tests.DB.Get(&user, "SELECT * FROM Users WHERE username = $1", testDirectory)
+	if err != nil {
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
+		return
+	}
+	if user.PictureURL_1 != response["picture_url"] {
+		t.Error("The new picture url path hasn't been inserted in the database")
 	}
 }
