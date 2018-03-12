@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/base64"
 	"errors"
-	"fmt"
 	"image/jpeg"
 	"image/png"
 	"io"
@@ -120,7 +119,7 @@ func updatePicturePathInDB(db *sqlx.DB, pictureNumber, picturePath, userId, user
 	row := db.QueryRow(`
 		UPDATE users x
 		SET picture_url_`+pictureNumber+` = $1
-		FROM  (SELECT id, picture_url_1 FROM users WHERE id = $2 AND username = $3 FOR UPDATE) y
+		FROM  (SELECT id, picture_url_`+pictureNumber+` FROM users WHERE id = $2 AND username = $3 FOR UPDATE) y
 		WHERE  x.id = y.id
 		RETURNING y.picture_url_`+pictureNumber,
 		picturePath, userId, username)
@@ -161,8 +160,20 @@ func uploadPicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureN
 	})
 }
 
-func deletePicture(w http.ResponseWriter, r *http.Request, pictureNumber string, db *sqlx.DB) {
-	fmt.Println(pictureNumber, " DELETE")
+func deletePicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureNumber, username, userId string) {
+	if pictureNumber == "1" {
+		lib.RespondWithErrorHTTP(w, http.StatusForbidden, "Not possible to delete the 1st picture - Only upload a new one is possible")
+		return
+	}
+	oldPicturePath, errCode, errContent, err := updatePicturePathInDB(db, pictureNumber, "", userId, username)
+	if err != nil {
+		lib.RespondWithErrorHTTP(w, errCode, errContent)
+		return
+	}
+	err = os.Remove(oldPicturePath)
+	if err != nil {
+		log.Println(lib.PrettyError("[OS] Failed to remove old picture - " + username + " - " + err.Error()))
+	}
 	lib.RespondEmptyHTTP(w, http.StatusOK)
 }
 
@@ -198,7 +209,7 @@ func Picture(w http.ResponseWriter, r *http.Request) {
 		uploadPicture(w, r, db, pictureNumber, username, userId)
 		return
 	case "DELETE":
-		deletePicture(w, r, pictureNumber, db)
+		deletePicture(w, r, db, pictureNumber, username, userId)
 		return
 	}
 }

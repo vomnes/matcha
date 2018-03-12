@@ -14,10 +14,15 @@ CREATE TABLE Users (
   firstname VARCHAR (65)     NOT NULL,
   password VARCHAR (65)     NOT NULL,
   created_at timestamp with time zone DEFAULT current_timestamp,
-  random_token VARCHAR (254) DEFAULT ''
+  random_token VARCHAR (254) DEFAULT '',
+  picture_url_1 VARCHAR (255) DEFAULT '',
+  picture_url_2 VARCHAR (255) DEFAULT '',
+  picture_url_3 VARCHAR (255) DEFAULT '',
+  picture_url_4 VARCHAR (255) DEFAULT '',
+  picture_url_5 VARCHAR (255) DEFAULT ''
 );
 
--- INSERT INTO Users (username, email, lastname, firstname, password) VALUES ('vomnes', 'valentin.omnes@gmail.com', 'Omnes', 'Valentin', 'abc');
+INSERT INTO Users (username, email, lastname, firstname, password) VALUES ('vomnes', 'valentin.omnes@gmail.com', 'Omnes', 'Valentin', 'abc');
 
 \echo '----- Initialize db_matcha_tests -----'
 
@@ -36,5 +41,10 @@ CREATE TABLE Users (
   firstname VARCHAR (65)     NOT NULL,
   password VARCHAR (65)     NOT NULL,
   created_at timestamp with time zone DEFAULT current_timestamp,
-  random_token VARCHAR (254) DEFAULT ''
+  random_token VARCHAR (254) DEFAULT '',
+  picture_url_1 VARCHAR (255) DEFAULT '',
+  picture_url_2 VARCHAR (255) DEFAULT '',
+  picture_url_3 VARCHAR (255) DEFAULT '',
+  picture_url_4 VARCHAR (255) DEFAULT '',
+  picture_url_5 VARCHAR (255) DEFAULT ''
 );
