@@ -47,7 +47,7 @@ func StringInArray(a string, list []string) bool {
 	return false
 }
 
-func strsub(input string, start int, end int) string {
+func Strsub(input string, start int, end int) string {
 	var output string
 	for i := start; i < start+end; i++ {
 		output += string(input[i])

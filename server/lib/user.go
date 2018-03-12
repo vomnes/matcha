@@ -2,6 +2,8 @@ package lib
 
 import (
 	"regexp"
+	"strconv"
+	"strings"
 	"unicode"
 )
 
@@ -113,9 +115,49 @@ func IsOnlyLowercaseLetters(s string, lengthMax int) bool {
 	return true
 }
 
-func IsValidDate(s string) bool {
-	// if !regexp.MustCompile(`^(?:(?:31(\/)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/)(?:0?[1,3-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$`).MatchString(s) {
-	// 	return false
-	// }
-	return true
+// IsValidDate check if the string parameter is a valid date dd/mm/yyyy
+// Return a boolean and status error
+func IsValidDate(s string) (bool, error) {
+	if len(s) > len("mm/dd/yyyy") {
+		return false, nil
+	}
+	if !regexp.MustCompile(`^[0-9\/]+$`).MatchString(s) {
+		return false, nil
+	}
+	if strings.Count(s, "/") != 2 {
+		return false, nil
+	}
+	var day, month, year string
+	idx := strings.Index(s, "/")
+	if idx != -1 {
+		day = s[:idx]
+	}
+	lastIdx := strings.LastIndex(s, "/")
+	if lastIdx != -1 {
+		year = s[lastIdx+1:]
+	}
+	month = Strsub(s, idx+1, 2)
+	var monthLimit = []int{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
+	monthInt, err := strconv.Atoi(month)
+	if err != nil {
+		return false, err
+	}
+	if monthInt < 1 || monthInt > 12 {
+		return false, nil
+	}
+	dayInt, err := strconv.Atoi(day)
+	if err != nil {
+		return false, err
+	}
+	if dayInt < 1 || dayInt > monthLimit[monthInt-1] {
+		return false, nil
+	}
+	yearInt, err := strconv.Atoi(year)
+	if err != nil {
+		return false, err
+	}
+	if yearInt <= 999 || yearInt > 9999 {
+		return false, nil
+	}
+	return true, nil
 }

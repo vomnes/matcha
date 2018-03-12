@@ -42,7 +42,8 @@ func getBasics(r *http.Request) (*sqlx.DB, string, string, int, string, bool) {
 
 func checkDataInput(d userData) (int, string) {
 	if d.Firstname == "" && d.Lastname == "" && d.EmailAddress == "" &&
-		d.Biography == "" && d.Genre == "" && d.InterestingIn == "" {
+		d.Biography == "" && d.Genre == "" && d.InterestingIn == "" &&
+		d.Birthday == "" {
 		return 400, "Nothing to update"
 	}
 	var right bool
@@ -86,6 +87,16 @@ func checkDataInput(d userData) (int, string) {
 		d.InterestingIn = strings.ToLower(d.InterestingIn)
 		if d.InterestingIn != "male" && d.InterestingIn != "female" && d.InterestingIn != "bisexual" {
 			return 406, "Not a supported 'interesting in'. Only male, female or bisexual"
+		}
+	}
+	if d.Birthday != "" {
+		d.Birthday = html.EscapeString(d.Birthday)
+		right, err := lib.IsValidDate(d.Birthday)
+		if err != nil {
+			return 500, "Failed to analyse birthday date validity"
+		}
+		if right == false {
+			return 406, "Not a valid birthday date"
 		}
 	}
 	return 0, ""

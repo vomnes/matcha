@@ -174,11 +174,22 @@ var dateTests = []struct {
 	testContent string // test details
 }{
 	{"06/03/1995", true, "Valid"},
+	{"6/03/1995", true, "Valid - Day"},
+	{"12/12/1995", true, "Invalid day"},
+	{"06/13/1995333", false, "Invalid length"},
+	{"06.12.1995", false, "Invalid characters '.'"},
+	{"06-12-1995", false, "Invalid characters '-'"},
+	{"06/03/199a", false, "Invalid characters 'a'"},
+	{"06/1995", false, "Invalid number of '/'"},
+	{"06/13/1995", false, "Invalid month"},
+	{"29/02/2017", false, "Limited to 28 days in February"},
+	{"31/04/2017", false, "Limited to 30 days in April"},
+	{"30/04/2017", true, "Limited to 30 days in April"},
 }
 
 func TestIsValidDate(t *testing.T) {
 	for _, tt := range dateTests {
-		actual := IsValidDate(tt.str)
+		actual, _ := IsValidDate(tt.str)
 		if actual != tt.expected {
 			t.Errorf("IsValidDate(%s): expected %t, actual %t - Test type: \033[31m%s\033[0m", tt.str, tt.expected, actual, tt.testContent)
 		}
