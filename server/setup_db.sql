@@ -19,7 +19,11 @@ CREATE TABLE Users (
   picture_url_2 VARCHAR (255) DEFAULT '',
   picture_url_3 VARCHAR (255) DEFAULT '',
   picture_url_4 VARCHAR (255) DEFAULT '',
-  picture_url_5 VARCHAR (255) DEFAULT ''
+  picture_url_5 VARCHAR (255) DEFAULT '',
+  biography VARCHAR (255) DEFAULT '',
+  birthday timestamp DEFAULT NULL,
+  genre VARCHAR (64) DEFAULT 'male',
+  interesting_in  VARCHAR (255) DEFAULT 'bisexual'
 );
 
 INSERT INTO Users (username, email, lastname, firstname, password) VALUES ('vomnes', 'valentin.omnes@gmail.com', 'Omnes', 'Valentin', 'abc');
@@ -46,5 +50,9 @@ CREATE TABLE Users (
   picture_url_2 VARCHAR (255) DEFAULT '',
   picture_url_3 VARCHAR (255) DEFAULT '',
   picture_url_4 VARCHAR (255) DEFAULT '',
-  picture_url_5 VARCHAR (255) DEFAULT ''
+  picture_url_5 VARCHAR (255) DEFAULT '',
+  biography VARCHAR (255) DEFAULT '',
+  birthday timestamp DEFAULT NULL,
+  genre VARCHAR (64) DEFAULT 'male',
+  interesting_in  VARCHAR (255) DEFAULT 'bisexual'
 );

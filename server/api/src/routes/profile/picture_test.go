@@ -61,7 +61,14 @@ func TestPictureUploadFailedToDecodeBody(t *testing.T) {
 	r := tests.CreateRequest("POST", "/v1/profiles/picture/"+"1", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
-	testApplicantServer().ServeHTTP(w, r)
+	output := tests.CaptureOutput(func() {
+		testApplicantServer().ServeHTTP(w, r)
+	})
+	// Check : Content stardard output
+	expectedError := "Failed to decode body invalid character '}' looking for beginning of value"
+	if !strings.Contains(output, expectedError) {
+		t.Errorf("Must write an error on the standard output that contains '%s'\nnot '%s'\n", expectedError, output)
+	}
 	strError := tests.CompareResponseJSONCode(w, 406, map[string]interface{}{
 		"error": "Failed to decode body",
 	})
@@ -81,7 +88,14 @@ func TestPictureUploadFailToGeneratePng(t *testing.T) {
 	r := tests.CreateRequest("POST", "/v1/profiles/picture/"+"1", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
-	testApplicantServer().ServeHTTP(w, r)
+	output := tests.CaptureOutput(func() {
+		testApplicantServer().ServeHTTP(w, r)
+	})
+	// Check : Content stardard output
+	expectedError := "[Base 64] Failed to generate png file"
+	if !strings.Contains(output, expectedError) {
+		t.Errorf("Must write an error on the standard output that contains '%s'\nnot '%s'\n", expectedError, output)
+	}
 	strError := tests.CompareResponseJSONCode(w, 500, map[string]interface{}{
 		"error": "Failed to generate png file",
 	})
@@ -101,7 +115,14 @@ func TestPictureUploadFailToGenerateJpg(t *testing.T) {
 	r := tests.CreateRequest("POST", "/v1/profiles/picture/"+"1", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
-	testApplicantServer().ServeHTTP(w, r)
+	output := tests.CaptureOutput(func() {
+		testApplicantServer().ServeHTTP(w, r)
+	})
+	// Check : Content stardard output
+	expectedError := "[Base 64] Failed to generate jpg file"
+	if !strings.Contains(output, expectedError) {
+		t.Errorf("Must write an error on the standard output that contains '%s'\nNot: %s\n", expectedError, output)
+	}
 	strError := tests.CompareResponseJSONCode(w, 500, map[string]interface{}{
 		"error": "Failed to generate jpg file",
 	})
@@ -121,7 +142,14 @@ func TestPictureUploadFailToGenerateJpeg(t *testing.T) {
 	r := tests.CreateRequest("POST", "/v1/profiles/picture/"+"1", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
-	testApplicantServer().ServeHTTP(w, r)
+	output := tests.CaptureOutput(func() {
+		testApplicantServer().ServeHTTP(w, r)
+	})
+	// Check : Content stardard output
+	expectedError := "[Base 64] Failed to generate jpeg file"
+	if !strings.Contains(output, expectedError) {
+		t.Errorf("Must write an error on the standard output that contains '%s'\nNot: %s\n", expectedError, output)
+	}
 	strError := tests.CompareResponseJSONCode(w, 500, map[string]interface{}{
 		"error": "Failed to generate jpeg file",
 	})
