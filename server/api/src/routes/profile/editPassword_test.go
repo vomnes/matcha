@@ -7,6 +7,7 @@ import (
 
 	"../../../../lib"
 	"../../../../tests"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func TestEditPasswordErrorBody(t *testing.T) {
@@ -268,45 +269,8 @@ func TestEditPassword(t *testing.T) {
 		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
 		return
 	}
-	// Check password -->
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte("abcABC1232019"))
+	if err != nil {
+		t.Error("New password not inserted in the database")
+	}
 }
-
-// func TestEditPassword(t *testing.T) {
-// 	tests.DbClean()
-// 	today := time.Now()
-// 	birthdayTime := time.Date(today.Year(), today.Month(), today.Day(), 0, 0, 0, 0, time.UTC)
-// 	username := "test_" + lib.GetRandomString(43)
-// 	userData := tests.InsertUser(lib.User{Username: username, Email: "valentin.omnes@gmail.com", Lastname: "Omnes", Firstname: "Valentin", Biography: "I&#39;m Valentin Omnes", Birthday: &birthdayTime, Genre: "example_genre", InterestingIn: "example_interesting_in"}, tests.DB)
-// 	context := tests.ContextData{
-// 		DB:       tests.DB,
-// 		Username: username,
-// 		UserID:   userData.ID,
-// 	}
-// 	birthdayString := "05/05/2000"
-// 	body := []byte(`{
-//     "password": "",
-//     "new_password": "",
-//     "new_rePassword": ""
-//     }`)
-// 	r := tests.CreateRequest("POST", "/v1/profiles/edit/password", body, context)
-// 	r.Header.Add("Content-Type", "application/json")
-// 	w := httptest.NewRecorder()
-// 	output := tests.CaptureOutput(func() {
-// 		EditPassword(w, r)
-// 	})
-// 	// Check : Content stardard output
-// 	if output != "" {
-// 		t.Error(output)
-// 	}
-// 	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{})
-// 	if strError != nil {
-// 		t.Errorf("%v", strError)
-// 	}
-// 	// Check : Updated data in database
-// 	var user lib.User
-// 	err := tests.DB.Get(&user, "SELECT id, username, password FROM Users WHERE username = $1", username)
-// 	if err != nil {
-// 		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
-// 		return
-// 	}
-// }

@@ -23,7 +23,10 @@ CREATE TABLE Users (
   biography VARCHAR (255) DEFAULT '',
   birthday timestamp DEFAULT NULL,
   genre VARCHAR (64) DEFAULT 'male',
-  interesting_in  VARCHAR (255) DEFAULT 'bisexual'
+  interesting_in  VARCHAR (255) DEFAULT 'bisexual',
+  latitude DECIMAL(9,6) DEFAULT NULL,
+  longitude DECIMAL(9,6) DEFAULT NULL,
+  geolocalisation_allowed BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 INSERT INTO Users (username, email, lastname, firstname, password) VALUES ('vomnes', 'valentin.omnes@gmail.com', 'Omnes', 'Valentin', 'abc');
@@ -54,5 +57,8 @@ CREATE TABLE Users (
   biography VARCHAR (255) DEFAULT '',
   birthday timestamp DEFAULT NULL,
   genre VARCHAR (64) DEFAULT 'male',
-  interesting_in  VARCHAR (255) DEFAULT 'bisexual'
+  interesting_in  VARCHAR (255) DEFAULT 'bisexual',
+  latitude DECIMAL(9,6) DEFAULT NULL,
+  longitude DECIMAL(9,6) DEFAULT NULL,
+  geolocalisation_allowed BOOLEAN NOT NULL DEFAULT FALSE
 );
