@@ -1,8 +1,8 @@
 package profile
 
 import (
-	"fmt"
 	"html"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -19,6 +19,7 @@ type userData struct {
 	Birthday      string `json:"birthday"`
 	Genre         string `json:"genre"`
 	InterestingIn string `json:"interesting_in"`
+	BirthdayTime  *time.Time
 }
 
 func getBasics(r *http.Request) (*sqlx.DB, string, string, int, string, bool) {
@@ -40,7 +41,7 @@ func getBasics(r *http.Request) (*sqlx.DB, string, string, int, string, bool) {
 	return db, username, userId, 0, "", true
 }
 
-func checkDataInput(d userData) (int, string) {
+func checkDataInput(d *userData) (int, string) {
 	if d.Firstname == "" && d.Lastname == "" && d.EmailAddress == "" &&
 		d.Biography == "" && d.Genre == "" && d.InterestingIn == "" &&
 		d.Birthday == "" {
@@ -98,15 +99,38 @@ func checkDataInput(d userData) (int, string) {
 		if right == false {
 			return 406, "Not a valid birthday date"
 		}
+		dateTime, err := dateStringToTime(d.Birthday)
+		if err != nil {
+			log.Println(lib.PrettyError("[Time] Failed to convert date string[" + d.Birthday + "] in date time.Time" + err.Error()))
+			return 500, "Failed to decode birthday date"
+		}
+		d.BirthdayTime = &dateTime
 	}
 	return 0, ""
 }
 
-func DateStringToTime() {
-	value := "06/03/1995"
-	// Writing down the way the standard time would look like formatted our way
-	t, _ := time.Parse("21/01/2006", value)
-	fmt.Println(t)
+func dateStringToTime(date string) (time.Time, error) {
+	return time.Parse("02/01/2006", date)
+}
+
+func updateDataInDB(db *sqlx.DB, data userData, userId, username string) (int, string, error) {
+	updateProfileData := `UPDATE users SET
+	lastname = COALESCE(NULLIF($1, ''), lastname),
+	firstname = COALESCE(NULLIF($2, ''), firstname),
+	email = COALESCE(NULLIF($3, ''), email),
+	biography = COALESCE(NULLIF($4, ''), biography),
+	birthday = COALESCE($5, birthday),
+	genre = COALESCE(NULLIF($6,''), genre),
+	interesting_in = COALESCE(NULLIF($7,''), interesting_in)
+	WHERE  users.id = $8 AND users.username = $9`
+	_, err := db.Queryx(updateProfileData, data.Lastname, data.Firstname,
+		data.EmailAddress, data.Biography, data.BirthdayTime, data.Genre,
+		data.InterestingIn, userId, username)
+	if err != nil {
+		log.Println(lib.PrettyError("[DB REQUEST - Update] Failed to update User[" + userId + "] Profile Data " + err.Error()))
+		return 500, "Failed to update data in database", err
+	}
+	return 0, "", nil
 }
 
 func EditData(w http.ResponseWriter, r *http.Request) {
@@ -115,15 +139,19 @@ func EditData(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	fmt.Println(db, username, userId)
 	var inputData userData
 	errCode, errContent, err := lib.GetDataBody(r, &inputData)
 	if err != nil {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	errCode, errContent = checkDataInput(inputData)
+	errCode, errContent = checkDataInput(&inputData)
 	if errCode != 0 && errContent != "" {
+		lib.RespondWithErrorHTTP(w, errCode, errContent)
+		return
+	}
+	errCode, errContent, err = updateDataInDB(db, inputData, userId, username)
+	if err != nil {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}

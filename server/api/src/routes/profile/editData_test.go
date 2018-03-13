@@ -4,9 +4,11 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"../../../../lib"
 	"../../../../tests"
+	"github.com/kylelemons/godebug/pretty"
 )
 
 func TestEditDataNoFound(t *testing.T) {
@@ -243,33 +245,223 @@ func TestEditDataInputInvalidBirthdayDate(t *testing.T) {
 
 func TestEditData(t *testing.T) {
 	tests.DbClean()
-	userData := tests.InsertUser(lib.User{}, tests.DB)
+	username := "test_" + lib.GetRandomString(43)
+	userData := tests.InsertUser(lib.User{Username: username}, tests.DB)
 	context := tests.ContextData{
 		DB:       tests.DB,
-		Username: "test",
+		Username: username,
 		UserID:   userData.ID,
 	}
+	birthdayString := "06/03/1995"
 	body := []byte(`{
     "firstname": "Valentin",
 		"lastname": "Omnes",
     "email": "valentin.omnes@gmail.com",
     "biography": "I'm Valentin Omnes",
-    "birthday": "06/03/1995",
+    "birthday": "` + birthdayString + `",
     "genre": "male",
     "interesting_in": "female"
     }`)
 	r := tests.CreateRequest("POST", "/v1/profiles/edit/data", body, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
-	_ = tests.CaptureOutput(func() {
+	output := tests.CaptureOutput(func() {
 		EditData(w, r)
 	})
 	// Check : Content stardard output
-	// if !strings.Contains(output, "Failed to decode body") {
-	// 	t.Error(output)
-	// }
+	if output != "" {
+		t.Error(output)
+	}
 	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{})
 	if strError != nil {
 		t.Errorf("%v", strError)
+	}
+	// Check : Updated data in database
+	var user lib.User
+	err := tests.DB.Get(&user, "SELECT id, username, lastname, firstname, email, biography, birthday, genre, interesting_in FROM Users WHERE username = $1", username)
+	if err != nil {
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
+		return
+	}
+	tmpDate := user.Birthday.UTC()
+	user.Birthday = &tmpDate
+	birthdayDate, _ := time.Parse("02/01/2006", birthdayString)
+	expectedDatabase := lib.User{
+		ID:            "1",
+		Username:      username,
+		Email:         "valentin.omnes@gmail.com",
+		Lastname:      "Omnes",
+		Firstname:     "Valentin",
+		Biography:     "I&#39;m Valentin Omnes",
+		Birthday:      &birthdayDate,
+		Genre:         "male",
+		InterestingIn: "female",
+	}
+	if compare := pretty.Compare(&expectedDatabase, user); compare != "" {
+		t.Error(compare)
+	}
+}
+
+func TestEditDataEmptyFields(t *testing.T) {
+	tests.DbClean()
+	today := time.Now()
+	birthdayTime := time.Date(today.Year(), today.Month(), today.Day(), 0, 0, 0, 0, time.UTC)
+	username := "test_" + lib.GetRandomString(43)
+	userData := tests.InsertUser(lib.User{Username: username, Birthday: &birthdayTime, Genre: "example_genre", InterestingIn: "example_interesting_in"}, tests.DB)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: username,
+		UserID:   userData.ID,
+	}
+	body := []byte(`{
+    "firstname": "Valentin",
+		"lastname": "Omnes",
+    "email": "valentin.omnes@gmail.com",
+    "biography": "I'm Valentin Omnes"
+    }`)
+	r := tests.CreateRequest("POST", "/v1/profiles/edit/data", body, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		EditData(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{})
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+	// Check : Updated data in database
+	var user lib.User
+	err := tests.DB.Get(&user, "SELECT id, username, lastname, firstname, email, biography, birthday, genre, interesting_in FROM Users WHERE username = $1", username)
+	if err != nil {
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
+		return
+	}
+	tmpDate := user.Birthday.UTC()
+	user.Birthday = &tmpDate
+	expectedDatabase := lib.User{
+		ID:            "1",
+		Username:      username,
+		Email:         "valentin.omnes@gmail.com",
+		Lastname:      "Omnes",
+		Firstname:     "Valentin",
+		Biography:     "I&#39;m Valentin Omnes",
+		Birthday:      &birthdayTime,
+		Genre:         "example_genre",
+		InterestingIn: "example_interesting_in",
+	}
+	if compare := pretty.Compare(&expectedDatabase, user); compare != "" {
+		t.Error(compare)
+	}
+}
+
+func TestEditDataUpdateBio(t *testing.T) {
+	tests.DbClean()
+	today := time.Now()
+	birthdayTime := time.Date(today.Year(), today.Month(), today.Day(), 0, 0, 0, 0, time.UTC)
+	username := "test_" + lib.GetRandomString(43)
+	userData := tests.InsertUser(lib.User{Username: username, Email: "valentin.omnes@gmail.com", Lastname: "Omnes", Firstname: "Valentin", Biography: "I&#39;m Valentin Omnes", Birthday: &birthdayTime, Genre: "example_genre", InterestingIn: "example_interesting_in"}, tests.DB)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: username,
+		UserID:   userData.ID,
+	}
+	body := []byte(`{
+    "biography": "I'm vomnes"
+    }`)
+	r := tests.CreateRequest("POST", "/v1/profiles/edit/data", body, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		EditData(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{})
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+	// Check : Updated data in database
+	var user lib.User
+	err := tests.DB.Get(&user, "SELECT id, username, lastname, firstname, email, biography, birthday, genre, interesting_in FROM Users WHERE username = $1", username)
+	if err != nil {
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
+		return
+	}
+	tmpDate := user.Birthday.UTC()
+	user.Birthday = &tmpDate
+	expectedDatabase := lib.User{
+		ID:            "1",
+		Username:      username,
+		Email:         "valentin.omnes@gmail.com",
+		Lastname:      "Omnes",
+		Firstname:     "Valentin",
+		Biography:     "I&#39;m vomnes",
+		Birthday:      &birthdayTime,
+		Genre:         "example_genre",
+		InterestingIn: "example_interesting_in",
+	}
+	if compare := pretty.Compare(&expectedDatabase, user); compare != "" {
+		t.Error(compare)
+	}
+}
+
+func TestEditDataUpdateBirthdayDate(t *testing.T) {
+	tests.DbClean()
+	today := time.Now()
+	birthdayTime := time.Date(today.Year(), today.Month(), today.Day(), 0, 0, 0, 0, time.UTC)
+	username := "test_" + lib.GetRandomString(43)
+	userData := tests.InsertUser(lib.User{Username: username, Email: "valentin.omnes@gmail.com", Lastname: "Omnes", Firstname: "Valentin", Biography: "I&#39;m Valentin Omnes", Birthday: &birthdayTime, Genre: "example_genre", InterestingIn: "example_interesting_in"}, tests.DB)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: username,
+		UserID:   userData.ID,
+	}
+	birthdayString := "05/05/2000"
+	body := []byte(`{
+    "birthday": "` + birthdayString + `"
+    }`)
+	r := tests.CreateRequest("POST", "/v1/profiles/edit/data", body, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		EditData(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{})
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+	// Check : Updated data in database
+	var user lib.User
+	err := tests.DB.Get(&user, "SELECT id, username, lastname, firstname, email, biography, birthday, genre, interesting_in FROM Users WHERE username = $1", username)
+	if err != nil {
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
+		return
+	}
+	tmpDate := user.Birthday.UTC()
+	user.Birthday = &tmpDate
+	birthdayDate, _ := time.Parse("02/01/2006", birthdayString)
+	expectedDatabase := lib.User{
+		ID:            "1",
+		Username:      username,
+		Email:         "valentin.omnes@gmail.com",
+		Lastname:      "Omnes",
+		Firstname:     "Valentin",
+		Biography:     "I&#39;m Valentin Omnes",
+		Birthday:      &birthdayDate,
+		Genre:         "example_genre",
+		InterestingIn: "example_interesting_in",
+	}
+	if compare := pretty.Compare(&expectedDatabase, user); compare != "" {
+		t.Error(compare)
 	}
 }
