@@ -29,7 +29,7 @@ CREATE TABLE Users (
   geolocalisation_allowed BOOLEAN NOT NULL DEFAULT FALSE
 );
 
-INSERT INTO Users (username, email, lastname, firstname, password) VALUES ('vomnes', 'valentin.omnes@gmail.com', 'Omnes', 'Valentin', 'abc');
+INSERT INTO Users (username, email, lastname, firstname, password) VALUES ('vomnes', 'valentin.omnes@gmail.com', 'Omnes', 'Valentin', '$2a$10$pgek6WtdhtKmGXPWOOtEf.gsgtNXOkqr3pBjaCCa9il6XhRS7LAua');
 
 \echo '----- Initialize db_matcha_tests -----'
 

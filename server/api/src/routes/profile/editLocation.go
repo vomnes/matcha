@@ -2,7 +2,6 @@ package profile
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -33,6 +32,12 @@ func checkLocationInput(d locationData) (float64, float64, int, string, error) {
 			return 0, 0, 406, "Invalid longitude in the body", err2
 		}
 	}
+	if latitude < -90.0 || latitude > 90.0 {
+		return 0, 0, 406, "Latitude value is over the limit", errors.New("Latitude overflow")
+	}
+	if longitude < -180.0 || longitude > 180.0 {
+		return 0, 0, 406, "Longitude value is over the limit", errors.New("Longitude overflow")
+	}
 	return latitude, longitude, 0, "", nil
 }
 
@@ -44,7 +49,7 @@ func updateLocationInDB(db *sqlx.DB, latitude, longitude float64, userId, userna
   	WHERE  users.id = $3 AND users.username = $4`
 	_, err := db.Queryx(updateLocation, latitude, longitude, userId, username)
 	if err != nil {
-		log.Println(lib.PrettyError("[DB REQUEST - Update] Failed to update User[" + userId + "] Profile Data " + err.Error()))
+		log.Println(lib.PrettyError("[DB REQUEST - Update] Failed to update User[" + userId + "] Location Data " + err.Error()))
 		return 500, "Failed to update data in database", err
 	}
 	return 0, "", nil
@@ -67,5 +72,9 @@ func EditLocation(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	fmt.Println(db, username, userId, latitude, longitude)
+	errCode, errContent, err = updateLocationInDB(db, latitude, longitude, userId, username)
+	if err != nil {
+		lib.RespondWithErrorHTTP(w, errCode, errContent)
+		return
+	}
 }
