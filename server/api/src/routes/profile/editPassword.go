@@ -33,9 +33,9 @@ func checkInputBody(inputData userPassword) (int, string) {
 	return 0, ""
 }
 
-func checkCurrentUserPassword(r *http.Request, db *sqlx.DB, password, userId, username string) (int, string) {
+func checkCurrentUserPassword(r *http.Request, db *sqlx.DB, password, userID, username string) (int, string) {
 	var user lib.User
-	err := db.Get(&user, "SELECT * FROM Users WHERE id = $1 AND username = $2", userId, username)
+	err := db.Get(&user, "SELECT * FROM Users WHERE id = $1 AND username = $2", userID, username)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return 400, "User does not exists in the database"
@@ -50,7 +50,7 @@ func checkCurrentUserPassword(r *http.Request, db *sqlx.DB, password, userId, us
 	return 0, ""
 }
 
-func updateUserPassword(r *http.Request, db *sqlx.DB, password, userId, username string) (int, string) {
+func updateUserPassword(r *http.Request, db *sqlx.DB, password, userID, username string) (int, string) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		log.Println(lib.PrettyError(r.URL.String() + " [PW - BCRYPT] " + err.Error()))
@@ -61,12 +61,13 @@ func updateUserPassword(r *http.Request, db *sqlx.DB, password, userId, username
 		log.Fatal(lib.PrettyError(r.URL.String() + "[DB REQUEST - INSERT] Failed to prepare request update user" + err.Error()))
 		return 500, "Prepare SQL request failed"
 	}
-	_ = stmt.QueryRow(hashedPassword, userId, username)
+	_ = stmt.QueryRow(hashedPassword, userID, username)
 	return 0, ""
 }
 
+// EditPassword is
 func EditPassword(w http.ResponseWriter, r *http.Request) {
-	db, username, userId, errCode, errContent, ok := getBasics(r)
+	db, username, userID, errCode, errContent, ok := getBasics(r, []string{"POST"})
 	if !ok {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
@@ -82,12 +83,12 @@ func EditPassword(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	errCode, errContent = checkCurrentUserPassword(r, db, inputData.CurrentPassword, userId, username)
+	errCode, errContent = checkCurrentUserPassword(r, db, inputData.CurrentPassword, userID, username)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	errCode, errContent = updateUserPassword(r, db, inputData.NewPassword, userId, username)
+	errCode, errContent = updateUserPassword(r, db, inputData.NewPassword, userID, username)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return

@@ -217,8 +217,8 @@ func TestPictureUploadNoOldPicture(t *testing.T) {
 	}
 	// Check : HTTP Response
 	var response map[string]interface{}
-	if err := tests.ChargeResponse(w, &response); err != nil {
-		t.Error("\x1b[1;31m" + err.Error() + "\033[0m\n")
+	if thisErr := tests.ChargeResponse(w, &response); thisErr != nil {
+		t.Error("\x1b[1;31m" + thisErr.Error() + "\033[0m\n")
 	}
 	expectedCode := 200
 	if w.Result().StatusCode != expectedCode {
@@ -271,8 +271,8 @@ func TestPictureUploadFailedToDeleteOldFile(t *testing.T) {
 	}
 	// Check : HTTP Response
 	var response map[string]interface{}
-	if err := tests.ChargeResponse(w, &response); err != nil {
-		t.Error("\x1b[1;31m" + err.Error() + "\033[0m\n")
+	if thisErr := tests.ChargeResponse(w, &response); thisErr != nil {
+		t.Error("\x1b[1;31m" + thisErr.Error() + "\033[0m\n")
 	}
 	expectedCode := 200
 	if w.Result().StatusCode != expectedCode {
@@ -330,7 +330,7 @@ func TestPictureUpload(t *testing.T) {
 		t.Error("Directory must not be empty, the file hasn't been created")
 	}
 	// Check : Old file deleted
-	if _, err := os.Stat(oldPicturePath); err == nil {
+	if _, thisErr := os.Stat(oldPicturePath); thisErr == nil {
 		t.Error("Old picture must not exists, the file hasn't been deleted")
 	}
 	// Check : HTTP Response
@@ -387,7 +387,7 @@ func TestPictureDelete(t *testing.T) {
 		t.Errorf("Failed to delete old picture\n%s", output)
 	}
 	// Check : Old file deleted
-	if _, err := os.Stat(oldPicturePath); err == nil {
+	if _, thisErr := os.Stat(oldPicturePath); thisErr == nil {
 		t.Error("Old picture must not exists, the file hasn't been deleted")
 	}
 	// Check : HTTP Response
@@ -487,7 +487,7 @@ func TestPictureDelete1stPicture(t *testing.T) {
 		t.Errorf("%v", strError)
 	}
 	// Check : Old file still exists
-	if _, err := os.Stat(oldPicturePath); os.IsNotExist(err) {
+	if _, thisErr := os.Stat(oldPicturePath); os.IsNotExist(thisErr) {
 		t.Error("Old picture file must not has been deleted")
 	}
 	// Check : Picture url updated in database

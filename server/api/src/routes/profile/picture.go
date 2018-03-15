@@ -115,24 +115,24 @@ func base64ToImageFile(base64 string, pictureNumber, username string) (string, i
 	return imagePath, 0, "", nil
 }
 
-func updatePicturePathInDB(db *sqlx.DB, pictureNumber, picturePath, userId, username string) (string, int, string, error) {
+func updatePicturePathInDB(db *sqlx.DB, pictureNumber, picturePath, userID, username string) (string, int, string, error) {
 	row := db.QueryRow(`
 		UPDATE users x
 		SET picture_url_`+pictureNumber+` = $1
 		FROM  (SELECT id, picture_url_`+pictureNumber+` FROM users WHERE id = $2 AND username = $3 FOR UPDATE) y
 		WHERE  x.id = y.id
 		RETURNING y.picture_url_`+pictureNumber,
-		picturePath, userId, username)
-	var oldUrl string
-	err := row.Scan(&oldUrl)
+		picturePath, userID, username)
+	var oldURL string
+	err := row.Scan(&oldURL)
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to update picture url in database - " + err.Error()))
 		return "", 500, "Failed to update picture url in database", err
 	}
-	return oldUrl, 0, "", nil
+	return oldURL, 0, "", nil
 }
 
-func uploadPicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureNumber, username, userId string) {
+func uploadPicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureNumber, username, userID string) {
 	var inputData pictureData
 	errCode, errContent, err := lib.GetDataBody(r, &inputData)
 	if err != nil {
@@ -144,7 +144,7 @@ func uploadPicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureN
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	oldPicturePath, errCode, errContent, err := updatePicturePathInDB(db, pictureNumber, picturePath, userId, username)
+	oldPicturePath, errCode, errContent, err := updatePicturePathInDB(db, pictureNumber, picturePath, userID, username)
 	if err != nil {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
@@ -160,12 +160,12 @@ func uploadPicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureN
 	})
 }
 
-func deletePicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureNumber, username, userId string) {
+func deletePicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureNumber, username, userID string) {
 	if pictureNumber == "1" {
 		lib.RespondWithErrorHTTP(w, http.StatusForbidden, "Not possible to delete the 1st picture - Only upload a new one is possible")
 		return
 	}
-	oldPicturePath, errCode, errContent, err := updatePicturePathInDB(db, pictureNumber, "", userId, username)
+	oldPicturePath, errCode, errContent, err := updatePicturePathInDB(db, pictureNumber, "", userID, username)
 	if err != nil {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
@@ -177,39 +177,26 @@ func deletePicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureN
 	lib.RespondEmptyHTTP(w, http.StatusOK)
 }
 
+// Picture is
 func Picture(w http.ResponseWriter, r *http.Request) {
-	if ok := lib.CheckHTTPMethod(r, []string{"POST", "DELETE"}); !ok {
-		lib.RespondWithErrorHTTP(w, 404, "Page not found")
-		return
-	}
-	db, ok := r.Context().Value(lib.Database).(*sqlx.DB)
+	db, username, userID, errCode, errContent, ok := getBasics(r, []string{"POST", "DELETE"})
 	if !ok {
-		lib.RespondWithErrorHTTP(w, http.StatusInternalServerError, "Problem with database connection")
-		return
-	}
-	username, ok := r.Context().Value(lib.Username).(string)
-	if !ok {
-		lib.RespondWithErrorHTTP(w, http.StatusInternalServerError, "Problem to collect the username")
-		return
-	}
-	userId, ok := r.Context().Value(lib.UserID).(string)
-	if !ok {
-		lib.RespondWithErrorHTTP(w, http.StatusInternalServerError, "Problem to collect the userId")
+		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
 	vars := mux.Vars(r)
 	pictureNumber := vars["number"]
-	errCode, errContent := checkInput(pictureNumber)
+	errCode, errContent = checkInput(pictureNumber)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
 	switch r.Method {
 	case "POST":
-		uploadPicture(w, r, db, pictureNumber, username, userId)
+		uploadPicture(w, r, db, pictureNumber, username, userID)
 		return
 	case "DELETE":
-		deletePicture(w, r, db, pictureNumber, username, userId)
+		deletePicture(w, r, db, pictureNumber, username, userID)
 		return
 	}
 }

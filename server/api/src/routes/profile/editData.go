@@ -22,8 +22,8 @@ type userData struct {
 	BirthdayTime  *time.Time
 }
 
-func getBasics(r *http.Request) (*sqlx.DB, string, string, int, string, bool) {
-	if ok := lib.CheckHTTPMethod(r, []string{"POST"}); !ok {
+func getBasics(r *http.Request, methodsAllowed []string) (*sqlx.DB, string, string, int, string, bool) {
+	if ok := lib.CheckHTTPMethod(r, methodsAllowed); !ok {
 		return nil, "", "", 404, "Page not found", false
 	}
 	db, ok := r.Context().Value(lib.Database).(*sqlx.DB)
@@ -34,11 +34,11 @@ func getBasics(r *http.Request) (*sqlx.DB, string, string, int, string, bool) {
 	if !ok {
 		return nil, "", "", http.StatusInternalServerError, "Problem to collect the username", false
 	}
-	userId, ok := r.Context().Value(lib.UserID).(string)
+	userID, ok := r.Context().Value(lib.UserID).(string)
 	if !ok {
-		return nil, "", "", http.StatusInternalServerError, "Problem to collect the userId", false
+		return nil, "", "", http.StatusInternalServerError, "Problem to collect the userID", false
 	}
-	return db, username, userId, 0, "", true
+	return db, username, userID, 0, "", true
 }
 
 func checkDataInput(d *userData) (int, string) {
@@ -113,7 +113,7 @@ func dateStringToTime(date string) (time.Time, error) {
 	return time.Parse("02/01/2006", date)
 }
 
-func updateDataInDB(db *sqlx.DB, data userData, userId, username string) (int, string, error) {
+func updateDataInDB(db *sqlx.DB, data userData, userID, username string) (int, string, error) {
 	updateProfileData := `UPDATE users SET
 	lastname = COALESCE(NULLIF($1, ''), lastname),
 	firstname = COALESCE(NULLIF($2, ''), firstname),
@@ -125,16 +125,17 @@ func updateDataInDB(db *sqlx.DB, data userData, userId, username string) (int, s
 	WHERE  users.id = $8 AND users.username = $9`
 	_, err := db.Queryx(updateProfileData, data.Lastname, data.Firstname,
 		data.EmailAddress, data.Biography, data.BirthdayTime, data.Genre,
-		data.InterestingIn, userId, username)
+		data.InterestingIn, userID, username)
 	if err != nil {
-		log.Println(lib.PrettyError("[DB REQUEST - Update] Failed to update User[" + userId + "] Profile Data " + err.Error()))
+		log.Println(lib.PrettyError("[DB REQUEST - Update] Failed to update User[" + userID + "] Profile Data " + err.Error()))
 		return 500, "Failed to update data in database", err
 	}
 	return 0, "", nil
 }
 
+// EditData is
 func EditData(w http.ResponseWriter, r *http.Request) {
-	db, username, userId, errCode, errContent, ok := getBasics(r)
+	db, username, userID, errCode, errContent, ok := getBasics(r, []string{"POST"})
 	if !ok {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
@@ -150,7 +151,7 @@ func EditData(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	errCode, errContent, err = updateDataInDB(db, inputData, userId, username)
+	errCode, errContent, err = updateDataInDB(db, inputData, userID, username)
 	if err != nil {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
