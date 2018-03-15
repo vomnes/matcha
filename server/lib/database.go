@@ -27,3 +27,16 @@ type User struct {
 	Longitude              *float64   `db:"longitude"`
 	GeolocalisationAllowed bool       `db:"geolocalisation_allowed"`
 }
+
+// Tag is the data structure of the table Tag from PostgreSQL
+type Tag struct {
+	ID   string `db:"id"`
+	Name string `db:"name"`
+}
+
+// UserTag is the data structure of the table User_Tag from PostgreSQL
+type UserTag struct {
+	ID     string `db:"id"`
+	UserID string `db:"userid"`
+	TagID  string `db:"tagid"`
+}

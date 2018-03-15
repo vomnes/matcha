@@ -161,3 +161,16 @@ func IsValidDate(s string) (bool, error) {
 	}
 	return true, nil
 }
+
+// IsValidTag check if the string parameter is a valid tag
+// Check length maximum and minimum and authorized characters (a-z0-9-_)
+// Return a boolean
+func IsValidTag(s string) bool {
+	if len(s) < 1 || len(s) > UsernameMaxLength {
+		return false
+	}
+	if !regexp.MustCompile(`^[a-z0-9\-_]+$`).MatchString(s) {
+		return false
+	}
+	return true
+}

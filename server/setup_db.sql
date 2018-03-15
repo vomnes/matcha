@@ -29,6 +29,17 @@ CREATE TABLE Users (
   geolocalisation_allowed BOOLEAN NOT NULL DEFAULT FALSE
 );
 
+CREATE TABLE Tags (
+  ID SERIAL PRIMARY KEY,
+  name VARCHAR (65) NOT NULL
+);
+
+CREATE TABLE Users_Tags (
+  ID SERIAL PRIMARY KEY,
+  userID SERIAL NOT NULL,
+  tagID SERIAL NOT NULL
+);
+
 INSERT INTO Users (username, email, lastname, firstname, password) VALUES ('vomnes', 'valentin.omnes@gmail.com', 'Omnes', 'Valentin', '$2a$10$pgek6WtdhtKmGXPWOOtEf.gsgtNXOkqr3pBjaCCa9il6XhRS7LAua');
 
 \echo '----- Initialize db_matcha_tests -----'
@@ -61,4 +72,15 @@ CREATE TABLE Users (
   latitude DECIMAL(9,6) DEFAULT NULL,
   longitude DECIMAL(9,6) DEFAULT NULL,
   geolocalisation_allowed BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE Tags (
+  ID SERIAL PRIMARY KEY,
+  name VARCHAR (65) NOT NULL
+);
+
+CREATE TABLE Users_Tags (
+  ID SERIAL PRIMARY KEY,
+  userID SERIAL NOT NULL,
+  tagID SERIAL NOT NULL
 );

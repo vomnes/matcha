@@ -47,6 +47,8 @@ func DbClean() {
 	}
 	tables := []string{
 		"Users",
+		"Tags",
+		"Users_Tags",
 	}
 	for _, table := range tables {
 		DB.MustExec("TRUNCATE TABLE " + table + " RESTART IDENTITY")

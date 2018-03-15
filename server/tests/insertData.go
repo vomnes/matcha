@@ -30,3 +30,37 @@ func InsertUser(data lib.User, db *sqlx.DB) lib.User {
 	}
 	return data
 }
+
+// InsertTag take as parameter a Tag structure and a db
+// Insert in the table Tags of the database the element in data (Tag)
+// The row insered is stored in the input Tag structure
+func InsertTag(data lib.Tag, db *sqlx.DB) lib.Tag {
+	stmt, err := db.Prepare(`INSERT INTO tags (name) VALUES ($1) RETURNING id`)
+	if err != nil {
+		log.Fatal(lib.PrettyError("Failed to prepare request Tag data" + err.Error()))
+	}
+	row := stmt.QueryRow(data.Name)
+	err = row.Scan(&data.ID)
+	if err != nil {
+		log.Fatal(lib.PrettyError("Failed to get new Tag data" + err.Error()))
+	}
+	return data
+}
+
+// InsertUserTag take as parameter a User_Tag structure and a db
+// Insert in the table Tags of the database the element in data (User_Tag)
+// The row insered is stored in the input User_Tag structure
+func InsertUserTag(data lib.UserTag, db *sqlx.DB) lib.UserTag {
+	stmt, err := db.Prepare(`INSERT INTO users_tags (userId, tagId)
+	VALUES ($1, $2)
+	RETURNING id`)
+	if err != nil {
+		log.Fatal(lib.PrettyError("Failed to prepare request User_Tag data" + err.Error()))
+	}
+	row := stmt.QueryRow(data.UserID, data.TagID)
+	err = row.Scan(&data.ID)
+	if err != nil {
+		log.Fatal(lib.PrettyError("Failed to get new User_Tag data" + err.Error()))
+	}
+	return data
+}

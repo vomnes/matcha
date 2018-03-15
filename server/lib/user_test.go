@@ -195,3 +195,27 @@ func TestIsValidDate(t *testing.T) {
 		}
 	}
 }
+
+var tagTests = []struct {
+	str         string // input
+	expected    bool   // expected result
+	testContent string // test details
+}{
+	{"test", true, "Valid"},
+	{"test09", true, "Valid with digit"},
+	{"test-a", true, "Valid with '-'"},
+	{"test_b", true, "Valid with '_'"},
+	{"", false, "Empty"},
+	{"testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest", false, "Too long"},
+	{"This", false, "Invalid character uppercase"},
+	{"this is false", false, "Invalid character space"},
+}
+
+func TestIsValidTag(t *testing.T) {
+	for _, tt := range tagTests {
+		actual := IsValidTag(tt.str)
+		if actual != tt.expected {
+			t.Errorf("IsValidTag(%s): expected %t, actual %t - Test type: \033[31m%s\033[0m", tt.str, tt.expected, actual, tt.testContent)
+		}
+	}
+}
