@@ -24,7 +24,7 @@ func TestGetUser(t *testing.T) {
 	birthdayTime := time.Date(1955, 1, 6, 0, 0, 0, 0, time.UTC)
 	lat := 1.4
 	lng := 56.0
-	userData := tests.InsertUser(lib.User{
+	targetUser := tests.InsertUser(lib.User{
 		Username:               targetUsername,
 		Email:                  "MyEmail",
 		Lastname:               "MyLastname",
@@ -45,18 +45,25 @@ func TestGetUser(t *testing.T) {
 		Country:                "myCountry",
 		GeolocalisationAllowed: false,
 	}, tests.DB)
+	userData := tests.InsertUser(lib.User{
+		Username: targetUsername,
+	}, tests.DB)
 	_ = tests.InsertTag(lib.Tag{Name: "zero"}, tests.DB)
 	_ = tests.InsertTag(lib.Tag{Name: "one"}, tests.DB)
 	_ = tests.InsertTag(lib.Tag{Name: "two"}, tests.DB)
 	_ = tests.InsertTag(lib.Tag{Name: "three"}, tests.DB)
+	_ = tests.InsertTag(lib.Tag{Name: "four"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: targetUser.ID, TagID: "1"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: targetUser.ID, TagID: "2"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: targetUser.ID, TagID: "3"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: targetUser.ID, TagID: "4"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: userData.ID, TagID: "1"}, tests.DB)
 	_ = tests.InsertUserTag(lib.UserTag{UserID: userData.ID, TagID: "2"}, tests.DB)
-	_ = tests.InsertUserTag(lib.UserTag{UserID: "2", TagID: "1"}, tests.DB)
-	_ = tests.InsertUserTag(lib.UserTag{UserID: userData.ID, TagID: "3"}, tests.DB)
-	_ = tests.InsertUserTag(lib.UserTag{UserID: userData.ID, TagID: "4"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: userData.ID, TagID: "5"}, tests.DB)
 	context := tests.ContextData{
 		DB:       tests.DB,
 		Username: username,
-		UserID:   "42",
+		UserID:   userData.ID,
 	}
 	r := tests.CreateRequest("GET", "/v1/users/"+targetUsername, nil, context)
 	r.Header.Add("Content-Type", "application/json")
@@ -68,7 +75,29 @@ func TestGetUser(t *testing.T) {
 	if output != "" {
 		t.Error(output)
 	}
-	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{})
+	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{
+		"firstname": "MyFirstname",
+		"lastname":  "MyLastname",
+		"username":  targetUsername,
+		"pictures": []string{"MyURL1",
+			"MyURL2",
+			"MyURL3",
+			"MyURL4",
+			"MyURL5",
+		},
+		"biography":      "This is my story",
+		"age":            63,
+		"genre":          "example_genre",
+		"interesting_in": "example_interesting_in",
+		"location":       "MYZIP, myCity, myCountry",
+		"connected":      false,
+		"liked":          false,
+		"rating":         5,
+		"tags": map[string]interface{}{
+			"shared":   []string{"zero", "one"},
+			"personal": []string{"two", "three"},
+		},
+	})
 	if strError != nil {
 		t.Errorf("%v", strError)
 	}
