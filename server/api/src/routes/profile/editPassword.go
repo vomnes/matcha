@@ -67,7 +67,7 @@ func updateUserPassword(r *http.Request, db *sqlx.DB, password, userID, username
 
 // EditPassword is
 func EditPassword(w http.ResponseWriter, r *http.Request) {
-	db, username, userID, errCode, errContent, ok := getBasics(r, []string{"POST"})
+	db, username, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"POST"})
 	if !ok {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return

@@ -179,7 +179,7 @@ func deletePicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureN
 
 // Picture is
 func Picture(w http.ResponseWriter, r *http.Request) {
-	db, username, userID, errCode, errContent, ok := getBasics(r, []string{"POST", "DELETE"})
+	db, username, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"POST", "DELETE"})
 	if !ok {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return

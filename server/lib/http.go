@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/jmoiron/sqlx"
 )
 
 var (
@@ -72,4 +74,23 @@ func ResponseDataBody(URL string, body io.ReadCloser, data interface{}) (int, st
 		return 406, "Failed to decode body", err
 	}
 	return 0, "", nil
+}
+
+func GetBasics(r *http.Request, methodsAllowed []string) (*sqlx.DB, string, string, int, string, bool) {
+	if ok := CheckHTTPMethod(r, methodsAllowed); !ok {
+		return nil, "", "", 404, "Page not found", false
+	}
+	db, ok := r.Context().Value(Database).(*sqlx.DB)
+	if !ok {
+		return nil, "", "", http.StatusInternalServerError, "Problem with database connection", false
+	}
+	username, ok := r.Context().Value(Username).(string)
+	if !ok {
+		return nil, "", "", http.StatusInternalServerError, "Problem to collect the username", false
+	}
+	userID, ok := r.Context().Value(UserID).(string)
+	if !ok {
+		return nil, "", "", http.StatusInternalServerError, "Problem to collect the userID", false
+	}
+	return db, username, userID, 0, "", true
 }

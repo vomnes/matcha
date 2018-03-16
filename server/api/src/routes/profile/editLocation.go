@@ -67,7 +67,7 @@ func UpdateLocationInDB(db *sqlx.DB, latitude, longitude float64,
 
 // EditLocation is
 func EditLocation(w http.ResponseWriter, r *http.Request) {
-	db, username, userID, errCode, errContent, ok := getBasics(r, []string{"POST"})
+	db, username, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"POST"})
 	if !ok {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return

@@ -96,7 +96,7 @@ func handleLocation(userDB *lib.User, d userIP, db *sqlx.DB, userID, username st
 }
 
 func GetProfile(w http.ResponseWriter, r *http.Request) {
-	db, username, userID, errCode, errContent, ok := getBasics(r, []string{"GET"})
+	db, username, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"GET"})
 	if !ok {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return

@@ -22,25 +22,6 @@ type userData struct {
 	BirthdayTime  *time.Time
 }
 
-func getBasics(r *http.Request, methodsAllowed []string) (*sqlx.DB, string, string, int, string, bool) {
-	if ok := lib.CheckHTTPMethod(r, methodsAllowed); !ok {
-		return nil, "", "", 404, "Page not found", false
-	}
-	db, ok := r.Context().Value(lib.Database).(*sqlx.DB)
-	if !ok {
-		return nil, "", "", http.StatusInternalServerError, "Problem with database connection", false
-	}
-	username, ok := r.Context().Value(lib.Username).(string)
-	if !ok {
-		return nil, "", "", http.StatusInternalServerError, "Problem to collect the username", false
-	}
-	userID, ok := r.Context().Value(lib.UserID).(string)
-	if !ok {
-		return nil, "", "", http.StatusInternalServerError, "Problem to collect the userID", false
-	}
-	return db, username, userID, 0, "", true
-}
-
 func checkDataInput(d *userData) (int, string) {
 	if d.Firstname == "" && d.Lastname == "" && d.EmailAddress == "" &&
 		d.Biography == "" && d.Genre == "" && d.InterestingIn == "" &&
@@ -135,7 +116,7 @@ func updateDataInDB(db *sqlx.DB, data userData, userID, username string) (int, s
 
 // EditData is
 func EditData(w http.ResponseWriter, r *http.Request) {
-	db, username, userID, errCode, errContent, ok := getBasics(r, []string{"POST"})
+	db, username, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"POST"})
 	if !ok {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
