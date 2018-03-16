@@ -219,3 +219,45 @@ func TestIsValidTag(t *testing.T) {
 		}
 	}
 }
+
+var CommonNameTests = []struct {
+	str         string // input
+	expected    bool   // expected result
+	testContent string // test details
+}{
+	{"aB12-_.", true, "Valid"},
+	{"37.169.43.146", true, "Valid"},
+	{"validContent", true, "Valid"},
+	{"<h1>Title</h1>", false, "HTML"},
+	{"Title§è!çà)", false, "Invalid characters"},
+}
+
+func TestIsValidCommonName(t *testing.T) {
+	for _, tt := range CommonNameTests {
+		actual := IsValidCommonName(tt.str)
+		if actual != tt.expected {
+			t.Errorf("IsValidCommonName(%s): expected %t, actual %t - Test type: \033[31m%s\033[0m", tt.str, tt.expected, actual, tt.testContent)
+		}
+	}
+}
+
+var IP4Tests = []struct {
+	str         string // input
+	expected    bool   // expected result
+	testContent string // test details
+}{
+	{"37.169.43.146", true, "Valid"},
+	{"192.168.a.0", false, "Invalid type"},
+	{"FE80:0000:0000:0000:0202:B3FF:FE1E:8329", false, "Invalid type"},
+	{"FE80::0202:B3FF:FE1E:8329", false, "Invalid type"},
+	{"http://[2001:db8:0:1]:80", false, "Invalid type"},
+}
+
+func TestIsValidIP4(t *testing.T) {
+	for _, tt := range IP4Tests {
+		actual := IsValidIP4(tt.str)
+		if actual != tt.expected {
+			t.Errorf("IsValidIP4(%s): expected %t, actual %t - Test type: \033[31m%s\033[0m", tt.str, tt.expected, actual, tt.testContent)
+		}
+	}
+}

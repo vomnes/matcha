@@ -32,13 +32,13 @@ func checkLocationInput(d *locationData) (int, string, error) {
 	d.City = html.EscapeString(d.City)
 	d.ZIP = html.EscapeString(d.ZIP)
 	d.Country = html.EscapeString(d.Country)
-	if !lib.IsCommonName(d.City) {
+	if !lib.IsValidCommonName(d.City) {
 		return 406, "City name is invalid", errors.New("City invalid")
 	}
-	if !lib.IsCommonName(d.ZIP) {
+	if !lib.IsValidCommonName(d.ZIP) {
 		return 406, "ZIP value is invalid", errors.New("ZIP invalid")
 	}
-	if !lib.IsCommonName(d.Country) {
+	if !lib.IsValidCommonName(d.Country) {
 		return 406, "Country name is invalid", errors.New("Country invalid")
 	}
 	d.City = strings.Title(d.City)

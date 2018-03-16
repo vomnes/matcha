@@ -115,7 +115,10 @@ func IsOnlyLowercaseLetters(s string, lengthMax int) bool {
 	return true
 }
 
-func IsCommonName(s string) bool {
+// IsValidCommonName check if the string parameter is a common name
+// Check length maximum and authorized characters (a-zA-Z0-9.-_)
+// Return a boolean
+func IsValidCommonName(s string) bool {
 	if len(s) < 1 || len(s) > UsernameMaxLength {
 		return false
 	}
@@ -180,6 +183,17 @@ func IsValidTag(s string) bool {
 		return false
 	}
 	if !regexp.MustCompile(`^[a-z0-9\-_]+$`).MatchString(s) {
+		return false
+	}
+	return true
+}
+
+// IsValidTag check if the string parameter is a valid IP Addres
+// Return a boolean
+func IsValidIP4(ipAddress string) bool {
+	ipAddress = strings.Trim(ipAddress, " ")
+	if !regexp.MustCompile(`^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$`).
+		MatchString(ipAddress) {
 		return false
 	}
 	return true

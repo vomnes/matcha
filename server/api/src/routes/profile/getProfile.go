@@ -3,6 +3,7 @@ package profile
 import (
 	"database/sql"
 	"fmt"
+	"html"
 	"log"
 	"net/http"
 	"strings"
@@ -68,6 +69,11 @@ func handleLocation(userDB *lib.User, d userIP, db *sqlx.DB, userID, username st
 		userDB.City = ""
 		userDB.ZIP = ""
 		userDB.Country = ""
+		d.IP = html.EscapeString(d.IP)
+		right := lib.IsValidIP4(d.IP)
+		if !right {
+			return 400, "IP in the body is invalid"
+		}
 		dataLocation, errCode, errContent := getIPLocation(d.IP)
 		if errCode != 0 || errContent != "" {
 			return errCode, errContent
