@@ -41,13 +41,14 @@ func checkLocationInput(d locationData) (float64, float64, int, string, error) {
 	return latitude, longitude, 0, "", nil
 }
 
-func updateLocationInDB(db *sqlx.DB, latitude, longitude float64, userID, username string) (int, string, error) {
+func UpdateLocationInDB(db *sqlx.DB, latitude, longitude float64,
+	geolocalisationAllowed bool, userID, username string) (int, string, error) {
 	updateLocation := `UPDATE users SET
   	latitude = $1,
     longitude = $2,
-    geolocalisation_allowed = TRUE
-  	WHERE  users.id = $3 AND users.username = $4`
-	_, err := db.Queryx(updateLocation, latitude, longitude, userID, username)
+    geolocalisation_allowed = $3
+  	WHERE  users.id = $4 AND users.username = $5`
+	_, err := db.Queryx(updateLocation, latitude, longitude, geolocalisationAllowed, userID, username)
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - Update] Failed to update User[" + userID + "] Location Data " + err.Error()))
 		return 500, "Failed to update data in database", err
@@ -73,7 +74,7 @@ func EditLocation(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	errCode, errContent, err = updateLocationInDB(db, latitude, longitude, userID, username)
+	errCode, errContent, err = UpdateLocationInDB(db, latitude, longitude, true, userID, username)
 	if err != nil {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return

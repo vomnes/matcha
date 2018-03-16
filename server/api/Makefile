@@ -78,4 +78,5 @@ vendor_get: vendor_clean
 		github.com/jmoiron/sqlx \
 		github.com/dgrijalva/jwt-go \
 		github.com/go-redis/redis \
-		github.com/mailjet/mailjet-apiv3-go
+		github.com/mailjet/mailjet-apiv3-go \
+		github.com/ip2location/ip2location-go

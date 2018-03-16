@@ -2,6 +2,7 @@ package lib
 
 import (
 	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -58,6 +59,16 @@ func GetDataBody(req *http.Request, data interface{}) (int, string, error) {
 	err := decoder.Decode(data)
 	if err != nil {
 		log.Println(PrettyError(req.URL.String() + " Failed to decode body " + err.Error()))
+		return 406, "Failed to decode body", err
+	}
+	return 0, "", nil
+}
+
+func ResponseDataBody(URL string, body io.ReadCloser, data interface{}) (int, string, error) {
+	decoder := json.NewDecoder(body)
+	err := decoder.Decode(data)
+	if err != nil {
+		log.Println(PrettyError(URL + " Failed to decode body " + err.Error()))
 		return 406, "Failed to decode body", err
 	}
 	return 0, "", nil
