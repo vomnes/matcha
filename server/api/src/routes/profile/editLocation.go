@@ -2,53 +2,62 @@ package profile
 
 import (
 	"errors"
+	"html"
 	"log"
 	"net/http"
-	"strconv"
+	"strings"
 
 	"../../../../lib"
 	"github.com/jmoiron/sqlx"
 )
 
 type locationData struct {
-	Lat string `json:"lat"`
-	Lng string `json:"lng"`
+	Lat     float64 `json:"lat"`
+	Lng     float64 `json:"lng"`
+	City    string  `json:"city"`
+	ZIP     string  `json:"zip"`
+	Country string  `json:"country"`
 }
 
-func checkLocationInput(d locationData) (float64, float64, int, string, error) {
-	if d.Lat == "" || d.Lng == "" {
-		return 0, 0, 406, "No field inside the body can be empty", errors.New("Empty fields")
+func checkLocationInput(d *locationData) (int, string, error) {
+	if (d.Lat == 0 && d.Lng == 0) || d.City == "" || d.ZIP == "" || d.Country == "" {
+		return 406, "No field inside the body can be empty", errors.New("Empty fields")
 	}
-	latitude, err1 := strconv.ParseFloat(d.Lat, 64)
-	longitude, err2 := strconv.ParseFloat(d.Lng, 64)
-	if err1 != nil || err2 != nil {
-		if err1 != nil && err2 != nil {
-			return 0, 0, 406, "Invalid latitude and longitude in the body", err1
-		}
-		if err1 != nil {
-			return 0, 0, 406, "Invalid latitude in the body", err1
-		}
-		if err2 != nil {
-			return 0, 0, 406, "Invalid longitude in the body", err2
-		}
+	if d.Lat < -90.0 || d.Lat > 90.0 {
+		return 406, "Latitude value is over the limit", errors.New("Latitude overflow")
 	}
-	if latitude < -90.0 || latitude > 90.0 {
-		return 0, 0, 406, "Latitude value is over the limit", errors.New("Latitude overflow")
+	if d.Lng < -180.0 || d.Lng > 180.0 {
+		return 406, "Longitude value is over the limit", errors.New("Longitude overflow")
 	}
-	if longitude < -180.0 || longitude > 180.0 {
-		return 0, 0, 406, "Longitude value is over the limit", errors.New("Longitude overflow")
+	d.City = html.EscapeString(d.City)
+	d.ZIP = html.EscapeString(d.ZIP)
+	d.Country = html.EscapeString(d.Country)
+	if !lib.IsCommonName(d.City) {
+		return 406, "City name is invalid", errors.New("City invalid")
 	}
-	return latitude, longitude, 0, "", nil
+	if !lib.IsCommonName(d.ZIP) {
+		return 406, "ZIP value is invalid", errors.New("ZIP invalid")
+	}
+	if !lib.IsCommonName(d.Country) {
+		return 406, "Country name is invalid", errors.New("Country invalid")
+	}
+	d.City = strings.Title(d.City)
+	d.ZIP = strings.ToUpper(d.ZIP)
+	d.Country = strings.Title(d.Country)
+	return 0, "", nil
 }
 
 func UpdateLocationInDB(db *sqlx.DB, latitude, longitude float64,
-	geolocalisationAllowed bool, userID, username string) (int, string, error) {
+	geolocalisationAllowed bool, city, zip, country, userID, username string) (int, string, error) {
 	updateLocation := `UPDATE users SET
-  	latitude = $1,
-    longitude = $2,
-    geolocalisation_allowed = $3
-  	WHERE  users.id = $4 AND users.username = $5`
-	_, err := db.Queryx(updateLocation, latitude, longitude, geolocalisationAllowed, userID, username)
+		city = $1,
+		zip = $2,
+		country = $3,
+		latitude = $4,
+		longitude = $5,
+    geolocalisation_allowed = $6
+  	WHERE  users.id = $7 AND users.username = $8`
+	_, err := db.Queryx(updateLocation, city, zip, country, latitude, longitude, geolocalisationAllowed, userID, username)
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - Update] Failed to update User[" + userID + "] Location Data " + err.Error()))
 		return 500, "Failed to update data in database", err
@@ -69,12 +78,13 @@ func EditLocation(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	latitude, longitude, errCode, errContent, err := checkLocationInput(inputData)
+	errCode, errContent, err = checkLocationInput(&inputData)
 	if err != nil {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	errCode, errContent, err = UpdateLocationInDB(db, latitude, longitude, true, userID, username)
+	errCode, errContent, err = UpdateLocationInDB(db, inputData.Lat, inputData.Lng,
+		true, inputData.City, inputData.ZIP, inputData.Country, userID, username)
 	if err != nil {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return

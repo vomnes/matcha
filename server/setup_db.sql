@@ -24,6 +24,9 @@ CREATE TABLE Users (
   birthday timestamp DEFAULT NULL,
   genre VARCHAR (64) DEFAULT 'male',
   interesting_in  VARCHAR (255) DEFAULT 'bisexual',
+  city VARCHAR (65)     DEFAULT '',
+  zip VARCHAR (65)     DEFAULT '',
+  country VARCHAR (65)     DEFAULT '',
   latitude DECIMAL(9,6) DEFAULT NULL,
   longitude DECIMAL(9,6) DEFAULT NULL,
   geolocalisation_allowed BOOLEAN NOT NULL DEFAULT FALSE
@@ -69,6 +72,9 @@ CREATE TABLE Users (
   birthday timestamp DEFAULT NULL,
   genre VARCHAR (64) DEFAULT 'male',
   interesting_in  VARCHAR (255) DEFAULT 'bisexual',
+  city VARCHAR (65)     DEFAULT '',
+  zip VARCHAR (65)     DEFAULT '',
+  country VARCHAR (65)     DEFAULT '',
   latitude DECIMAL(9,6) DEFAULT NULL,
   longitude DECIMAL(9,6) DEFAULT NULL,
   geolocalisation_allowed BOOLEAN NOT NULL DEFAULT FALSE

@@ -23,6 +23,9 @@ type User struct {
 	Birthday               *time.Time `db:"birthday"`
 	Genre                  string     `db:"genre"`
 	InterestingIn          string     `db:"interesting_in"`
+	City                   string     `db:"city"`
+	ZIP                    string     `db:"zip"`
+	Country                string     `db:"country"`
 	Latitude               *float64   `db:"latitude"`
 	Longitude              *float64   `db:"longitude"`
 	GeolocalisationAllowed bool       `db:"geolocalisation_allowed"`

@@ -8,6 +8,7 @@ import (
 
 	"../../../../lib"
 	"../../../../tests"
+	"github.com/kylelemons/godebug/pretty"
 )
 
 func TestGetProfile(t *testing.T) {
@@ -32,6 +33,9 @@ func TestGetProfile(t *testing.T) {
 		InterestingIn:          "example_interesting_in",
 		Latitude:               &lat,
 		Longitude:              &lng,
+		City:                   "myCity",
+		ZIP:                    "MYZIP",
+		Country:                "myCountry",
 		GeolocalisationAllowed: true,
 	}, tests.DB)
 	_ = tests.InsertTag(lib.Tag{Name: "zero"}, tests.DB)
@@ -72,6 +76,9 @@ func TestGetProfile(t *testing.T) {
 		"birthday":                "06/01/1955",
 		"genre":                   "example_genre",
 		"interesting_in":          "example_interesting_in",
+		"city":                    "myCity",
+		"zip":                     "MYZIP",
+		"country":                 "myCountry",
 		"latitude":                1.4,
 		"longitude":               56,
 		"geolocalisation_allowed": true,
@@ -115,6 +122,9 @@ func TestGetProfileNoTags(t *testing.T) {
 		Birthday:               &birthdayTime,
 		Genre:                  "example_genre",
 		InterestingIn:          "example_interesting_in",
+		City:                   "myCity",
+		ZIP:                    "MYZIP",
+		Country:                "myCountry",
 		Latitude:               &lat,
 		Longitude:              &lng,
 		GeolocalisationAllowed: true,
@@ -159,11 +169,36 @@ func TestGetProfileNoTags(t *testing.T) {
 		"interesting_in":          "example_interesting_in",
 		"latitude":                1.4,
 		"longitude":               56,
+		"city":                    "myCity",
+		"zip":                     "MYZIP",
+		"country":                 "myCountry",
 		"geolocalisation_allowed": true,
 		"tags": nil,
 	})
 	if strError != nil {
 		t.Errorf("%v", strError)
+	}
+	// Check : Updated location in database
+	var user lib.User
+	err := tests.DB.Get(&user, "SELECT id, username, latitude, longitude, city, zip, country, geolocalisation_allowed FROM Users WHERE username = $1", username)
+	if err != nil {
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
+		return
+	}
+	lat = 1.4
+	lng = 56
+	expectedDatabase := lib.User{
+		ID:                     "1",
+		Username:               username,
+		Latitude:               &lat,
+		Longitude:              &lng,
+		City:                   "myCity",
+		ZIP:                    "MYZIP",
+		Country:                "myCountry",
+		GeolocalisationAllowed: true,
+	}
+	if compare := pretty.Compare(&expectedDatabase, user); compare != "" {
+		t.Error(compare)
 	}
 }
 
@@ -243,6 +278,9 @@ func TestGetProfileUpdateLocation(t *testing.T) {
 		InterestingIn:          "example_interesting_in",
 		Latitude:               &lat,
 		Longitude:              &lng,
+		City:                   "myCity",
+		ZIP:                    "MYZIP",
+		Country:                "myCountry",
 		GeolocalisationAllowed: false,
 	}, tests.DB)
 	_ = tests.InsertTag(lib.Tag{Name: "zero"}, tests.DB)
@@ -269,7 +307,7 @@ func TestGetProfileUpdateLocation(t *testing.T) {
 	if output != "" {
 		t.Error(output)
 	}
-	_ = tests.CompareResponseJSONCode(w, 200, map[string]interface{}{
+	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{
 		"username":                username,
 		"email":                   "MyEmail",
 		"lastname":                "MyLastname",
@@ -283,9 +321,12 @@ func TestGetProfileUpdateLocation(t *testing.T) {
 		"birthday":                "06/01/1955",
 		"genre":                   "example_genre",
 		"interesting_in":          "example_interesting_in",
-		"latitude":                1.4,
-		"longitude":               56,
-		"geolocalisation_allowed": true,
+		"latitude":                0,
+		"longitude":               0,
+		"geolocalisation_allowed": false,
+		"city":    "",
+		"zip":     "",
+		"country": "",
 		"tags": []interface{}{
 			map[string]interface{}{
 				"id":   "2",
@@ -301,7 +342,29 @@ func TestGetProfileUpdateLocation(t *testing.T) {
 			},
 		},
 	})
-	// if strError != nil {
-	// 	t.Errorf("%v", strError)
-	// }
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+	// Check : Updated location in database
+	var user lib.User
+	err := tests.DB.Get(&user, "SELECT id, username, latitude, longitude, city, zip, country, geolocalisation_allowed FROM Users WHERE username = $1", username)
+	if err != nil {
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
+		return
+	}
+	lat = 48.8628
+	lng = 2.3292
+	expectedDatabase := lib.User{
+		ID:                     "1",
+		Username:               username,
+		Latitude:               &lat,
+		Longitude:              &lng,
+		City:                   "Paris",
+		ZIP:                    "75001",
+		Country:                "France",
+		GeolocalisationAllowed: false,
+	}
+	if compare := pretty.Compare(&expectedDatabase, user); compare != "" {
+		t.Error(compare)
+	}
 }

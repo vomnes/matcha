@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"../../../../lib"
 	"github.com/jmoiron/sqlx"
@@ -64,12 +65,23 @@ func handleLocation(userDB *lib.User, d userIP, db *sqlx.DB, userID, username st
 		nilFloat64 := 0.0
 		userDB.Latitude = &nilFloat64
 		userDB.Longitude = &nilFloat64
+		userDB.City = ""
+		userDB.ZIP = ""
+		userDB.Country = ""
 		dataLocation, errCode, errContent := getIPLocation(d.IP)
 		if errCode != 0 || errContent != "" {
 			return errCode, errContent
 		}
-		fmt.Println(dataLocation["city"], dataLocation["zip"], dataLocation["country"], dataLocation["lat"], dataLocation["lon"])
-		errCode, errContent, err := UpdateLocationInDB(db, dataLocation["lat"].(float64), dataLocation["lon"].(float64), false, userID, username)
+		errCode, errContent, err := UpdateLocationInDB(
+			db,
+			dataLocation["lat"].(float64),
+			dataLocation["lon"].(float64),
+			false,
+			strings.Title(dataLocation["city"].(string)),
+			strings.ToUpper(dataLocation["zip"].(string)),
+			strings.Title(dataLocation["country"].(string)),
+			userID,
+			username)
 		if err != nil {
 			return errCode, errContent
 		}
@@ -104,7 +116,6 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	fmt.Println(userDB.Latitude, userDB.Longitude, userDB.GeolocalisationAllowed)
 	lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{
 		"username":                userDB.Username,
 		"email":                   userDB.Email,
@@ -121,6 +132,9 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 		"interesting_in":          userDB.InterestingIn,
 		"latitude":                userDB.Latitude,
 		"longitude":               userDB.Longitude,
+		"city":                    userDB.City,
+		"zip":                     userDB.ZIP,
+		"country":                 userDB.Country,
 		"geolocalisation_allowed": userDB.GeolocalisationAllowed,
 		"tags": tags,
 	})

@@ -115,6 +115,16 @@ func IsOnlyLowercaseLetters(s string, lengthMax int) bool {
 	return true
 }
 
+func IsCommonName(s string) bool {
+	if len(s) < 1 || len(s) > UsernameMaxLength {
+		return false
+	}
+	if !regexp.MustCompile(`^[a-zA-Z0-9\.\-_]+$`).MatchString(s) {
+		return false
+	}
+	return true
+}
+
 // IsValidDate check if the string parameter is a valid date dd/mm/yyyy
 // Return a boolean and status error
 func IsValidDate(s string) (bool, error) {
