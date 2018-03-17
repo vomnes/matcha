@@ -52,3 +52,19 @@ type Like struct {
 	LikedUserID string    `db:"liked_userid"`
 	CreatedAt   time.Time `db:"created_at"`
 }
+
+// Visit is the data structure of the table Visits from PostgreSQL
+type Visit struct {
+	ID            string    `db:"id"`
+	UserID        string    `db:"userid"`
+	VisitedUserID string    `db:"visited_userid"`
+	CreatedAt     time.Time `db:"created_at"`
+}
+
+// FakeReport is the data structure of the table Fake_Reports from PostgreSQL
+type FakeReport struct {
+	ID           string    `db:"id"`
+	UserID       string    `db:"userid"`
+	TargetUserID string    `db:"target_userid"`
+	CreatedAt    time.Time `db:"created_at"`
+}

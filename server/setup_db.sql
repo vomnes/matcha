@@ -51,6 +51,20 @@ CREATE TABLE Likes (
   created_at timestamp with time zone DEFAULT current_timestamp
 );
 
+CREATE TABLE Visits (
+  ID SERIAL PRIMARY KEY,
+  userID SERIAL NOT NULL,
+  visited_userID SERIAL NOT NULL,
+  created_at timestamp with time zone DEFAULT current_timestamp
+);
+
+CREATE TABLE Fake_Reports (
+  ID SERIAL PRIMARY KEY,
+  userID SERIAL NOT NULL,
+  target_userID SERIAL NOT NULL,
+  created_at timestamp with time zone DEFAULT current_timestamp
+);
+
 INSERT INTO Users (username, email, lastname, firstname, password) VALUES ('vomnes', 'valentin.omnes@gmail.com', 'Omnes', 'Valentin', '$2a$10$pgek6WtdhtKmGXPWOOtEf.gsgtNXOkqr3pBjaCCa9il6XhRS7LAua');
 
 \echo '----- Initialize db_matcha_tests -----'
@@ -104,5 +118,19 @@ CREATE TABLE Likes (
   ID SERIAL PRIMARY KEY,
   userID SERIAL NOT NULL,
   liked_userID SERIAL NOT NULL,
+  created_at timestamp with time zone DEFAULT current_timestamp
+);
+
+CREATE TABLE Visits (
+  ID SERIAL PRIMARY KEY,
+  userID SERIAL NOT NULL,
+  visited_userID SERIAL NOT NULL,
+  created_at timestamp with time zone DEFAULT current_timestamp
+);
+
+CREATE TABLE Fake_Reports (
+  ID SERIAL PRIMARY KEY,
+  userID SERIAL NOT NULL,
+  target_userID SERIAL NOT NULL,
   created_at timestamp with time zone DEFAULT current_timestamp
 );

@@ -9,6 +9,7 @@ import (
 	"../../../../lib"
 	"../../../../tests"
 	"github.com/gorilla/mux"
+	"github.com/kylelemons/godebug/pretty"
 )
 
 func testApplicantServer() http.Handler {
@@ -83,19 +84,20 @@ func TestGetUser(t *testing.T) {
 		t.Error(output)
 	}
 	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{
-		"firstname":      "MyFirstname",
-		"lastname":       "MyLastname",
-		"username":       targetUsername,
-		"pictures":       []string{"MyURL1", "MyURL2", "MyURL3", "MyURL4", "MyURL5"},
-		"biography":      "This is my story",
-		"age":            63,
-		"genre":          "example_genre",
-		"interesting_in": "example_interesting_in",
-		"location":       "MYZIP, myCity, myCountry",
-		"liked":          true,
-		"usersConnected": true,
-		"online":         true,
-		"rating":         5,
+		"firstname":        "MyFirstname",
+		"lastname":         "MyLastname",
+		"username":         targetUsername,
+		"pictures":         []string{"MyURL1", "MyURL2", "MyURL3", "MyURL4", "MyURL5"},
+		"biography":        "This is my story",
+		"age":              63,
+		"genre":            "example_genre",
+		"interesting_in":   "example_interesting_in",
+		"location":         "MYZIP, myCity, myCountry",
+		"liked":            true,
+		"users_connected":  true,
+		"online":           true,
+		"rating":           5,
+		"reported_as_fake": false,
 		"tags": map[string]interface{}{
 			"shared":   []string{"sharedzero", "sharedone"},
 			"personal": []string{"notsharedtwo", "notsharedthree"},
@@ -104,9 +106,27 @@ func TestGetUser(t *testing.T) {
 	if strError != nil {
 		t.Errorf("%v", strError)
 	}
+	// Check : Updated data in database
+	var visit []lib.Visit
+	err := tests.DB.Select(&visit, "SELECT * FROM Visits WHERE userID = $1", userData.ID)
+	if err != nil {
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
+		return
+	}
+	expectedDatabase := []lib.Visit{
+		lib.Visit{
+			ID:            "1",
+			UserID:        userData.ID,
+			VisitedUserID: targetUser.ID,
+			CreatedAt:     time.Now().Local(),
+		},
+	}
+	if compare := pretty.Compare(&expectedDatabase, visit); compare != "" {
+		t.Error(compare)
+	}
 }
 
-func TestGetUserLikedNoSharedTags(t *testing.T) {
+func TestGetUserLikedNoSharedTagsReportedAsFake(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)
 	targetUsername := "taget_test_" + lib.GetRandomString(43)
@@ -153,6 +173,7 @@ func TestGetUserLikedNoSharedTags(t *testing.T) {
 	_ = tests.InsertLike(lib.Like{UserID: "47", LikedUserID: userData.ID}, tests.DB)
 	_ = tests.InsertLike(lib.Like{UserID: "45", LikedUserID: userData.ID}, tests.DB)
 	_ = tests.InsertLike(lib.Like{UserID: "46", LikedUserID: "43"}, tests.DB)
+	_ = tests.InsertFakeReport(lib.FakeReport{UserID: userData.ID, TargetUserID: targetUser.ID}, tests.DB)
 	context := tests.ContextData{
 		DB:       tests.DB,
 		Username: username,
@@ -169,19 +190,20 @@ func TestGetUserLikedNoSharedTags(t *testing.T) {
 		t.Error(output)
 	}
 	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{
-		"firstname":      "MyFirstname",
-		"lastname":       "MyLastname",
-		"username":       targetUsername,
-		"pictures":       []string{"MyURL1", "MyURL3", "MyURL5"},
-		"biography":      "This is my story",
-		"age":            63,
-		"genre":          "example_genre",
-		"interesting_in": "example_interesting_in",
-		"location":       "MYZIP, myCity, myCountry",
-		"liked":          true,
-		"usersConnected": false,
-		"online":         false,
-		"rating":         5,
+		"firstname":        "MyFirstname",
+		"lastname":         "MyLastname",
+		"username":         targetUsername,
+		"pictures":         []string{"MyURL1", "MyURL3", "MyURL5"},
+		"biography":        "This is my story",
+		"age":              63,
+		"genre":            "example_genre",
+		"interesting_in":   "example_interesting_in",
+		"location":         "MYZIP, myCity, myCountry",
+		"liked":            true,
+		"users_connected":  false,
+		"online":           false,
+		"rating":           5,
+		"reported_as_fake": true,
 		"tags": map[string]interface{}{
 			"shared":   nil,
 			"personal": []string{"notsharedzero", "notsharedone", "notsharedtwo", "notsharedthree"},
@@ -189,6 +211,24 @@ func TestGetUserLikedNoSharedTags(t *testing.T) {
 	})
 	if strError != nil {
 		t.Errorf("%v", strError)
+	}
+	// Check : Updated data in database
+	var visit []lib.Visit
+	err := tests.DB.Select(&visit, "SELECT * FROM Visits WHERE userID = $1", userData.ID)
+	if err != nil {
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
+		return
+	}
+	expectedDatabase := []lib.Visit{
+		lib.Visit{
+			ID:            "1",
+			UserID:        userData.ID,
+			VisitedUserID: targetUser.ID,
+			CreatedAt:     time.Now().Local(),
+		},
+	}
+	if compare := pretty.Compare(&expectedDatabase, visit); compare != "" {
+		t.Error(compare)
 	}
 }
 
@@ -259,19 +299,20 @@ func TestGetUserNoLikedSharedTagsOnePictures(t *testing.T) {
 		t.Error(output)
 	}
 	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{
-		"firstname":      "MyFirstname",
-		"lastname":       "MyLastname",
-		"username":       targetUsername,
-		"pictures":       []string{"MyURL1"},
-		"biography":      "This is my story",
-		"age":            63,
-		"genre":          "example_genre",
-		"interesting_in": "example_interesting_in",
-		"location":       "MYZIP, myCity, myCountry",
-		"liked":          false,
-		"usersConnected": false,
-		"online":         false,
-		"rating":         5,
+		"firstname":        "MyFirstname",
+		"lastname":         "MyLastname",
+		"username":         targetUsername,
+		"pictures":         []string{"MyURL1"},
+		"biography":        "This is my story",
+		"age":              63,
+		"genre":            "example_genre",
+		"interesting_in":   "example_interesting_in",
+		"location":         "MYZIP, myCity, myCountry",
+		"liked":            false,
+		"users_connected":  false,
+		"online":           false,
+		"rating":           5,
+		"reported_as_fake": false,
 		"tags": map[string]interface{}{
 			"shared":   []string{"sharedzero", "sharedone", "sharedtwo", "sharedthree"},
 			"personal": nil,
@@ -279,6 +320,24 @@ func TestGetUserNoLikedSharedTagsOnePictures(t *testing.T) {
 	})
 	if strError != nil {
 		t.Errorf("%v", strError)
+	}
+	// Check : Updated data in database
+	var visit []lib.Visit
+	err := tests.DB.Select(&visit, "SELECT * FROM Visits WHERE userID = $1", userData.ID)
+	if err != nil {
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
+		return
+	}
+	expectedDatabase := []lib.Visit{
+		lib.Visit{
+			ID:            "1",
+			UserID:        userData.ID,
+			VisitedUserID: targetUser.ID,
+			CreatedAt:     time.Now().Local(),
+		},
+	}
+	if compare := pretty.Compare(&expectedDatabase, visit); compare != "" {
+		t.Error(compare)
 	}
 }
 

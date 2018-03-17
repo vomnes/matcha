@@ -1,8 +1,10 @@
 package tests
 
 import (
+	"fmt"
 	"log"
 	"reflect"
+	"strconv"
 	"time"
 
 	"github.com/go-redis/redis"
@@ -33,7 +35,8 @@ func InitTimeTest() {
 		if diff.Nanoseconds() < 50000 {
 			return "Now rounded to 0.5 secondes"
 		}
-		return t.String()
+		return fmt.Sprintf("%d-%d-%d %d:%d:%d.%s\n", TimeTest.Year(), TimeTest.Month(), TimeTest.Day(),
+			TimeTest.Hour(), TimeTest.Minute(), TimeTest.Second(), string(strconv.Itoa(TimeTest.Nanosecond())[0]))
 	}
 }
 
@@ -50,6 +53,8 @@ func DbClean() {
 		"Tags",
 		"Users_Tags",
 		"Likes",
+		"Visits",
+		"Fake_Reports",
 	}
 	for _, table := range tables {
 		DB.MustExec("TRUNCATE TABLE " + table + " RESTART IDENTITY")

@@ -104,6 +104,31 @@ func getHasLikedAreConnectedStatus(db *sqlx.DB, userID, targetID string) (bool, 
 	return hasLiked, areConnected, 0, ""
 }
 
+func getFakeReport(db *sqlx.DB, userID, targetID string) (bool, int, string) {
+	var fakeReport lib.FakeReport
+	err := db.Get(&fakeReport, `Select userid, target_userid
+		From Fake_Reports
+		Where userid = $1 AND target_userid = $2`, userID, targetID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, 0, ""
+		}
+		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to collect likes in database " + err.Error()))
+		return false, 500, "Failed to collect likes in the database"
+	}
+	return true, 0, ""
+}
+
+func addVisit(db *sqlx.DB, userID, targetID string) (int, string) {
+	stmt, err := db.Preparex(`INSERT INTO Visits (userid, visited_userid) VALUES ($1, $2)`)
+	if err != nil {
+		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request insert visit" + "UserId: " + userID + " " + err.Error()))
+		return 500, "Insert new visit failed"
+	}
+	_ = stmt.QueryRow(userID, targetID)
+	return 0, ""
+}
+
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	db, _, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"GET"})
 	if !ok {
@@ -117,36 +142,47 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, 406, "Username parameter is invalid")
 		return
 	}
-	userData, errCode, errContent := getUserData(db, targetUsername)
+	targetUserData, errCode, errContent := getUserData(db, targetUsername)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	sharedTags, notSharedTags, errCode, errContent, err := getTags(db, userID, userData.ID)
+	sharedTags, notSharedTags, errCode, errContent, err := getTags(db, userID, targetUserData.ID)
 	if err != nil {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	hasLiked, areConnected, errCode, errContent := getHasLikedAreConnectedStatus(db, userID, userData.ID)
+	hasLiked, areConnected, errCode, errContent := getHasLikedAreConnectedStatus(db, userID, targetUserData.ID)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	// pretty.Print(userData)
+	isReportedAsFake, errCode, errContent := getFakeReport(db, userID, targetUserData.ID)
+	if errCode != 0 || errContent != "" {
+		lib.RespondWithErrorHTTP(w, errCode, errContent)
+		return
+	}
+	errCode, errContent = addVisit(db, userID, targetUserData.ID)
+	if errCode != 0 || errContent != "" {
+		lib.RespondWithErrorHTTP(w, errCode, errContent)
+		return
+	}
+	// pretty.Print(targetUserData)
 	lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{
-		"username":       targetUsername,
-		"firstname":      userData.Firstname,
-		"lastname":       userData.Lastname,
-		"biography":      userData.Biography,
-		"genre":          userData.Genre,
-		"interesting_in": userData.InterestingIn,
-		"location":       userData.ZIP + ", " + userData.City + ", " + userData.Country,
-		"age":            getUserAge(*userData.Birthday),
-		"pictures":       arrayPicture(userData),
-		"rating":         5,
-		"liked":          hasLiked,
-		"usersConnected": areConnected,
-		"online":         userData.Online,
+		"username":         targetUsername,
+		"firstname":        targetUserData.Firstname,
+		"lastname":         targetUserData.Lastname,
+		"biography":        targetUserData.Biography,
+		"genre":            targetUserData.Genre,
+		"interesting_in":   targetUserData.InterestingIn,
+		"location":         targetUserData.ZIP + ", " + targetUserData.City + ", " + targetUserData.Country,
+		"age":              getUserAge(*targetUserData.Birthday),
+		"pictures":         arrayPicture(targetUserData),
+		"rating":           5,
+		"liked":            hasLiked,
+		"users_connected":  areConnected,
+		"reported_as_fake": isReportedAsFake,
+		"online":           targetUserData.Online,
 		"tags": map[string]interface{}{
 			"shared":   sharedTags,
 			"personal": notSharedTags,

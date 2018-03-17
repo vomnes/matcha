@@ -84,3 +84,39 @@ func InsertLike(data lib.Like, db *sqlx.DB) lib.Like {
 	}
 	return data
 }
+
+// InsertVisit take as parameter a Visits structure and the db
+// Insert in the table Visits of the database the element in data (Visit)
+// The row insered is stored in the input Visit structure
+func InsertVisit(data lib.Visit, db *sqlx.DB) lib.Visit {
+	stmt, err := db.Prepare(`INSERT INTO visits (userId, visited_userid)
+	VALUES ($1, $2)
+	RETURNING id, created_at`)
+	if err != nil {
+		log.Fatal(lib.PrettyError("Failed to prepare request Visit data" + err.Error()))
+	}
+	row := stmt.QueryRow(data.UserID, data.VisitedUserID)
+	err = row.Scan(&data.ID, &data.CreatedAt)
+	if err != nil {
+		log.Fatal(lib.PrettyError("Failed to get new Visit data" + err.Error()))
+	}
+	return data
+}
+
+// InsertFakeReport take as parameter a FakeReports structure and the db
+// Insert in the table FakeReports of the database the element in data (FakeReport)
+// The row insered is stored in the input FakeReport structure
+func InsertFakeReport(data lib.FakeReport, db *sqlx.DB) lib.FakeReport {
+	stmt, err := db.Prepare(`INSERT INTO Fake_Reports (userId, target_userid)
+	VALUES ($1, $2)
+	RETURNING id, created_at`)
+	if err != nil {
+		log.Fatal(lib.PrettyError("Failed to prepare request FakeReport data" + err.Error()))
+	}
+	row := stmt.QueryRow(data.UserID, data.TargetUserID)
+	err = row.Scan(&data.ID, &data.CreatedAt)
+	if err != nil {
+		log.Fatal(lib.PrettyError("Failed to get new FakeReport data" + err.Error()))
+	}
+	return data
+}
