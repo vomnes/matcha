@@ -27,8 +27,9 @@ test:
 	@go test ./src/routes/account/.
 	@go test ./src/routes/mail/.
 	@go test ./src/routes/profile/.
+	@go test ./src/routes/user/.
 
-test-r:
+test-d:
 	@go test -v ./src/routes/$(TARGET)/.
 
 test-verbose:
@@ -36,6 +37,7 @@ test-verbose:
 	@go test -v ./src/routes/account/.
 	@go test -v ./src/routes/mail/.
 	@go test -v ./src/routes/profile/.
+	@go test -v ./src/routes/user/.
 
 test-target:
 	go test -v -run '$(TARGET)' ./src/...

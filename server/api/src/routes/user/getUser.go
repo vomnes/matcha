@@ -56,8 +56,8 @@ func getUserAge(date time.Time) int {
 
 func getTags(db *sqlx.DB, userID, targetID string) ([]string, []string, int, string, error) {
 	var tags []userTags
-	err := db.Select(&tags, `Select u.userid, u.tagid, t.name From Users_Tags u Left
-    Join Tags t On t.id = u.tagid
+	err := db.Select(&tags, `Select u.userid, u.tagid, t.name From Users_Tags u
+		Left Join Tags t On t.id = u.tagid
     Where  userid = $1 OR userid = $2`, userID, targetID)
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to collect user tags in database " + err.Error()))
@@ -79,6 +79,29 @@ func getTags(db *sqlx.DB, userID, targetID string) ([]string, []string, int, str
 		}
 	}
 	return sharedTags, notSharedTags, 0, "", nil
+}
+
+func getHasLikedAreConnectedStatus(db *sqlx.DB, userID, targetID string) (bool, bool, int, string) {
+	var hasLiked, isLiked, areConnected bool
+	var likes []lib.Like
+	err := db.Select(&likes, `Select userid, liked_userid From Likes Where
+		(userid = $1 AND liked_userid = $2) OR
+		(userid = $2 AND liked_userid = $1)`, userID, targetID)
+	if err != nil {
+		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to collect likes in database " + err.Error()))
+		return false, false, 500, "Failed to collect likes in the database"
+	}
+	for _, like := range likes {
+		if like.UserID == userID && like.LikedUserID == targetID {
+			hasLiked = true
+		} else if like.UserID == targetID && like.LikedUserID == userID {
+			isLiked = true
+		}
+	}
+	if hasLiked && isLiked {
+		areConnected = true
+	}
+	return hasLiked, areConnected, 0, ""
 }
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
@@ -104,6 +127,11 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
+	hasLiked, areConnected, errCode, errContent := getHasLikedAreConnectedStatus(db, userID, userData.ID)
+	if errCode != 0 || errContent != "" {
+		lib.RespondWithErrorHTTP(w, errCode, errContent)
+		return
+	}
 	// pretty.Print(userData)
 	lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{
 		"username":       targetUsername,
@@ -116,9 +144,9 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		"age":            getUserAge(*userData.Birthday),
 		"pictures":       arrayPicture(userData),
 		"rating":         5,
-		"liked":          false,
-		"userConnected":  false,
-		"online":         true,
+		"liked":          hasLiked,
+		"usersConnected": areConnected,
+		"online":         userData.Online,
 		"tags": map[string]interface{}{
 			"shared":   sharedTags,
 			"personal": notSharedTags,

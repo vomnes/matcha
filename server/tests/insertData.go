@@ -16,8 +16,8 @@ func InsertUser(data lib.User, db *sqlx.DB) lib.User {
 		(username, email, lastname, firstname, password, random_token,
 			picture_url_1, picture_url_2, picture_url_3, picture_url_4, picture_url_5,
 			biography, birthday, genre, interesting_in, city, zip, country,
-			latitude, longitude, geolocalisation_allowed)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
+			latitude, longitude, geolocalisation_allowed, online)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
 		RETURNING id, created_at`)
 	if err != nil {
 		log.Fatal(lib.PrettyError("Failed to prepare request User data" + err.Error()))
@@ -25,7 +25,7 @@ func InsertUser(data lib.User, db *sqlx.DB) lib.User {
 	row := stmt.QueryRow(data.Username, data.Email, data.Lastname, data.Firstname, data.Password, data.RandomToken,
 		data.PictureURL_1, data.PictureURL_2, data.PictureURL_3, data.PictureURL_4, data.PictureURL_5,
 		data.Biography, data.Birthday, data.Genre, data.InterestingIn, data.City, data.ZIP, data.Country,
-		data.Latitude, data.Longitude, data.GeolocalisationAllowed)
+		data.Latitude, data.Longitude, data.GeolocalisationAllowed, data.Online)
 	err = row.Scan(&data.ID, &data.CreatedAt)
 	if err != nil {
 		log.Fatal(lib.PrettyError("Failed to get new User data" + err.Error()))
@@ -63,6 +63,24 @@ func InsertUserTag(data lib.UserTag, db *sqlx.DB) lib.UserTag {
 	err = row.Scan(&data.ID)
 	if err != nil {
 		log.Fatal(lib.PrettyError("Failed to get new User_Tag data" + err.Error()))
+	}
+	return data
+}
+
+// InsertLike take as parameter a Likes structure and the db
+// Insert in the table Likes of the database the element in data (Like)
+// The row insered is stored in the input Like structure
+func InsertLike(data lib.Like, db *sqlx.DB) lib.Like {
+	stmt, err := db.Prepare(`INSERT INTO likes (userId, liked_userID)
+	VALUES ($1, $2)
+	RETURNING id, created_at`)
+	if err != nil {
+		log.Fatal(lib.PrettyError("Failed to prepare request Like data" + err.Error()))
+	}
+	row := stmt.QueryRow(data.UserID, data.LikedUserID)
+	err = row.Scan(&data.ID, &data.CreatedAt)
+	if err != nil {
+		log.Fatal(lib.PrettyError("Failed to get new Like data" + err.Error()))
 	}
 	return data
 }

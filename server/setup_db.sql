@@ -29,7 +29,8 @@ CREATE TABLE Users (
   country VARCHAR (65)     DEFAULT '',
   latitude DECIMAL(9,6) DEFAULT NULL,
   longitude DECIMAL(9,6) DEFAULT NULL,
-  geolocalisation_allowed BOOLEAN NOT NULL DEFAULT FALSE
+  geolocalisation_allowed BOOLEAN NOT NULL DEFAULT FALSE,
+  online BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE Tags (
@@ -41,6 +42,13 @@ CREATE TABLE Users_Tags (
   ID SERIAL PRIMARY KEY,
   userID SERIAL NOT NULL,
   tagID SERIAL NOT NULL
+);
+
+CREATE TABLE Likes (
+  ID SERIAL PRIMARY KEY,
+  userID SERIAL NOT NULL,
+  liked_userID SERIAL NOT NULL,
+  created_at timestamp with time zone DEFAULT current_timestamp
 );
 
 INSERT INTO Users (username, email, lastname, firstname, password) VALUES ('vomnes', 'valentin.omnes@gmail.com', 'Omnes', 'Valentin', '$2a$10$pgek6WtdhtKmGXPWOOtEf.gsgtNXOkqr3pBjaCCa9il6XhRS7LAua');
@@ -77,7 +85,8 @@ CREATE TABLE Users (
   country VARCHAR (65)     DEFAULT '',
   latitude DECIMAL(9,6) DEFAULT NULL,
   longitude DECIMAL(9,6) DEFAULT NULL,
-  geolocalisation_allowed BOOLEAN NOT NULL DEFAULT FALSE
+  geolocalisation_allowed BOOLEAN NOT NULL DEFAULT FALSE,
+  online BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE Tags (
@@ -89,4 +98,11 @@ CREATE TABLE Users_Tags (
   ID SERIAL PRIMARY KEY,
   userID SERIAL NOT NULL,
   tagID SERIAL NOT NULL
+);
+
+CREATE TABLE Likes (
+  ID SERIAL PRIMARY KEY,
+  userID SERIAL NOT NULL,
+  liked_userID SERIAL NOT NULL,
+  created_at timestamp with time zone DEFAULT current_timestamp
 );

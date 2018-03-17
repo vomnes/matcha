@@ -29,6 +29,7 @@ type User struct {
 	Latitude               *float64   `db:"latitude"`
 	Longitude              *float64   `db:"longitude"`
 	GeolocalisationAllowed bool       `db:"geolocalisation_allowed"`
+	Online                 bool       `db:"online"`
 }
 
 // Tag is the data structure of the table Tag from PostgreSQL
@@ -42,4 +43,12 @@ type UserTag struct {
 	ID     string `db:"id"`
 	UserID string `db:"userid"`
 	TagID  string `db:"tagid"`
+}
+
+// Like is the data structure of the table Likes from PostgreSQL
+type Like struct {
+	ID          string    `db:"id"`
+	UserID      string    `db:"userid"`
+	LikedUserID string    `db:"liked_userid"`
+	CreatedAt   time.Time `db:"created_at"`
 }
