@@ -1,22 +1,14 @@
 package user
 
 import (
-	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
 
 	"../../../../lib"
 	"../../../../tests"
-	"github.com/gorilla/mux"
 	"github.com/kylelemons/godebug/pretty"
 )
-
-func testApplicantServer() http.Handler {
-	r := mux.NewRouter()
-	r.HandleFunc("/v1/users/{username}", GetUser)
-	return r
-}
 
 func TestGetUser(t *testing.T) {
 	tests.DbClean()
