@@ -13,7 +13,7 @@ import (
 func TestLikeAdd(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)
-	targetUsername := "taget_test_" + lib.GetRandomString(43)
+	targetUsername := "target_test_" + lib.GetRandomString(43)
 	userData := tests.InsertUser(lib.User{Username: username}, tests.DB)
 	targetData := tests.InsertUser(lib.User{Username: targetUsername}, tests.DB)
 	_ = tests.InsertLike(lib.Like{UserID: userData.ID, LikedUserID: "42"}, tests.DB)
@@ -64,7 +64,7 @@ func TestLikeAdd(t *testing.T) {
 func TestLikeAddAlreadyLiked(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)
-	targetUsername := "taget_test_" + lib.GetRandomString(43)
+	targetUsername := "target_test_" + lib.GetRandomString(43)
 	userData := tests.InsertUser(lib.User{Username: username}, tests.DB)
 	targetData := tests.InsertUser(lib.User{Username: targetUsername}, tests.DB)
 	_ = tests.InsertLike(lib.Like{UserID: userData.ID, LikedUserID: targetData.ID}, tests.DB)
@@ -206,7 +206,7 @@ func TestLikeWrongMethod(t *testing.T) {
 func TestLikeDelete(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)
-	targetUsername := "taget_test_" + lib.GetRandomString(43)
+	targetUsername := "target_test_" + lib.GetRandomString(43)
 	userData := tests.InsertUser(lib.User{Username: username}, tests.DB)
 	targetData := tests.InsertUser(lib.User{Username: targetUsername}, tests.DB)
 	_ = tests.InsertLike(lib.Like{UserID: userData.ID, LikedUserID: "42"}, tests.DB)

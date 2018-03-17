@@ -26,8 +26,8 @@ func getUserIDFromUsername(db *sqlx.DB, username string) (string, int, string) {
 func insertLike(db *sqlx.DB, userID, targetUserID string) (int, string) {
 	stmt, err := db.Preparex(`INSERT INTO Likes (userid, liked_userID) VALUES ($1, $2)`)
 	if err != nil {
-		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request insert tag" + err.Error()))
-		return 500, "Insert new tag failed"
+		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request insert like" + err.Error()))
+		return 500, "Insert new like failed"
 	}
 	_ = stmt.QueryRow(userID, targetUserID)
 	return 0, ""
@@ -74,8 +74,7 @@ func Like(w http.ResponseWriter, r *http.Request) {
 	}
 	vars := mux.Vars(r)
 	targetUsername := vars["username"]
-	right := lib.IsValidUsername(targetUsername)
-	if right == false {
+	if right := lib.IsValidUsername(targetUsername); !right {
 		lib.RespondWithErrorHTTP(w, 406, "Username parameter is invalid")
 		return
 	}

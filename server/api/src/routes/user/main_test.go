@@ -15,6 +15,7 @@ func testApplicantServer() http.Handler {
 	r := mux.NewRouter()
 	r.HandleFunc("/v1/users/{username}", GetUser)
 	r.HandleFunc("/v1/users/{username}/like", Like)
+	r.HandleFunc("/v1/users/{username}/fake", HandleReportFake)
 	return r
 }
 

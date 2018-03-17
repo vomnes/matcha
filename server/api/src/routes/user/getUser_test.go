@@ -13,7 +13,7 @@ import (
 func TestGetUser(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)
-	targetUsername := "taget_test_" + lib.GetRandomString(43)
+	targetUsername := "target_test_" + lib.GetRandomString(43)
 	birthdayTime := time.Date(1955, 1, 6, 0, 0, 0, 0, time.UTC)
 	lat := 1.4
 	lng := 56.0
@@ -121,7 +121,7 @@ func TestGetUser(t *testing.T) {
 func TestGetUserLikedNoSharedTagsReportedAsFake(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)
-	targetUsername := "taget_test_" + lib.GetRandomString(43)
+	targetUsername := "target_test_" + lib.GetRandomString(43)
 	birthdayTime := time.Date(1955, 1, 6, 0, 0, 0, 0, time.UTC)
 	lat := 1.4
 	lng := 56.0
@@ -227,7 +227,7 @@ func TestGetUserLikedNoSharedTagsReportedAsFake(t *testing.T) {
 func TestGetUserNoLikedSharedTagsOnePictures(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)
-	targetUsername := "taget_test_" + lib.GetRandomString(43)
+	targetUsername := "target_test_" + lib.GetRandomString(43)
 	birthdayTime := time.Date(1955, 1, 6, 0, 0, 0, 0, time.UTC)
 	lat := 1.4
 	lng := 56.0
