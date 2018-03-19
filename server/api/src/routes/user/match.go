@@ -2,13 +2,28 @@ package user
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 
 	"../../../../lib"
 	"github.com/jmoiron/sqlx"
-	"github.com/kr/pretty"
+	"github.com/kylelemons/godebug/pretty"
 )
+
+type match struct {
+	ID            string   `db:"id"`
+	Username      string   `db:"username"`
+	Lastname      string   `db:"lastname"`
+	Firstname     string   `db:"firstname"`
+	PictureURL_1  string   `db:"picture_url_1"`
+	Genre         string   `db:"genre"`
+	InterestingIn string   `db:"interesting_in"`
+	Latitude      *float64 `db:"latitude"`
+	Longitude     *float64 `db:"longitude"`
+	Distance      *float64 `db:"distance"`
+	Age           string   `db:"age"`
+}
 
 func getLoggedInUserData(db *sqlx.DB, userID string) (lib.User, int, string) {
 	var loggedInUser lib.User
@@ -20,32 +35,15 @@ func getLoggedInUserData(db *sqlx.DB, userID string) (lib.User, int, string) {
 	return loggedInUser, 0, ""
 }
 
-func handleGenre(loggedInUser lib.User) ([]string, []string) {
-	var matchGenre, matchInterestingIn []string
+func handleGenre(loggedInUser lib.User) (string, string) {
+	var matchGenre, matchInterestingIn string
 	if loggedInUser.InterestingIn == "bisexual" {
-		matchGenre = []string{"male", "female"}
+		matchGenre = `'male', 'female'`
 	} else {
-		matchGenre = []string{loggedInUser.Genre}
+		matchGenre = `'` + loggedInUser.InterestingIn + `'`
 	}
-	matchInterestingIn = []string{loggedInUser.Genre, "bisuxual"}
+	matchInterestingIn = `'` + loggedInUser.Genre + `', 'bisexual'`
 	return matchGenre, matchInterestingIn
-}
-
-func distanceRequest(lat1, lng1, lat2, lng2, radius string) string {
-	// Radius -> 6371 km or 3959 mi
-	return `(2 * ` + radius + ` *
-    asin(
-      sqrt(
-        sin(radians(` + lat2 + ` - ` + lat1 + `) / 2) ^ 2 +
-        cos(radians(` + lat1 + `)) *
-        cos(radians(` + lat2 + `)) *
-        sin(radians(` + lng2 + ` - ` + lng1 + `) / 2) ^ 2
-      )
-    ))`
-}
-
-func ageRequest(timestamp string) string {
-	return `age(` + timestamp + `)`
 }
 
 func blockedRequest(one string) string {
@@ -56,35 +54,37 @@ func blockedRequest(one string) string {
   `
 }
 
-func getUsers(db *sqlx.DB, userID string) ([]lib.User, int, string) {
+func getUsers(db *sqlx.DB, userID string) ([]match, int, string) {
 	loggedInUser, errCode, errContent := getLoggedInUserData(db, userID)
 	if errCode != 0 && errContent != "" {
-		return []lib.User{}, errCode, errContent
+		return []match{}, errCode, errContent
 	}
 	matchGenre, matchInterestingIn := handleGenre(loggedInUser)
-	var users []lib.User
+	var users []match
 	request := `SELECT
-    id,
-    ` + distanceRequest("latitude", "longitude", "$3", "$4", "6371") + ` as distance,
-    ` + ageRequest("birthday") + ` as age,
-    FROM Users
-    WHERE
-      id <> $1 AND
-      genre IN ($2) AND
-      interesting_in IN ($3) AND
-      ` + blockedRequest("$1")
-	err := db.Select(&users, request, userID, matchGenre, matchInterestingIn)
+	  id, username, latitude, longitude,
+	  geodistance(latitude, longitude, $1, $2) as distance,
+	  ageyear(birthday) as age
+	  FROM Users
+	  WHERE
+	    id <> $3 AND
+	    genre IN (` + matchGenre + `) AND
+	    interesting_in IN (` + matchInterestingIn + `) AND
+	    ` + blockedRequest("$3")
+	err := db.Select(&users, request, 48.8895812, 2.3393303, userID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return []lib.User{}, 0, ""
+			fmt.Println("Here")
+			return []match{}, 0, ""
 		}
 		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to collect user data in database" + err.Error()))
-		return []lib.User{}, 500, "Failed to collect user data in the database"
+		return []match{}, 500, "Failed to collect user data in the database"
 	}
+	fmt.Println("-->", users)
 	return users, 0, ""
 }
 
-func Browsing(w http.ResponseWriter, r *http.Request) {
+func Match(w http.ResponseWriter, r *http.Request) {
 	db, _, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"GET"})
 	if !ok {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
@@ -98,3 +98,15 @@ func Browsing(w http.ResponseWriter, r *http.Request) {
 	pretty.Print(users)
 	lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{})
 }
+
+// request := `SELECT
+// 	id,
+// 	` + distanceRequest("latitude", "longitude", "$1", "$2", "6371") + ` as distance,
+// 	` + ageRequest("birthday") + ` as age
+// 	FROM Users
+// 	WHERE
+// 		id <> $3 AND
+// 		genre IN ($4) AND
+// 		interesting_in IN ($5) AND
+// 		` + blockedRequest("$3")
+// err := db.Select(&users, request, 1.2, 2.4, userID, pq.Array(matchGenre), pq.Array(matchInterestingIn))
