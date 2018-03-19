@@ -31,7 +31,7 @@ func handleGenre(loggedInUser lib.User) ([]string, []string) {
 	return matchGenre, matchInterestingIn
 }
 
-func getDistance(lat1, lng1, lat2, lng2, radius string) string {
+func distanceRequest(lat1, lng1, lat2, lng2, radius string) string {
 	// Radius -> 6371 km or 3959 mi
 	return `(2 * ` + radius + ` *
     asin(
@@ -44,8 +44,16 @@ func getDistance(lat1, lng1, lat2, lng2, radius string) string {
     ))`
 }
 
-func getAge(timestamp string) string {
+func ageRequest(timestamp string) string {
 	return `age(` + timestamp + `)`
+}
+
+func blockedRequest(one string) string {
+	return `
+  id NOT IN (Select target_userid From Fake_Reports Where userid = ` + one + `)
+    AND
+  id NOT IN (Select userid From Fake_Reports Where target_userid = ` + one + `)
+  `
 }
 
 func getUsers(db *sqlx.DB, userID string) ([]lib.User, int, string) {
@@ -57,14 +65,14 @@ func getUsers(db *sqlx.DB, userID string) ([]lib.User, int, string) {
 	var users []lib.User
 	request := `SELECT
     id,
-    ` + getDistance("latitude", "longitude", "$3", "$4", "6371") + ` as distance,
-    ` + getAge("birthday") + ` as age,
+    ` + distanceRequest("latitude", "longitude", "$3", "$4", "6371") + ` as distance,
+    ` + ageRequest("birthday") + ` as age,
     FROM Users
     WHERE
       id <> $1 AND
-      genre IN ($2)
-      interesting_in IN ($3)
-      id NOT IN (Select target_userid From Fake_Reports Where userid = $1)`
+      genre IN ($2) AND
+      interesting_in IN ($3) AND
+      ` + blockedRequest("$1")
 	err := db.Select(&users, request, userID, matchGenre, matchInterestingIn)
 	if err != nil {
 		if err == sql.ErrNoRows {
