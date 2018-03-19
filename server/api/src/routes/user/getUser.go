@@ -167,7 +167,6 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	// pretty.Print(targetUserData)
 	lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{
 		"username":         targetUsername,
 		"firstname":        targetUserData.Firstname,
