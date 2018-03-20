@@ -30,6 +30,11 @@ func addFake(w http.ResponseWriter, r *http.Request, db *sqlx.DB, userID, target
 				lib.RespondWithErrorHTTP(w, errCode, errContent)
 				return
 			}
+			errCode, errContent = updateRating(db, userID)
+			if errCode != 0 || errContent != "" {
+				lib.RespondWithErrorHTTP(w, errCode, errContent)
+				return
+			}
 			lib.RespondEmptyHTTP(w, http.StatusOK)
 			return
 		}
@@ -48,6 +53,11 @@ func deleteFake(w http.ResponseWriter, r *http.Request, db *sqlx.DB, userID, tar
 		return
 	}
 	_ = stmt.QueryRowx(userID, targetUserID)
+	errCode, errContent := updateRating(db, userID)
+	if errCode != 0 || errContent != "" {
+		lib.RespondWithErrorHTTP(w, errCode, errContent)
+		return
+	}
 	lib.RespondEmptyHTTP(w, http.StatusOK)
 }
 

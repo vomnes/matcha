@@ -1,7 +1,6 @@
 package user
 
 import (
-	"log"
 	"net/http/httptest"
 	"testing"
 	"time"
@@ -15,7 +14,7 @@ func TestLikeAdd(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)
 	targetUsername := "target_test_" + lib.GetRandomString(43)
-	userData := tests.InsertUser(lib.User{Username: username}, tests.DB)
+	userData := tests.InsertUser(lib.User{Username: username, Rating: 1.0}, tests.DB)
 	targetData := tests.InsertUser(lib.User{Username: targetUsername}, tests.DB)
 	_ = tests.InsertLike(lib.Like{UserID: userData.ID, LikedUserID: "42"}, tests.DB)
 	// -> Rating
@@ -90,7 +89,15 @@ func TestLikeAdd(t *testing.T) {
 	if compare := pretty.Compare(&expectedDatabase, likes); compare != "" {
 		t.Error(compare)
 	}
-	log.Fatal()
+	var user lib.User
+	err = tests.DB.Get(&user, "SELECT rating FROM users WHERE id = $1", userData.ID)
+	if err != nil {
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
+		return
+	}
+	if user.Rating != 3.711111 {
+		t.Error("\x1b[1;31m Rating not updated in the table user\033[0m")
+	}
 }
 
 func TestLikeAddAlreadyLiked(t *testing.T) {

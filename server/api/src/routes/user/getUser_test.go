@@ -75,7 +75,7 @@ func TestGetUser(t *testing.T) {
 	if output != "" {
 		t.Error(output)
 	}
-	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{
+	expectedJSONResponse := map[string]interface{}{
 		"firstname":        "MyFirstname",
 		"lastname":         "MyLastname",
 		"username":         targetUsername,
@@ -91,10 +91,11 @@ func TestGetUser(t *testing.T) {
 		"rating":           2.5,
 		"reported_as_fake": false,
 		"tags": map[string]interface{}{
-			"shared":   []string{"sharedzero", "sharedone"},
-			"personal": []string{"notsharedtwo", "notsharedthree"},
+			"shared":   []string{"sharedone", "sharedzero"},
+			"personal": []string{"notsharedthree", "notsharedtwo"},
 		},
-	})
+	}
+	strError := tests.CompareResponseJSONCode(w, 200, expectedJSONResponse)
 	if strError != nil {
 		t.Errorf("%v", strError)
 	}
@@ -198,7 +199,7 @@ func TestGetUserLikedNoSharedTagsReportedAsFake(t *testing.T) {
 		"reported_as_fake": true,
 		"tags": map[string]interface{}{
 			"shared":   nil,
-			"personal": []string{"notsharedzero", "notsharedone", "notsharedtwo", "notsharedthree"},
+			"personal": []string{"notsharedone", "notsharedthree", "notsharedtwo", "notsharedzero"},
 		},
 	})
 	if strError != nil {
@@ -306,7 +307,7 @@ func TestGetUserNoLikedSharedTagsOnePictures(t *testing.T) {
 		"rating":           2.5,
 		"reported_as_fake": false,
 		"tags": map[string]interface{}{
-			"shared":   []string{"sharedzero", "sharedone", "sharedtwo", "sharedthree"},
+			"shared":   []string{"sharedone", "sharedthree", "sharedtwo", "sharedzero"},
 			"personal": nil,
 		},
 	})

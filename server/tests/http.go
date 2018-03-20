@@ -93,7 +93,10 @@ func CompareResponseJSONCode(w *httptest.ResponseRecorder, expectedCode int, exp
 			errorArray = append(errorArray, "\x1b[1;31m"+err.Error()+"\033[0m\n")
 		}
 	}
-	if compare := pretty.Compare(&expectedJSONResponse, response); compare != "" {
+	compact := &pretty.Config{
+		Diffable: true,
+	}
+	if compare := compact.Compare(&expectedJSONResponse, response); compare != "" {
 		errorArray = append(errorArray, compare)
 	}
 	return errorArray

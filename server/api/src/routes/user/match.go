@@ -16,7 +16,7 @@ type match struct {
 	Username      string   `db:"username"`
 	Lastname      string   `db:"lastname"`
 	Firstname     string   `db:"firstname"`
-	PictureURL_1  string   `db:"picture_url_1"`
+	PictureURL1   string   `db:"picture_url_1"`
 	Genre         string   `db:"genre"`
 	InterestingIn string   `db:"interesting_in"`
 	Latitude      *float64 `db:"latitude"`
@@ -84,6 +84,7 @@ func getUsers(db *sqlx.DB, userID string) ([]match, int, string) {
 	return users, 0, ""
 }
 
+// Match ...
 func Match(w http.ResponseWriter, r *http.Request) {
 	db, _, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"GET"})
 	if !ok {
@@ -98,15 +99,3 @@ func Match(w http.ResponseWriter, r *http.Request) {
 	pretty.Print(users)
 	lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{})
 }
-
-// request := `SELECT
-// 	id,
-// 	` + distanceRequest("latitude", "longitude", "$1", "$2", "6371") + ` as distance,
-// 	` + ageRequest("birthday") + ` as age
-// 	FROM Users
-// 	WHERE
-// 		id <> $3 AND
-// 		genre IN ($4) AND
-// 		interesting_in IN ($5) AND
-// 		` + blockedRequest("$3")
-// err := db.Select(&users, request, 1.2, 2.4, userID, pq.Array(matchGenre), pq.Array(matchInterestingIn))

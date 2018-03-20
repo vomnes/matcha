@@ -2,7 +2,6 @@ package user
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -10,85 +9,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 )
-
-type link struct {
-	Count       uint8
-	LikedByUser bool
-}
-
-func getNumberLikesConnections(db *sqlx.DB, userID string) (float64, float64, int, string) {
-	var likes []lib.Like
-	err := db.Select(&likes, `Select userid, liked_userid From Likes Where userid = $1 OR liked_userid = $1`, userID)
-	if err != nil {
-		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to collect likes in database " + err.Error()))
-		return 0, 0, 500, "Failed to collect likes in the database"
-	}
-	links := make(map[string]link)
-	for _, like := range likes {
-		if like.UserID == userID {
-			links[like.LikedUserID] = link{
-				Count:       links[like.LikedUserID].Count + 1,
-				LikedByUser: true,
-			}
-		} else if like.LikedUserID == userID {
-			links[like.UserID] = link{
-				Count:       links[like.UserID].Count + 1,
-				LikedByUser: links[like.LikedUserID].LikedByUser,
-			}
-		}
-	}
-	var nbLikes, nbConnections float64
-	for _, link := range links {
-		if link.LikedByUser == true {
-			if link.Count >= 2 {
-				nbConnections++
-				nbLikes++
-			}
-		} else {
-			nbLikes++
-		}
-	}
-	return nbLikes, nbConnections, 0, ""
-}
-
-func getNumberVisits(db *sqlx.DB, userID string) (float64, int, string) {
-	var visits []lib.Visit
-	err := db.Select(&visits, `Select Distinct on (userid) userid, visited_userid From Visits Where visited_userid = $1`, userID)
-	if err != nil {
-		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to collect visits in database " + err.Error()))
-		return 0, 500, "Failed to collect visits in the database"
-	}
-	return float64(len(visits)), 0, ""
-}
-
-func getNumberFakeReports(db *sqlx.DB, userID string) (float64, int, string) {
-	var reports []lib.FakeReport
-	err := db.Select(&reports, `Select id From Fake_reports Where target_userid = $1`, userID)
-	if err != nil {
-		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to collect fake reports in database " + err.Error()))
-		return 0, 500, "Failed to collect fake reports in the database"
-	}
-	return float64(len(reports)), 0, ""
-}
-
-func updateRating(db *sqlx.DB, userID string) (int, string) {
-	var nbLikes, nbConnection, nbVisits, nbFakeReports, rating float64
-	nbLikes, nbConnection, errCode, errContent := getNumberLikesConnections(db, userID)
-	if errCode != 0 || errContent != "" {
-		return errCode, errContent
-	}
-	nbVisits, errCode, errContent = getNumberVisits(db, userID)
-	if errCode != 0 || errContent != "" {
-		return errCode, errContent
-	}
-	nbFakeReports, errCode, errContent = getNumberFakeReports(db, userID)
-	if errCode != 0 || errContent != "" {
-		return errCode, errContent
-	}
-	rating = 2.0*(nbLikes*(0.9+(nbConnection/100.0)))/nbVisits + 2.0*(1.0-(nbFakeReports*5.0)/100.0)
-	fmt.Printf("Number likes: %f\nNumber connections: %f\nNumber visits: %f\nNumber fakes reports: %f\nRating: %f\n", nbLikes, nbConnection, nbVisits, nbFakeReports, rating)
-	return 0, ""
-}
 
 func getUserIDFromUsername(db *sqlx.DB, username string) (string, int, string) {
 	var user lib.User
@@ -98,7 +18,7 @@ func getUserIDFromUsername(db *sqlx.DB, username string) (string, int, string) {
 			return "", 406, "User[" + username + "] doesn't exists"
 		}
 		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to collect user data in database" + err.Error()))
-		return "", 500, "Failed to collect user data in the database"
+		return "", 500, "Failed to gather user data in the database"
 	}
 	return user.ID, 0, ""
 }
@@ -124,7 +44,11 @@ func addLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB,
 				lib.RespondWithErrorHTTP(w, errCode, errContent)
 				return
 			}
-			updateRating(db, userID)
+			errCode, errContent = updateRating(db, userID)
+			if errCode != 0 || errContent != "" {
+				lib.RespondWithErrorHTTP(w, errCode, errContent)
+				return
+			}
 			lib.RespondEmptyHTTP(w, http.StatusOK)
 			return
 		}
@@ -143,6 +67,11 @@ func deleteLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB, userID, tar
 		return
 	}
 	_ = stmt.QueryRowx(userID, targetUserID)
+	errCode, errContent := updateRating(db, userID)
+	if errCode != 0 || errContent != "" {
+		lib.RespondWithErrorHTTP(w, errCode, errContent)
+		return
+	}
 	lib.RespondEmptyHTTP(w, http.StatusOK)
 }
 

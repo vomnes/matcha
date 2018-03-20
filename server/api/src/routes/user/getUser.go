@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"sort"
 	"time"
 
 	"../../../../lib"
@@ -25,7 +26,7 @@ func getUserData(db *sqlx.DB, username string) (lib.User, int, string) {
 			return lib.User{}, 406, "User[" + username + "] doesn't exists"
 		}
 		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to collect user data in database" + err.Error()))
-		return lib.User{}, 500, "Failed to collect user data in the database"
+		return lib.User{}, 500, "Failed to gather user data in the database"
 	}
 	return user, 0, ""
 }
@@ -78,6 +79,8 @@ func getTags(db *sqlx.DB, userID, targetID string) ([]string, []string, int, str
 			}
 		}
 	}
+	sort.Strings(sharedTags)
+	sort.Strings(notSharedTags)
 	return sharedTags, notSharedTags, 0, "", nil
 }
 
@@ -89,7 +92,7 @@ func getHasLikedAreConnectedStatus(db *sqlx.DB, userID, targetID string) (bool, 
 		(userid = $2 AND liked_userid = $1)`, userID, targetID)
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to collect likes in database " + err.Error()))
-		return false, false, 500, "Failed to collect likes in the database"
+		return false, false, 500, "Failed to gather likes in the database"
 	}
 	for _, like := range likes {
 		if like.UserID == userID && like.LikedUserID == targetID {
@@ -126,9 +129,14 @@ func addVisit(db *sqlx.DB, userID, targetID string) (int, string) {
 		return 500, "Insert new visit failed"
 	}
 	_ = stmt.QueryRow(userID, targetID)
+	errCode, errContent := updateRating(db, userID)
+	if errCode != 0 || errContent != "" {
+		return errCode, errContent
+	}
 	return 0, ""
 }
 
+// GetUser ...
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	db, _, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"GET"})
 	if !ok {
