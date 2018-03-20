@@ -35,8 +35,13 @@ func TestLikeAdd(t *testing.T) {
 	_ = tests.InsertVisit(lib.Visit{UserID: "8", VisitedUserID: userData.ID}, tests.DB)
 	_ = tests.InsertVisit(lib.Visit{UserID: "9", VisitedUserID: userData.ID}, tests.DB)
 	_ = tests.InsertVisit(lib.Visit{UserID: "10", VisitedUserID: userData.ID}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: userData.ID, VisitedUserID: "5"}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: userData.ID, VisitedUserID: "5"}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: userData.ID, VisitedUserID: "5"}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: userData.ID, VisitedUserID: "5"}, tests.DB)
 	_ = tests.InsertFakeReport(lib.FakeReport{UserID: "2", TargetUserID: userData.ID}, tests.DB)
 	_ = tests.InsertFakeReport(lib.FakeReport{UserID: "3", TargetUserID: userData.ID}, tests.DB)
+	_ = tests.InsertFakeReport(lib.FakeReport{UserID: userData.ID, TargetUserID: "5"}, tests.DB)
 	context := tests.ContextData{
 		DB:       tests.DB,
 		Username: username,
