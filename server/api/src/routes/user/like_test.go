@@ -1,6 +1,7 @@
 package user
 
 import (
+	"log"
 	"net/http/httptest"
 	"testing"
 	"time"
@@ -17,6 +18,25 @@ func TestLikeAdd(t *testing.T) {
 	userData := tests.InsertUser(lib.User{Username: username}, tests.DB)
 	targetData := tests.InsertUser(lib.User{Username: targetUsername}, tests.DB)
 	_ = tests.InsertLike(lib.Like{UserID: userData.ID, LikedUserID: "42"}, tests.DB)
+	// -> Rating
+	_ = tests.InsertLike(lib.Like{UserID: "11", LikedUserID: userData.ID}, tests.DB)
+	_ = tests.InsertLike(lib.Like{UserID: "11", LikedUserID: "5"}, tests.DB)
+	_ = tests.InsertLike(lib.Like{UserID: userData.ID, LikedUserID: "11"}, tests.DB)
+	_ = tests.InsertLike(lib.Like{UserID: "3", LikedUserID: userData.ID}, tests.DB)
+	_ = tests.InsertLike(lib.Like{UserID: "4", LikedUserID: userData.ID}, tests.DB)
+	_ = tests.InsertLike(lib.Like{UserID: "5", LikedUserID: userData.ID}, tests.DB)
+	_ = tests.InsertLike(lib.Like{UserID: "6", LikedUserID: userData.ID}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: "2", VisitedUserID: userData.ID}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: "3", VisitedUserID: userData.ID}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: "4", VisitedUserID: userData.ID}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: "5", VisitedUserID: userData.ID}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: "6", VisitedUserID: userData.ID}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: "7", VisitedUserID: userData.ID}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: "8", VisitedUserID: userData.ID}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: "9", VisitedUserID: userData.ID}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: "10", VisitedUserID: userData.ID}, tests.DB)
+	_ = tests.InsertFakeReport(lib.FakeReport{UserID: "2", TargetUserID: userData.ID}, tests.DB)
+	_ = tests.InsertFakeReport(lib.FakeReport{UserID: "3", TargetUserID: userData.ID}, tests.DB)
 	context := tests.ContextData{
 		DB:       tests.DB,
 		Username: username,
@@ -50,7 +70,13 @@ func TestLikeAdd(t *testing.T) {
 			CreatedAt:   time.Now(),
 		},
 		lib.Like{
-			ID:          "2",
+			ID:          "4",
+			UserID:      userData.ID,
+			LikedUserID: "11",
+			CreatedAt:   time.Now(),
+		},
+		lib.Like{
+			ID:          "9",
 			UserID:      userData.ID,
 			LikedUserID: targetData.ID,
 			CreatedAt:   time.Now(),
@@ -59,6 +85,7 @@ func TestLikeAdd(t *testing.T) {
 	if compare := pretty.Compare(&expectedDatabase, likes); compare != "" {
 		t.Error(compare)
 	}
+	log.Fatal()
 }
 
 func TestLikeAddAlreadyLiked(t *testing.T) {

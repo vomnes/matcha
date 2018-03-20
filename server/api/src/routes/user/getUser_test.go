@@ -88,7 +88,7 @@ func TestGetUser(t *testing.T) {
 		"liked":            true,
 		"users_connected":  true,
 		"online":           true,
-		"rating":           5,
+		"rating":           2.5,
 		"reported_as_fake": false,
 		"tags": map[string]interface{}{
 			"shared":   []string{"sharedzero", "sharedone"},
@@ -194,7 +194,7 @@ func TestGetUserLikedNoSharedTagsReportedAsFake(t *testing.T) {
 		"liked":            true,
 		"users_connected":  false,
 		"online":           false,
-		"rating":           5,
+		"rating":           2.5,
 		"reported_as_fake": true,
 		"tags": map[string]interface{}{
 			"shared":   nil,
@@ -303,7 +303,7 @@ func TestGetUserNoLikedSharedTagsOnePictures(t *testing.T) {
 		"liked":            false,
 		"users_connected":  false,
 		"online":           false,
-		"rating":           5,
+		"rating":           2.5,
 		"reported_as_fake": false,
 		"tags": map[string]interface{}{
 			"shared":   []string{"sharedzero", "sharedone", "sharedtwo", "sharedthree"},

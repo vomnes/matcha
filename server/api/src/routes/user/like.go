@@ -8,7 +8,44 @@ import (
 	"../../../../lib"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
+	"github.com/kylelemons/godebug/pretty"
 )
+
+type link struct {
+	Count       uint8
+	LikedByUser bool
+}
+
+func updateRating(db *sqlx.DB, userID string) (int, string) {
+	// 2 * (Nb Likes * (0,9 * (Nb Connections / 100))) / Views + 2 * (1 - (Nb Reports * 5) / 100)
+	// -> Nb Likes
+	// -> Nb Connections
+	// -> Nb Views
+	// -> Nb Reports
+	var likes []lib.Like
+	err := db.Select(&likes, `Select userid, liked_userid From Likes Where userid = $1 OR liked_userid = $1`, userID)
+	if err != nil {
+		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to collect likes in database " + err.Error()))
+		return 500, "Failed to collect likes in the database"
+	}
+	pretty.Print(likes)
+	links := make(map[string]link)
+	for _, like := range likes {
+		if like.UserID == userID {
+			links[like.LikedUserID] = link{
+				Count:       links[like.LikedUserID].Count + 1,
+				LikedByUser: true,
+			}
+		} else if like.LikedUserID == userID {
+			links[like.LikedUserID] = link{
+				Count:       links[like.LikedUserID].Count + 1,
+				LikedByUser: links[like.LikedUserID].LikedByUser,
+			}
+		}
+	}
+	pretty.Print(links)
+	return 0, ""
+}
 
 func getUserIDFromUsername(db *sqlx.DB, username string) (string, int, string) {
 	var user lib.User
@@ -44,6 +81,7 @@ func addLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB,
 				lib.RespondWithErrorHTTP(w, errCode, errContent)
 				return
 			}
+			updateRating(db, userID)
 			lib.RespondEmptyHTTP(w, http.StatusOK)
 			return
 		}

@@ -30,6 +30,7 @@ type User struct {
 	Longitude              *float64   `db:"longitude"`
 	GeolocalisationAllowed bool       `db:"geolocalisation_allowed"`
 	Online                 bool       `db:"online"`
+	Rating                 float64    `db:"rating"`
 }
 
 // Tag is the data structure of the table Tag from PostgreSQL

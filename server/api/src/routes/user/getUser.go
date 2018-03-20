@@ -177,7 +177,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		"location":         targetUserData.ZIP + ", " + targetUserData.City + ", " + targetUserData.Country,
 		"age":              getUserAge(*targetUserData.Birthday),
 		"pictures":         arrayPicture(targetUserData),
-		"rating":           5,
+		"rating":           targetUserData.Rating,
 		"liked":            hasLiked,
 		"users_connected":  areConnected,
 		"reported_as_fake": isReportedAsFake,
