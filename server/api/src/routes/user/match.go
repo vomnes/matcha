@@ -2,7 +2,6 @@ package user
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -28,7 +27,7 @@ type match struct {
 
 func getLoggedInUserData(db *sqlx.DB, userID string) (lib.User, int, string) {
 	var loggedInUser lib.User
-	err := db.Get(&loggedInUser, `SELECT id, genre, interesting_in FROM Users WHERE id = $1`, userID)
+	err := db.Get(&loggedInUser, `SELECT id, genre, interesting_in, latitude, longitude FROM Users WHERE id = $1`, userID)
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to collect user data in database " + err.Error()))
 		return lib.User{}, 500, "Failed to collect user data in the database"
@@ -63,7 +62,7 @@ func getUsers(db *sqlx.DB, userID string) ([]match, int, string) {
 	userTagsIds := []string{"1", "2"}
 	matchGenre, matchInterestingIn := handleGenre(loggedInUser)
 	var users []match
-	request := `SELECT u.id, u.username, u.latitude, u.longitude,
+	request := `SELECT u.id, u.username, u.firstname, u.lastname, u.picture_url_1, u.latitude, u.longitude,
 		(Select COUNT(*) from users_tags Where userid = u.id AND tagid IN (` + strings.Join(userTagsIds, ", ") + `)) as common_tags,
 	  geodistance(u.latitude, u.longitude, $1, $2) as distance,
 	  ageyear(u.birthday) as age,
@@ -71,11 +70,13 @@ func getUsers(db *sqlx.DB, userID string) ([]match, int, string) {
 	  FROM Users u
 	  WHERE
 	    u.id <> $3 AND
+			geodistance(u.latitude, u.longitude, $1, $2) BETWEEN 50 AND 81 AND
 	    u.genre IN (` + matchGenre + `) AND
 	    u.interesting_in IN (` + matchInterestingIn + `) AND
 	    ` + blockedRequest("$3")
-	fmt.Println(request)
-	err := db.Select(&users, request, 48.8895812, 2.3393303, userID)
+	// fmt.Println(request)
+	// a BETWEEN x AND y
+	err := db.Select(&users, request, loggedInUser.Latitude, loggedInUser.Longitude, userID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return []match{}, 0, ""
@@ -83,7 +84,20 @@ func getUsers(db *sqlx.DB, userID string) ([]match, int, string) {
 		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to collect user data in database " + err.Error()))
 		return []match{}, 500, "Failed to collect user data in the database"
 	}
+	pretty.Print("_____>", users)
 	return users, 0, ""
+}
+
+type elementUser struct {
+	Username   string   `json:"username"`
+	Firstname  string   `json:"firstname"`
+	Lastname   string   `json:"lastname"`
+	PictureURL string   `json:"picture_url"`
+	Age        string   `json:"age"`
+	Rating     *float64 `json:"rating"`
+	Latitude   *float64 `db:"latitude"`
+	Longitude  *float64 `db:"longitude"`
+	Distance   *float64 `db:"distance"`
 }
 
 // Match ...
@@ -98,6 +112,22 @@ func Match(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	pretty.Print(users)
-	lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{})
+	var listUsers []map[string]interface{}
+	for i, elem := range users {
+		if i == 10 {
+			break
+		}
+		listUsers = append(listUsers, map[string]interface{}{
+			"username":    elem.Username,
+			"firstname":   elem.Firstname,
+			"lastname":    elem.Lastname,
+			"picture_url": elem.PictureURL1,
+			"age":         elem.Age,
+			"rating":      elem.Rating,
+			"latitude":    elem.Latitude,
+			"longitude":   elem.Longitude,
+			"distance":    elem.Distance,
+		})
+	}
+	lib.RespondWithJSON(w, http.StatusOK, listUsers)
 }
