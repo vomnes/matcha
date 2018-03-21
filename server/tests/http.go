@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 
 	"../lib"
 
@@ -87,16 +88,19 @@ func CompareResponseJSONCode(w *httptest.ResponseRecorder, expectedCode int, exp
 	if w.Result().StatusCode != expectedCode {
 		errorArray = append(errorArray, fmt.Sprintf("Must return an error with http code \x1b[1;32m%d\033[0m not \x1b[1;31m%d\033[0m.\n", expectedCode, w.Result().StatusCode))
 	}
-	var response map[string]interface{}
+	var response interface{}
+	// Handle array and non-array response
+	if reflect.TypeOf(expectedJSONResponse).Kind() == reflect.Slice {
+		response = []map[string]interface{}{}
+	} else {
+		response = map[string]interface{}{}
+	}
 	if err := ChargeResponse(w, &response); err != nil {
 		if err.Error() != "EOF" {
 			errorArray = append(errorArray, "\x1b[1;31m"+err.Error()+"\033[0m\n")
 		}
 	}
-	compact := &pretty.Config{
-		Diffable: true,
-	}
-	if compare := compact.Compare(&expectedJSONResponse, response); compare != "" {
+	if compare := pretty.Compare(&expectedJSONResponse, response); compare != "" {
 		errorArray = append(errorArray, compare)
 	}
 	return errorArray
