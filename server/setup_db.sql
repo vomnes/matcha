@@ -84,13 +84,6 @@ SELECT (2 * 6371 *
 $BODY$
 LANGUAGE sql IMMUTABLE COST 100;
 
-CREATE OR REPLACE FUNCTION ageyear(date timestamp)
-  RETURNS varchar AS
-$BODY$
-SELECT to_char(age(date), 'YY') AS distance;
-$BODY$
-LANGUAGE sql IMMUTABLE COST 100;
-
 INSERT INTO Users (username, email, lastname, firstname, password) VALUES ('vomnes', 'valentin.omnes@gmail.com', 'Omnes', 'Valentin', '$2a$10$pgek6WtdhtKmGXPWOOtEf.gsgtNXOkqr3pBjaCCa9il6XhRS7LAua');
 
 \echo '----- Initialize db_matcha_tests -----'
@@ -177,12 +170,5 @@ SELECT (2 * 6371 *
       sin(radians($4 - $2) / 2) ^ 2
     )
   )) AS distance;
-$BODY$
-LANGUAGE sql IMMUTABLE COST 100;
-
-CREATE OR REPLACE FUNCTION ageyear(date timestamp)
-  RETURNS varchar AS
-$BODY$
-SELECT to_char(age(date), 'YY') AS distance;
 $BODY$
 LANGUAGE sql IMMUTABLE COST 100;

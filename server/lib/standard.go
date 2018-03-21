@@ -88,3 +88,7 @@ func UniqueTimeToken(key string) string {
 	data := []byte(key + "&" + now.String())
 	return base64.StdEncoding.EncodeToString(data)
 }
+
+func SWAPStrings(str1, str2 *string) {
+	*str1, *str2 = *str2, *str1
+}
