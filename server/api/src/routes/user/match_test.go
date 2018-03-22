@@ -2,32 +2,119 @@ package user
 
 import (
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
 	"../../../../lib"
 	"../../../../tests"
-	"github.com/kylelemons/godebug/pretty"
 )
 
-func TestMatch(t *testing.T) {
+func TestMatchFailedToDecodeBody(t *testing.T) {
+	tests.DbClean()
+	context := tests.ContextData{
+		DB: tests.DB,
+	}
+	body := []byte(`{5}`)
+	r := tests.CreateRequest("GET", "/v1/users", body, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		Match(w, r)
+	})
+	// Check : Content stardard output
+	expectedError := "Failed to decode body invalid character '5'"
+	if !strings.Contains(output, expectedError) {
+		t.Errorf("Must write an error on the standard output that contains '%s'\nNot: %s\n", expectedError, output)
+	}
+	strError := tests.CompareResponseJSONCode(w, 406, map[string]interface{}{
+		"error": "Failed to decode body",
+	})
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+}
+
+func TestMatchWrongMethod(t *testing.T) {
+	tests.DbClean()
+	context := tests.ContextData{}
+	r := tests.CreateRequest("POST", "/v1/users", nil, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		Match(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	strError := tests.CompareResponseJSONCode(w, 404, map[string]interface{}{
+		"error": "Page not found",
+	})
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+}
+
+func TestMatchInvalidInput(t *testing.T) {
+	tests.DbClean()
+	context := tests.ContextData{
+		DB: tests.DB,
+	}
+	body := []byte(`{
+		"tags": [
+			"ta'(§è!çàg1",
+			"tag2"
+		]
+		}`)
+	r := tests.CreateRequest("GET", "/v1/users", body, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		Match(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Errorf(output)
+	}
+	strError := tests.CompareResponseJSONCode(w, 406, map[string]interface{}{
+		"error": "Tag(s) name is/are not valid",
+	})
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+}
+
+func TestMatchUserDoesntExists(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)
-	birthdayTime := time.Date(1998, 1, 6, 0, 0, 0, 0, time.UTC) // Age 29 year old
-	myLat := 48.856614
-	myLng := 2.3522219000000177
-	userData := tests.InsertUser(lib.User{
-		Username:      username,
-		Lastname:      "MyLastname",
-		Firstname:     "MyFirstname",
-		PictureURL_1:  "MyURL1",
-		Birthday:      &birthdayTime,
-		Genre:         "male",
-		InterestingIn: "female",
-		Latitude:      &myLat,
-		Longitude:     &myLng,
-	}, tests.DB)
-	u1Username := "u1_test_" + lib.GetRandomString(43)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: username,
+		UserID:   "2",
+	}
+	body := []byte(`{}`)
+	r := tests.CreateRequest("GET", "/v1/users", body, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		Match(w, r)
+	})
+	// Check : Content stardard output
+	expectedError := "Failed to collect user data in database sql: no rows in result set"
+	if !strings.Contains(output, expectedError) {
+		t.Errorf("Must write an error on the standard output that contains '%s'\nNot: %s\n", expectedError, output)
+	}
+	strError := tests.CompareResponseJSONCode(w, 500, map[string]interface{}{
+		"error": "Failed to collect user data in the database",
+	})
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+}
+
+func setData(userData lib.User) []lib.User {
+	u1Username := "u1_test"
 	u1birthdayTime := time.Date(1991, 1, 6, 0, 0, 0, 0, time.UTC) // Age 27 year old
 	u1Lat := 48.81541905
 	u1Lng := 2.73692653
@@ -42,8 +129,9 @@ func TestMatch(t *testing.T) {
 		Birthday:      &u1birthdayTime,
 		Latitude:      &u1Lat,
 		Longitude:     &u1Lng,
+		Rating:        5.0,
 	}, tests.DB)
-	u2Username := "u2_test_" + lib.GetRandomString(43)
+	u2Username := "u2_test"
 	u2birthdayTime := time.Date(1992, 0, 0, 0, 0, 0, 0, time.UTC) // Age 26 year old
 	u2Lat := 48.47908733
 	u2Lng := 2.17997089
@@ -58,8 +146,9 @@ func TestMatch(t *testing.T) {
 		Birthday:      &u2birthdayTime,
 		Latitude:      &u2Lat,
 		Longitude:     &u2Lng,
+		Rating:        4.9,
 	}, tests.DB)
-	u3Username := "u3_test_" + lib.GetRandomString(43)
+	u3Username := "u3_test"
 	u3birthdayTime := time.Date(1993, 0, 0, 0, 0, 0, 0, time.UTC) // Age 25 year old
 	u3Lat := 48.94851138
 	u3Lng := 2.23254623
@@ -74,8 +163,9 @@ func TestMatch(t *testing.T) {
 		Birthday:      &u3birthdayTime,
 		Latitude:      &u3Lat,
 		Longitude:     &u3Lng,
+		Rating:        4.8,
 	}, tests.DB)
-	u4Username := "u4_test_" + lib.GetRandomString(43)
+	u4Username := "u4_test"
 	u4birthdayTime := time.Date(1994, 0, 0, 0, 0, 0, 0, time.UTC) // Age 24 year old
 	u4Lat := 48.48667401
 	u4Lng := 3.07014163
@@ -90,8 +180,9 @@ func TestMatch(t *testing.T) {
 		Birthday:      &u4birthdayTime,
 		Latitude:      &u4Lat,
 		Longitude:     &u4Lng,
+		Rating:        4.7,
 	}, tests.DB)
-	u5Username := "u5_test_" + lib.GetRandomString(43)
+	u5Username := "u5_test"
 	u5birthdayTime := time.Date(1995, 0, 0, 0, 0, 0, 0, time.UTC) // Age 23 year old
 	u5Lat := 48.88338784
 	u5Lng := 2.22864154
@@ -106,8 +197,9 @@ func TestMatch(t *testing.T) {
 		Birthday:      &u5birthdayTime,
 		Latitude:      &u5Lat,
 		Longitude:     &u5Lng,
+		Rating:        3.5,
 	}, tests.DB)
-	u6Username := "u6_test_" + lib.GetRandomString(43)
+	u6Username := "u6_test"
 	u6birthdayTime := time.Date(1996, 0, 0, 0, 0, 0, 0, time.UTC) // Age 22 year old
 	u6Lat := 48.66145786
 	u6Lng := 1.98218962
@@ -122,8 +214,9 @@ func TestMatch(t *testing.T) {
 		Birthday:      &u6birthdayTime,
 		Latitude:      &u6Lat,
 		Longitude:     &u6Lng,
+		Rating:        3.6,
 	}, tests.DB)
-	u7Username := "u7_test_" + lib.GetRandomString(43)
+	u7Username := "u7_test"
 	u7birthdayTime := time.Date(1997, 0, 0, 0, 0, 0, 0, time.UTC) // Age 21 year old
 	u7Lat := 48.4081833
 	u7Lng := 2.59391871
@@ -138,8 +231,9 @@ func TestMatch(t *testing.T) {
 		Birthday:      &u7birthdayTime,
 		Latitude:      &u7Lat,
 		Longitude:     &u7Lng,
+		Rating:        3.7,
 	}, tests.DB)
-	u8Username := "u8_test_" + lib.GetRandomString(43)
+	u8Username := "u8_test"
 	u8birthdayTime := time.Date(1998, 0, 0, 0, 0, 0, 0, time.UTC) // Age 20 year old
 	u8Lat := 48.85586208
 	u8Lng := 2.63838366
@@ -154,8 +248,9 @@ func TestMatch(t *testing.T) {
 		Birthday:      &u8birthdayTime,
 		Latitude:      &u8Lat,
 		Longitude:     &u8Lng,
+		Rating:        3.8,
 	}, tests.DB)
-	u9Username := "u9_test_" + lib.GetRandomString(43)
+	u9Username := "u9_test"
 	u9birthdayTime := time.Date(1999, 0, 0, 0, 0, 0, 0, time.UTC) // Age 19 year old
 	u9Lat := 48.90529675
 	u9Lng := 1.86026865
@@ -170,8 +265,9 @@ func TestMatch(t *testing.T) {
 		Birthday:      &u9birthdayTime,
 		Latitude:      &u9Lat,
 		Longitude:     &u9Lng,
+		Rating:        3.9,
 	}, tests.DB)
-	u10Username := "u10_test_" + lib.GetRandomString(43)
+	u10Username := "u10_test"
 	u10birthdayTime := time.Date(1990, 0, 0, 0, 0, 0, 0, time.UTC) // Age 28 year old
 	u10Lat := 48.63134156
 	u10Lng := 2.14927855
@@ -186,9 +282,10 @@ func TestMatch(t *testing.T) {
 		Birthday:      &u10birthdayTime,
 		Latitude:      &u10Lat,
 		Longitude:     &u10Lng,
+		Rating:        4.0,
 	}, tests.DB)
-	u11Username := "u11_test_" + lib.GetRandomString(43)
-	u11birthdayTime := time.Date(1990, 0, 0, 0, 0, 0, 0, time.UTC) // Age 28 year old
+	u11Username := "u11_test"
+	u11birthdayTime := time.Date(1992, 0, 0, 0, 0, 0, 0, time.UTC) // Age 26 year old
 	u11Lat := 48.15835265
 	u11Lng := 2.05977873
 	// Distance: 80.5992 km
@@ -202,30 +299,142 @@ func TestMatch(t *testing.T) {
 		Birthday:      &u11birthdayTime,
 		Latitude:      &u11Lat,
 		Longitude:     &u11Lng,
+		Rating:        2.8,
 	}, tests.DB)
-	pretty.Print(u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11)
+	u12birthdayTime := time.Date(1993, 0, 0, 0, 0, 0, 0, time.UTC) // Age 25 year old
+	u12Lat := 48.63134156
+	u12Lng := 2.18927855
+	// Distance: 27.8 km
+	u12 := tests.InsertUser(lib.User{
+		Username:      "u12_test",
+		Firstname:     "u12_firstname",
+		Lastname:      "u12_lastname",
+		PictureURL_1:  "u12_picture_url",
+		Genre:         "male",
+		InterestingIn: "female",
+		Birthday:      &u12birthdayTime,
+		Latitude:      &u12Lat,
+		Longitude:     &u12Lng,
+		Rating:        4.0,
+	}, tests.DB)
+	u13birthdayTime := time.Date(1993, 0, 0, 0, 0, 0, 0, time.UTC) // Age 25 year old
+	u13Lat := 48.63134156
+	u13Lng := 2.14927855
+	// Distance: 29.144 km
+	u13 := tests.InsertUser(lib.User{
+		Username:      "u13_test",
+		Firstname:     "u13_firstname",
+		Lastname:      "u13_lastname",
+		PictureURL_1:  "u13_picture_url",
+		Genre:         "male",
+		InterestingIn: "bisexual",
+		Birthday:      &u13birthdayTime,
+		Latitude:      &u13Lat,
+		Longitude:     &u13Lng,
+		Rating:        4.1,
+	}, tests.DB)
+	u14birthdayTime := time.Date(1993, 0, 0, 0, 0, 0, 0, time.UTC) // Age 25 year old
+	u14Lat := 48.63134156
+	u14Lng := 2.38927855
+	// Distance: 27.8 km
+	u14 := tests.InsertUser(lib.User{
+		Username:      "u14_test",
+		Firstname:     "u14_firstname",
+		Lastname:      "u14_lastname",
+		PictureURL_1:  "u14_picture_url",
+		Genre:         "female",
+		InterestingIn: "female",
+		Birthday:      &u14birthdayTime,
+		Latitude:      &u14Lat,
+		Longitude:     &u14Lng,
+		Rating:        2.6,
+	}, tests.DB)
+	// Insert 5 tags
+	_ = tests.InsertTag(lib.Tag{Name: "tag0"}, tests.DB)
 	_ = tests.InsertTag(lib.Tag{Name: "tag1"}, tests.DB)
 	_ = tests.InsertTag(lib.Tag{Name: "tag2"}, tests.DB)
 	_ = tests.InsertTag(lib.Tag{Name: "tag3"}, tests.DB)
 	_ = tests.InsertTag(lib.Tag{Name: "tag4"}, tests.DB)
 	_ = tests.InsertTag(lib.Tag{Name: "tag5"}, tests.DB)
-	_ = tests.InsertUserTag(lib.UserTag{UserID: u1.ID, TagID: "1"}, tests.DB)
-	_ = tests.InsertUserTag(lib.UserTag{UserID: u1.ID, TagID: "2"}, tests.DB)
-	_ = tests.InsertUserTag(lib.UserTag{UserID: u1.ID, TagID: "3"}, tests.DB)
-	_ = tests.InsertUserTag(lib.UserTag{UserID: u1.ID, TagID: "4"}, tests.DB)
+	_ = tests.InsertTag(lib.Tag{Name: "tag6"}, tests.DB)
+	_ = tests.InsertTag(lib.Tag{Name: "tag7"}, tests.DB)
+	// Affect tags to users
+	// Logged user
+	_ = tests.InsertUserTag(lib.UserTag{UserID: userData.ID, TagID: "0"}, tests.DB)
 	_ = tests.InsertUserTag(lib.UserTag{UserID: userData.ID, TagID: "1"}, tests.DB)
 	_ = tests.InsertUserTag(lib.UserTag{UserID: userData.ID, TagID: "2"}, tests.DB)
-	_ = tests.InsertUserTag(lib.UserTag{UserID: userData.ID, TagID: "5"}, tests.DB)
-	_ = tests.InsertLike(lib.Like{UserID: userData.ID, LikedUserID: u1.ID}, tests.DB)
-	_ = tests.InsertLike(lib.Like{UserID: "44", LikedUserID: u1.ID}, tests.DB)
-	_ = tests.InsertLike(lib.Like{UserID: userData.ID, LikedUserID: "42"}, tests.DB)
-	_ = tests.InsertLike(lib.Like{UserID: u1.ID, LikedUserID: userData.ID}, tests.DB)
-	_ = tests.InsertLike(lib.Like{UserID: "45", LikedUserID: userData.ID}, tests.DB)
-	_ = tests.InsertLike(lib.Like{UserID: u1.ID, LikedUserID: "43"}, tests.DB)
+	// u1 - 2 common tags
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u1.ID, TagID: "0"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u1.ID, TagID: "1"}, tests.DB)
+	// u2 - 2 Common tags
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u2.ID, TagID: "0"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u2.ID, TagID: "2"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u2.ID, TagID: "3"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u2.ID, TagID: "4"}, tests.DB)
+	// u3 - 1 Common tags
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u3.ID, TagID: "1"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u3.ID, TagID: "4"}, tests.DB)
+	// u4 - 0 Common tags
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u4.ID, TagID: "4"}, tests.DB)
+	// u5 - 3 Common tags
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u5.ID, TagID: "0"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u5.ID, TagID: "1"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u5.ID, TagID: "2"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u5.ID, TagID: "4"}, tests.DB)
+	// u6 - 1 Common tags
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u6.ID, TagID: "0"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u6.ID, TagID: "3"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u6.ID, TagID: "4"}, tests.DB)
+	// u7 - 1 Common tags
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u7.ID, TagID: "1"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u7.ID, TagID: "3"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u7.ID, TagID: "4"}, tests.DB)
+	// u8 - 1 Common tags
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u8.ID, TagID: "2"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u8.ID, TagID: "3"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u8.ID, TagID: "4"}, tests.DB)
+	// u9 - 0 Common tags
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u9.ID, TagID: "3"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u9.ID, TagID: "4"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u9.ID, TagID: "5"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u9.ID, TagID: "6"}, tests.DB)
+	// u10 - 0 Common tags
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u10.ID, TagID: "3"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u10.ID, TagID: "4"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u10.ID, TagID: "5"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u10.ID, TagID: "6"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u10.ID, TagID: "7"}, tests.DB)
+	// u11 - 0 Common tags
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u11.ID, TagID: "5"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u11.ID, TagID: "6"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: u11.ID, TagID: "7"}, tests.DB)
+	// Report u2 as fake
+	_ = tests.InsertFakeReport(lib.FakeReport{UserID: userData.ID, TargetUserID: u2.ID}, tests.DB)
+	return []lib.User{userData, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13, u14}
+}
+
+func TestMatchMaleToFemale23YO(t *testing.T) {
+	tests.DbClean()
+	username := "test_" + lib.GetRandomString(43)
+	birthdayTime := time.Date(1995, 0, 0, 0, 0, 0, 0, time.UTC) // Age 23 year old
+	myLat := 48.856614
+	myLng := 2.3522219000000177
+	userData := tests.InsertUser(lib.User{
+		Username:      username,
+		Lastname:      "MyLastname",
+		Firstname:     "MyFirstname",
+		PictureURL_1:  "MyURL1",
+		Birthday:      &birthdayTime,
+		Genre:         "male",
+		InterestingIn: "female",
+		Latitude:      &myLat,
+		Longitude:     &myLng,
+	}, tests.DB)
+	data := setData(userData)
 	context := tests.ContextData{
 		DB:       tests.DB,
-		Username: username,
-		UserID:   userData.ID,
+		Username: data[0].Username,
+		UserID:   data[0].ID,
 	}
 	body := []byte(`{}`)
 	r := tests.CreateRequest("GET", "/v1/users", body, context)
@@ -238,7 +447,283 @@ func TestMatch(t *testing.T) {
 	if output != "" {
 		t.Error(output)
 	}
-	strError := tests.CompareResponseJSONCode(w, 200, []map[string]interface{}{})
+	strError := tests.CompareResponseJSONCode(w, 200, []interface{}{
+		map[string]interface{}{
+			"age":         25,
+			"distance":    13.5,
+			"rating":      4.8,
+			"latitude":    48.948511,
+			"longitude":   2.232546,
+			"firstname":   data[3].Firstname,
+			"lastname":    data[3].Lastname,
+			"picture_url": data[3].PictureURL_1,
+			"username":    data[3].Username,
+		},
+		map[string]interface{}{
+			"age":         20,
+			"distance":    20.9,
+			"rating":      3.8,
+			"latitude":    48.855862,
+			"longitude":   2.638384,
+			"firstname":   data[8].Firstname,
+			"lastname":    data[8].Lastname,
+			"picture_url": data[8].PictureURL_1,
+			"username":    data[8].Username,
+		},
+		map[string]interface{}{
+			"age":         22,
+			"distance":    34.7,
+			"rating":      3.6,
+			"latitude":    48.661458,
+			"longitude":   1.98219,
+			"firstname":   data[6].Firstname,
+			"lastname":    data[6].Lastname,
+			"picture_url": data[6].PictureURL_1,
+			"username":    data[6].Username,
+		},
+		map[string]interface{}{
+			"age":         23,
+			"distance":    9.5,
+			"rating":      3.5,
+			"latitude":    48.883388,
+			"longitude":   2.228642,
+			"firstname":   data[5].Firstname,
+			"lastname":    data[5].Lastname,
+			"picture_url": data[5].PictureURL_1,
+			"username":    data[5].Username,
+		},
+	})
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+}
+
+func TestMatchFemaleToMale23YO(t *testing.T) {
+	tests.DbClean()
+	username := "test_" + lib.GetRandomString(43)
+	birthdayTime := time.Date(1995, 0, 0, 0, 0, 0, 0, time.UTC) // Age 23 year old
+	myLat := 48.856614
+	myLng := 2.3522219000000177
+	userData := tests.InsertUser(lib.User{
+		Username:      username,
+		Lastname:      "MyLastname",
+		Firstname:     "MyFirstname",
+		PictureURL_1:  "MyURL1",
+		Birthday:      &birthdayTime,
+		Genre:         "female",
+		InterestingIn: "male",
+		Latitude:      &myLat,
+		Longitude:     &myLng,
+	}, tests.DB)
+	data := setData(userData)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: data[0].Username,
+		UserID:   data[0].ID,
+	}
+	body := []byte(`{}`)
+	r := tests.CreateRequest("GET", "/v1/users", body, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		Match(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	strError := tests.CompareResponseJSONCode(w, 200, []interface{}{
+		map[string]interface{}{
+			"age":         25,
+			"distance":    29.1,
+			"rating":      4.1,
+			"latitude":    48.631342,
+			"longitude":   2.149279,
+			"firstname":   data[13].Firstname,
+			"lastname":    data[13].Lastname,
+			"picture_url": data[13].PictureURL_1,
+			"username":    data[13].Username,
+		},
+		map[string]interface{}{
+			"age":         25,
+			"distance":    27.8,
+			"rating":      4,
+			"latitude":    48.631342,
+			"longitude":   2.189279,
+			"firstname":   data[12].Firstname,
+			"lastname":    data[12].Lastname,
+			"picture_url": data[12].PictureURL_1,
+			"username":    data[12].Username,
+		},
+	})
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+}
+
+func TestMatchMaleBisexual23YO(t *testing.T) {
+	tests.DbClean()
+	username := "test_" + lib.GetRandomString(43)
+	birthdayTime := time.Date(1995, 0, 0, 0, 0, 0, 0, time.UTC) // Age 23 year old
+	myLat := 48.856614
+	myLng := 2.3522219000000177
+	userData := tests.InsertUser(lib.User{
+		Username:      username,
+		Lastname:      "MyLastname",
+		Firstname:     "MyFirstname",
+		PictureURL_1:  "MyURL1",
+		Birthday:      &birthdayTime,
+		Genre:         "male",
+		InterestingIn: "bisexual",
+		Latitude:      &myLat,
+		Longitude:     &myLng,
+	}, tests.DB)
+	data := setData(userData)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: data[0].Username,
+		UserID:   data[0].ID,
+	}
+	body := []byte(`{}`)
+	r := tests.CreateRequest("GET", "/v1/users", body, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		Match(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	strError := tests.CompareResponseJSONCode(w, 200, []interface{}{
+		map[string]interface{}{
+			"age":         25,
+			"distance":    13.5,
+			"rating":      4.8,
+			"latitude":    48.948511,
+			"longitude":   2.232546,
+			"firstname":   data[3].Firstname,
+			"lastname":    data[3].Lastname,
+			"picture_url": data[3].PictureURL_1,
+			"username":    data[3].Username,
+		},
+		map[string]interface{}{
+			"age":         25,
+			"distance":    29.1,
+			"rating":      4.1,
+			"latitude":    48.631342,
+			"longitude":   2.149279,
+			"firstname":   data[13].Firstname,
+			"lastname":    data[13].Lastname,
+			"picture_url": data[13].PictureURL_1,
+			"username":    data[13].Username,
+		},
+		map[string]interface{}{
+			"age":         20,
+			"distance":    20.9,
+			"rating":      3.8,
+			"latitude":    48.855862,
+			"longitude":   2.638384,
+			"firstname":   data[8].Firstname,
+			"lastname":    data[8].Lastname,
+			"picture_url": data[8].PictureURL_1,
+			"username":    data[8].Username,
+		},
+		map[string]interface{}{
+			"age":         22,
+			"distance":    34.7,
+			"rating":      3.6,
+			"latitude":    48.661458,
+			"longitude":   1.98219,
+			"firstname":   data[6].Firstname,
+			"lastname":    data[6].Lastname,
+			"picture_url": data[6].PictureURL_1,
+			"username":    data[6].Username,
+		},
+		map[string]interface{}{
+			"age":         23,
+			"distance":    9.5,
+			"rating":      3.5,
+			"latitude":    48.883388,
+			"longitude":   2.228642,
+			"firstname":   data[5].Firstname,
+			"lastname":    data[5].Lastname,
+			"picture_url": data[5].PictureURL_1,
+			"username":    data[5].Username,
+		},
+	})
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+}
+
+// "age": {
+//  "min": ,
+//  "max":
+// },
+// "rating": {
+//  "min": ,
+//  "max":
+// },
+// "distance": {
+//  "max":
+// },
+// "tags": [
+// 	"tag1",
+// 	"tag2"
+// ],
+// "latitude":
+// "longitude"
+// "sort_type"
+// "sort_direction"
+
+func TestMatchFemaleToFemale23YO(t *testing.T) {
+	tests.DbClean()
+	username := "test_" + lib.GetRandomString(43)
+	birthdayTime := time.Date(1995, 0, 0, 0, 0, 0, 0, time.UTC) // Age 23 year old
+	myLat := 48.856614
+	myLng := 2.3522219000000177
+	userData := tests.InsertUser(lib.User{
+		Username:      username,
+		Lastname:      "MyLastname",
+		Firstname:     "MyFirstname",
+		PictureURL_1:  "MyURL1",
+		Birthday:      &birthdayTime,
+		Genre:         "female",
+		InterestingIn: "female",
+		Latitude:      &myLat,
+		Longitude:     &myLng,
+	}, tests.DB)
+	data := setData(userData)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: data[0].Username,
+		UserID:   data[0].ID,
+	}
+	body := []byte(`{}`)
+	r := tests.CreateRequest("GET", "/v1/users", body, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		Match(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	strError := tests.CompareResponseJSONCode(w, 200, []interface{}{
+		map[string]interface{}{
+			"age":         25,
+			"distance":    25.2,
+			"rating":      2.6,
+			"latitude":    48.631342,
+			"longitude":   2.389279,
+			"firstname":   data[14].Firstname,
+			"lastname":    data[14].Lastname,
+			"picture_url": data[14].PictureURL_1,
+			"username":    data[14].Username,
+		},
+	})
 	if strError != nil {
 		t.Errorf("%v", strError)
 	}

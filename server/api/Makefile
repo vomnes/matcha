@@ -30,7 +30,7 @@ test:
 	@go test ./src/routes/user/.
 
 test-d:
-	@go test -v ./src/routes/$(TARGET)/.
+	@go test ./src/routes/$(TARGET)/.
 
 test-verbose:
 	@go test -v ./src/.

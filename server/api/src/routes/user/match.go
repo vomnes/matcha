@@ -2,7 +2,6 @@ package user
 
 import (
 	"database/sql"
-	"fmt"
 	"html"
 	"log"
 	"net/http"
@@ -11,7 +10,6 @@ import (
 
 	"../../../../lib"
 	"github.com/jmoiron/sqlx"
-	"github.com/kylelemons/godebug/pretty"
 )
 
 type limitsInt struct {
@@ -57,7 +55,7 @@ type match struct {
 
 func getLoggedInUserData(db *sqlx.DB, userID string) (lib.User, int, string) {
 	var loggedInUser lib.User
-	err := db.Get(&loggedInUser, `SELECT id, genre, interesting_in, latitude, longitude FROM Users WHERE id = $1`, userID)
+	err := db.Get(&loggedInUser, `SELECT id, genre, interesting_in, latitude, longitude , birthday FROM Users WHERE id = $1`, userID)
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to collect user data in database " + err.Error()))
 		return lib.User{}, 500, "Failed to collect user data in the database"
@@ -101,6 +99,8 @@ func checkInput(data *bodyData) (int, string) {
 	}
 	if data.Distance.Max > 0 {
 		data.Distance.MaxStr = strconv.Itoa(data.Distance.Max)
+	} else {
+		data.Distance.MaxStr = "50"
 	}
 	if data.Latitude > 0 || data.Longitude > 0 {
 		data.LatStr = strconv.FormatFloat(data.Latitude, 'f', 6, 64)
@@ -111,7 +111,7 @@ func checkInput(data *bodyData) (int, string) {
 		data.Tags[i] = strings.ToLower(data.Tags[i])
 		right := lib.IsValidTag(data.Tags[i])
 		if !right {
-			return 406, "Tag name is not valid"
+			return 406, "Tag(s) name is/are not valid"
 		}
 	}
 	if len(data.Tags) > 0 && data.SortType != "tags" {
@@ -165,22 +165,29 @@ func getUsers(db *sqlx.DB, userID string, optionData bodyData) ([]match, int, st
 	    u.genre IN (` + matchGenre + `) AND
 	    u.interesting_in IN (` + matchInterestingIn + `) AND
 	    ` + blockedRequest("$3")
+	// Handle tags
 	if len(optionData.Tags) > 0 {
 		request += ` AND (Select COUNT(*) from users_tags Where userid = u.id AND tagid IN (` + strings.Join(optionData.Tags, ", ") + `))`
 	}
+	// Handle rating
 	if optionData.Rating.MinStr != "" && optionData.Rating.MaxStr != "" {
 		request += ` AND u.rating BETWEEN ` + optionData.Rating.MinStr + ` AND ` + optionData.Rating.MaxStr
 	}
+	// Handle age
 	if optionData.Age.MinStr != "" && optionData.Age.MaxStr != "" {
 		request += ` AND date_part('year',age(now(), u.birthday)) BETWEEN ` + optionData.Age.MinStr + ` AND ` + optionData.Age.MaxStr
 	} else {
-		request += ` AND u.birthday BETWEEN u.birthday - interval '3 year' AND u.birthday + interval '3 year'`
+		userBirthdateLess3Years := loggedInUser.Birthday.AddDate(-3, 0, 0).Format("2006-01-02")
+		userBirthdateAdd3Years := loggedInUser.Birthday.AddDate(3, 0, 0).Format("2006-01-02")
+		request += ` AND u.birthday BETWEEN to_timestamp('` + userBirthdateLess3Years + `', 'YYYY-MM-DD') AND to_timestamp('` + userBirthdateAdd3Years + `', 'YYYY-MM-DD')`
 	}
+	// Handle distance
 	if optionData.Distance.MaxStr != "" {
 		request += ` AND geodistance(u.latitude, u.longitude, $1, $2) <= ` + optionData.Distance.MaxStr
 	}
+	// Handle order
 	request += ` ORDER BY ` + optionData.SortType + ` ` + optionData.SortDirection
-	fmt.Println(request)
+	// fmt.Println(request)
 	err := db.Select(&users, request, loggedInUser.Latitude, loggedInUser.Longitude, userID)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -189,7 +196,6 @@ func getUsers(db *sqlx.DB, userID string, optionData bodyData) ([]match, int, st
 		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to collect user data in database " + err.Error()))
 		return []match{}, 500, "Failed to collect user data in the database"
 	}
-	pretty.Print("_____>", users)
 	return users, 0, ""
 }
 
@@ -202,7 +208,7 @@ type elementUser struct {
 	Rating     *float64 `json:"rating"`
 	Latitude   *float64 `db:"latitude"`
 	Longitude  *float64 `db:"longitude"`
-	Distance   *float64 `db:"distance"`
+	Distance   *float32 `db:"distance"`
 }
 
 // Match ...
@@ -233,17 +239,20 @@ func Match(w http.ResponseWriter, r *http.Request) {
 		if i == 10 {
 			break
 		}
-		listUsers = append(listUsers, map[string]interface{}{
-			"username":    elem.Username,
-			"firstname":   elem.Firstname,
-			"lastname":    elem.Lastname,
-			"picture_url": elem.PictureURL1,
-			"age":         elem.Age,
-			"rating":      elem.Rating,
-			"latitude":    elem.Latitude,
-			"longitude":   elem.Longitude,
-			"distance":    elem.Distance,
-		})
+		listUsers = append([]map[string]interface{}{
+			map[string]interface{}{
+				"username":    elem.Username,
+				"firstname":   elem.Firstname,
+				"lastname":    elem.Lastname,
+				"picture_url": elem.PictureURL1,
+				"age":         elem.Age,
+				"rating":      elem.Rating,
+				"latitude":    elem.Latitude,
+				"longitude":   elem.Longitude,
+				// Round about distance 0.1
+				"distance": float64(int64(*elem.Distance*10+0.5)) / 10,
+			},
+		}, listUsers...)
 	}
 	lib.RespondWithJSON(w, http.StatusOK, listUsers)
 }
