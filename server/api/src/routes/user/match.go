@@ -1,8 +1,6 @@
 package user
 
 import (
-	"database/sql"
-	"html"
 	"log"
 	"net/http"
 	"strconv"
@@ -27,16 +25,19 @@ type limitsFloat64 struct {
 }
 
 type bodyData struct {
-	Age           limitsInt     `json:"age"`
-	Rating        limitsFloat64 `json:"rating"`
-	Distance      limitsInt     `json:"distance"`
-	Tags          []string      `json:"tags"`
-	Latitude      float64       `json:"latitude"`
-	LatStr        string
-	Longitude     float64 `json:"longitude"`
-	LngStr        string
-	SortType      string `json:"sort_type"`
-	SortDirection string `json:"sort_direction"`
+	Age            limitsInt     `json:"age"`
+	Rating         limitsFloat64 `json:"rating"`
+	Distance       limitsInt     `json:"distance"`
+	Tags           []int         `json:"tags"`
+	TagsStr        []string
+	Latitude       float64 `json:"lat"`
+	LatStr         string
+	Longitude      float64 `json:"lng"`
+	LngStr         string
+	SortType       string `json:"sort_type"`
+	SortDirection  string `json:"sort_direction"`
+	StartPosition  uint   `json:"start_position"`
+	FinishPosition uint   `json:"finish_position"`
 }
 
 type match struct {
@@ -82,7 +83,7 @@ func blockedRequest(one string) string {
   `
 }
 
-func checkInput(data *bodyData) (int, string) {
+func checkInput(data *bodyData) {
 	if data.Age.Min > 0 && data.Age.Max > 0 {
 		data.Age.MinStr = strconv.Itoa(data.Age.Min)
 		data.Age.MaxStr = strconv.Itoa(data.Age.Max)
@@ -102,31 +103,24 @@ func checkInput(data *bodyData) (int, string) {
 	} else {
 		data.Distance.MaxStr = "50"
 	}
-	if data.Latitude > 0 || data.Longitude > 0 {
-		data.LatStr = strconv.FormatFloat(data.Latitude, 'f', 6, 64)
-		data.LngStr = strconv.FormatFloat(data.Longitude, 'f', 6, 64)
+	for _, tag := range data.Tags {
+		data.TagsStr = append(data.TagsStr, "'"+strconv.Itoa(tag)+"'")
 	}
-	for i := range data.Tags {
-		data.Tags[i] = html.EscapeString(data.Tags[i])
-		data.Tags[i] = strings.ToLower(data.Tags[i])
-		right := lib.IsValidTag(data.Tags[i])
-		if !right {
-			return 406, "Tag(s) name is/are not valid"
-		}
-	}
-	if len(data.Tags) > 0 && data.SortType != "tags" {
+	if len(data.Tags) > 0 && data.SortType == "common_tags" {
 		data.SortType = "rating"
 	} else if data.SortType != "age" &&
 		data.SortType != "distance" &&
-		data.SortType != "tags" {
+		data.SortType != "common_tags" {
 		data.SortType = "rating"
 	}
-	if data.SortDirection == "revers" {
+	if data.SortDirection == "reverse" {
 		data.SortDirection = "desc"
 	} else {
 		data.SortDirection = "asc"
 	}
-	return 0, ""
+	if data.FinishPosition == 0 {
+		data.FinishPosition = 20
+	}
 }
 
 func getUserTags(db *sqlx.DB, userID string) ([]string, int, string) {
@@ -167,7 +161,7 @@ func getUsers(db *sqlx.DB, userID string, optionData bodyData) ([]match, int, st
 	    ` + blockedRequest("$3")
 	// Handle tags
 	if len(optionData.Tags) > 0 {
-		request += ` AND (Select COUNT(*) from users_tags Where userid = u.id AND tagid IN (` + strings.Join(optionData.Tags, ", ") + `))`
+		request += ` AND (Select COUNT(*) from users_tags Where userid = u.id AND tagid IN (` + strings.Join(optionData.TagsStr, ", ") + `)) = ` + strconv.Itoa(len(optionData.TagsStr))
 	}
 	// Handle rating
 	if optionData.Rating.MinStr != "" && optionData.Rating.MaxStr != "" {
@@ -187,12 +181,12 @@ func getUsers(db *sqlx.DB, userID string, optionData bodyData) ([]match, int, st
 	}
 	// Handle order
 	request += ` ORDER BY ` + optionData.SortType + ` ` + optionData.SortDirection
-	// fmt.Println(request)
+	if optionData.Latitude > 0 && optionData.Longitude > 0 {
+		loggedInUser.Latitude = &optionData.Latitude
+		loggedInUser.Longitude = &optionData.Longitude
+	}
 	err := db.Select(&users, request, loggedInUser.Latitude, loggedInUser.Longitude, userID)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return []match{}, 0, ""
-		}
 		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to collect user data in database " + err.Error()))
 		return []match{}, 500, "Failed to collect user data in the database"
 	}
@@ -224,35 +218,34 @@ func Match(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	errCode, errContent = checkInput(&inputData)
-	if errCode != 0 || errContent != "" {
-		lib.RespondWithErrorHTTP(w, errCode, errContent)
-		return
-	}
+	checkInput(&inputData)
 	users, errCode, errContent := getUsers(db, userID, inputData)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
 	var listUsers []map[string]interface{}
-	for i, elem := range users {
-		if i == 10 {
-			break
-		}
+	nbUser := uint(len(users))
+	for i := inputData.StartPosition; i < inputData.FinishPosition && i < nbUser; i++ {
 		listUsers = append([]map[string]interface{}{
 			map[string]interface{}{
-				"username":    elem.Username,
-				"firstname":   elem.Firstname,
-				"lastname":    elem.Lastname,
-				"picture_url": elem.PictureURL1,
-				"age":         elem.Age,
-				"rating":      elem.Rating,
-				"latitude":    elem.Latitude,
-				"longitude":   elem.Longitude,
+				"username":    users[i].Username,
+				"firstname":   users[i].Firstname,
+				"lastname":    users[i].Lastname,
+				"picture_url": users[i].PictureURL1,
+				"age":         users[i].Age,
+				"rating":      users[i].Rating,
+				"latitude":    users[i].Latitude,
+				"longitude":   users[i].Longitude,
 				// Round about distance 0.1
-				"distance": float64(int64(*elem.Distance*10+0.5)) / 10,
+				"distance": float64(int64(*users[i].Distance*10+0.5)) / 10,
 			},
 		}, listUsers...)
+	}
+	if listUsers == nil {
+		lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{
+			"data": "No (more) users",
+		})
 	}
 	lib.RespondWithJSON(w, http.StatusOK, listUsers)
 }
