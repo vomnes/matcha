@@ -1,8 +1,8 @@
 # API routes details
 
 ## Table of Contents
-- [Accounts](../accounts)
-- [Mails](../mails)
+- [Accounts](../account)
+- [Mails](../mail)
 
 ### Profiles
 #### POST - /v1/profiles/edit/data
