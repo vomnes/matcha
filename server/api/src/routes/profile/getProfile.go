@@ -97,12 +97,12 @@ func handleLocation(userDB *lib.User, d userIP, db *sqlx.DB, userID, username st
 }
 
 // GetProfile is the route '/v1/profiles/edit' with the method GET.
-// The body contains the IP of the users
-// Collect the data concerning the users in the table Users of the database
+// The body contains the IP of the user
+// Collect the data concerning the user in the table Users of the database
 // If the user doesn't exists
 // 		-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: User<username> doesn't exists"
-// Collect the tags (id, name) concerning the users in database
-// If geolocalisation_allowed is false we need to set or update the location of the users by using the IP in the body
+// Collect the tags (id, name) concerning the user in database
+// If geolocalisation_allowed is false we need to set or update the location of the user by using the IP in the body
 // Trim and escape characters of the IP
 // If the IP is not a valid IP4
 // 		-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: IP in the body is invalid"

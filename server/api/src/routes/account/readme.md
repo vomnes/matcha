@@ -1,8 +1,4 @@
-# API routes details
-
-## Table of Contents
-- [Mails](../mail)
-- [Profiles](../profile)
+[Go back to 'Table of Contents'](../../../api)
 
 ### Accounts
 #### POST - /v1/account/register

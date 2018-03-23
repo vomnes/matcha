@@ -20,6 +20,12 @@ func insertFake(db *sqlx.DB, userID, targetUserID string) (int, string) {
 	return 0, ""
 }
 
+// Add Fake Method POST
+// If the profile is already liked by the connected user
+// 		-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Profile already reported as fake by the user"
+// Insert fake in the table Fake_Reports in the database
+// Update target user rating
+// Return HTTP Code 200 Status OK
 func addFake(w http.ResponseWriter, r *http.Request, db *sqlx.DB, userID, targetUserID string) {
 	var fake lib.FakeReport
 	err := db.Get(&fake, "SELECT id FROM Fake_Reports WHERE userid = $1 AND target_userID = $2", userID, targetUserID)
@@ -45,6 +51,10 @@ func addFake(w http.ResponseWriter, r *http.Request, db *sqlx.DB, userID, target
 	lib.RespondWithErrorHTTP(w, 400, "Profile already reported as fake by the user")
 }
 
+// Delete Fake Method DELETE
+// Remove the fake report from the table Fake_Reports in the database
+// Update target user rating
+// Return HTTP Code 200 Status OK
 func deleteFake(w http.ResponseWriter, r *http.Request, db *sqlx.DB, userID, targetUserID string) {
 	stmt, err := db.Preparex(`DELETE FROM Fake_Reports WHERE userId = $1 AND target_userID = $2;`)
 	if err != nil {
@@ -53,7 +63,7 @@ func deleteFake(w http.ResponseWriter, r *http.Request, db *sqlx.DB, userID, tar
 		return
 	}
 	_ = stmt.QueryRowx(userID, targetUserID)
-	errCode, errContent := updateRating(db, userID)
+	errCode, errContent := updateRating(db, targetUserID)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
@@ -61,7 +71,13 @@ func deleteFake(w http.ResponseWriter, r *http.Request, db *sqlx.DB, userID, tar
 	lib.RespondEmptyHTTP(w, http.StatusOK)
 }
 
-// HandleReportFake is
+// HandleReportFake is the route '/v1/users/{username}/fake' with the method POST OR DELETE.
+// The url contains the parameter username
+// If username is not a valid username
+// 		-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Username parameter is invalid"
+// Collect the userId corresponding to the username in the database
+// If the username doesn't match with any data
+// 		-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: User<username> doesn't exists"
 func HandleReportFake(w http.ResponseWriter, r *http.Request) {
 	db, _, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"POST", "DELETE"})
 	if !ok {

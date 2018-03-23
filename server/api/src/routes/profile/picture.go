@@ -132,7 +132,7 @@ func updatePicturePathInDB(db *sqlx.DB, pictureNumber, picturePath, userID, user
 	return oldURL, 0, "", nil
 }
 
-// Method Update Picture POST
+// Update Picture Method POST
 // The body contains the picture_base64
 // Convert the base64 picture a file picture, support only png, jpg and jpeg files.
 // The file picture is stored in '/storage/pictures/profiles/<username>' on the server (specific directory for tests)
@@ -171,7 +171,7 @@ func uploadPicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureN
 	})
 }
 
-// Method Delete Picture DELETE
+// Delete Picture Method DELETE
 // Not possible to only remove the first picture (only update)
 //    -> Return an error - HTTP Code 403 Forbidden - JSON Content "Error: Not possible to delete the 1st picture - Only upload a new one is possible"
 // Update the picture path in the database with an empty string

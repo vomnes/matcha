@@ -714,26 +714,6 @@ func TestMatchFemaleToFemale23YO(t *testing.T) {
 	}
 }
 
-// "age": {
-//  "min": ,
-//  "max":
-// },
-// "rating": {
-//  "min": ,
-//  "max":
-// },
-// "distance": {
-//  "max":
-// },
-// "tags": [
-// 	"tag1",
-// 	"tag2"
-// ],
-// "lat"
-// "lng"
-// "sort_type"
-// "sort_direction"
-
 func TestMatchMaleToFemaleAge21_100Distance100SortDistanceReverse(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)

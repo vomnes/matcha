@@ -1,8 +1,4 @@
-# API routes details
-
-## Table of Contents
-- [Accounts](../account)
-- [Profiles](../profile)
+[Go back to 'Table of Contents'](../../../api)
 
 ### Mails
 #### POST - /v1/mails/forgotpassword

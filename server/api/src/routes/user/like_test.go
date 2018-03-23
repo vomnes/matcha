@@ -90,13 +90,13 @@ func TestLikeAdd(t *testing.T) {
 		t.Error(compare)
 	}
 	var user lib.User
-	err = tests.DB.Get(&user, "SELECT rating FROM users WHERE id = $1", userData.ID)
+	err = tests.DB.Get(&user, "SELECT rating FROM users WHERE id = $1", targetData.ID)
 	if err != nil {
 		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
 		return
 	}
 	if user.Rating != 3.711111 {
-		t.Error("\x1b[1;31m Rating not updated in the table user\033[0m")
+		t.Error("\x1b[1;31m Rating not updated in the table user\033[0m", user.Rating)
 	}
 }
 
@@ -122,7 +122,7 @@ func TestLikeAddAlreadyLiked(t *testing.T) {
 	if output != "" {
 		t.Error(output)
 	}
-	strError := tests.CompareResponseJSONCode(w, 400, map[string]interface{}{
+	strError := tests.CompareResponseJSONCode(w, 406, map[string]interface{}{
 		"error": "Profile already liked by the user",
 	})
 	if strError != nil {

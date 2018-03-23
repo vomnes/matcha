@@ -33,6 +33,12 @@ func insertLike(db *sqlx.DB, userID, targetUserID string) (int, string) {
 	return 0, ""
 }
 
+// Add Like Method POST
+// If the profile is already liked by the connected user
+// 		-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Profile already liked by the user"
+// Insert like in the table Likes in the database
+// Update target user rating
+// Return HTTP Code 200 Status OK
 func addLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB,
 	userID, targetUserID string) {
 	var like lib.Like
@@ -44,7 +50,7 @@ func addLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB,
 				lib.RespondWithErrorHTTP(w, errCode, errContent)
 				return
 			}
-			errCode, errContent = updateRating(db, userID)
+			errCode, errContent = updateRating(db, targetUserID)
 			if errCode != 0 || errContent != "" {
 				lib.RespondWithErrorHTTP(w, errCode, errContent)
 				return
@@ -56,9 +62,13 @@ func addLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB,
 		lib.RespondWithErrorHTTP(w, 500, "Failed to check if like exists in database")
 		return
 	}
-	lib.RespondWithErrorHTTP(w, 400, "Profile already liked by the user")
+	lib.RespondWithErrorHTTP(w, 406, "Profile already liked by the user")
 }
 
+// Delete Like Method DELETE
+// Remove the like from the table Likes in the database
+// Update target user rating
+// Return HTTP Code 200 Status OK
 func deleteLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB, userID, targetUserID string) {
 	stmt, err := db.Preparex(`DELETE FROM Likes WHERE userId = $1 AND liked_userID = $2;`)
 	if err != nil {
@@ -67,7 +77,7 @@ func deleteLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB, userID, tar
 		return
 	}
 	_ = stmt.QueryRowx(userID, targetUserID)
-	errCode, errContent := updateRating(db, userID)
+	errCode, errContent := updateRating(db, targetUserID)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
@@ -75,7 +85,13 @@ func deleteLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB, userID, tar
 	lib.RespondEmptyHTTP(w, http.StatusOK)
 }
 
-// Like is
+// Like is the route '/v1/users/{username}/like' with the method POST OR DELETE.
+// The url contains the parameter username
+// If username is not a valid username
+// 		-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Username parameter is invalid"
+// Collect the userId corresponding to the username in the database
+// If the username doesn't match with any data
+// 		-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: User<username> doesn't exists"
 func Like(w http.ResponseWriter, r *http.Request) {
 	db, _, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"POST", "DELETE"})
 	if !ok {

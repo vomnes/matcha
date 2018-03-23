@@ -136,7 +136,21 @@ func addVisit(db *sqlx.DB, userID, targetID string) (int, string) {
 	return 0, ""
 }
 
-// GetUser ...
+// GetUser is the route '/v1/users/{username}' with the method GET.
+// The url contains the parameter username
+// If username is not a valid username
+// 		-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Username parameter is invalid"
+// Collect the data concerning the user in the table Users of the database
+// If the user doesn't exists
+// 		-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: User<username> doesn't exists"
+// Collect the tags (id, name) concerning the users (target/connected) in database
+// Split the shared and not shared tags
+// Check if the connected user
+// - has liked the target user and so if they have liked each other
+// - has reported the user as fake
+// Add a profile visit in the table Visits in the database
+// Update target user rating
+// Return HTTP Code 200 Status OK - JSON Content User data
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	db, _, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"GET"})
 	if !ok {
@@ -171,6 +185,11 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	errCode, errContent = addVisit(db, userID, targetUserData.ID)
+	if errCode != 0 || errContent != "" {
+		lib.RespondWithErrorHTTP(w, errCode, errContent)
+		return
+	}
+	errCode, errContent = updateRating(db, targetUserData.ID)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return

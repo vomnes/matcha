@@ -1,10 +1,56 @@
-# API routes details
-
-## Table of Contents
-- [Accounts](../account)
-- [Mails](../mail)
+[Go back to 'Table of Contents'](../../../api)
 
 ### Profiles
+#### GET - /v1/profiles/edit
+
+```
+JSON Body :
+  {
+    "ip" string
+  }
+```
+
+Collect the data concerning the user in the table Users of the database  
+If the user doesn't exists  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: User<username> doesn't exists"  
+Collect the tags (id, name) concerning the user in database  
+If geolocalisation_allowed is false we need to set or update the location of the user by using the IP in the body  
+Trim and escape characters of the IP  
+If the IP is not a valid IP4  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: IP in the body is invalid"  
+Collect the latitude, longitude, city, zip and country linked to this IP using ip-api.com's API  
+Update the geoposition of the user using this new data, geolocalisation_allowed still false  
+city and country are formated as Title and ZIP as upper case  
+Return HTTP Code 200 Status OK
+
+```
+JSON Content Response :
+  {
+    "username":                string,
+    "email":                   string,
+    "lastname":                string,
+    "firstname":               string,
+    "picture_url_1":           string,
+    "picture_url_2":           string,
+    "picture_url_3":           string,
+    "picture_url_4":           string,
+    "picture_url_5":           string,
+    "biography":               string,
+    "birthday":                string, /* Format Date DD/MM/YYYY */
+    "genre":                   string,
+    "interesting_in":          string,
+    "latitude":                float64,
+    "longitude":               float64,
+    "city":                    string,
+    "zip":                     string,
+    "country":                 string,
+    "geolocalisation_allowed": bool,
+    "tags":                    []string,
+  }
+```
+
+___
+
 #### POST - /v1/profiles/edit/data
 
 ```
@@ -27,6 +73,7 @@ Convert string format time from body to \*time.Time
 Update the table Users in the database with the new values  
 If a new field is empty then this field won't be updated  
 Return HTTP Code 200 Status OK  
+
 ___
 
 #### POST - /v1/profiles/edit/location
@@ -78,56 +125,6 @@ Check if the current password in the body match with the current password of the
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 403 Forbidden - JSON Content "Error: Current password incorrect"  
 Encrypt the new password and update the table Users in the database  
 Return HTTP Code 200 Status OK  
-
-___
-
-#### GET - /v1/profiles/edit
-
-```
-JSON Body :
-  {
-    "ip" string
-  }
-```
-
-Collect the data concerning the users in the table Users of the database  
-If the user doesn't exists  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: User<username> doesn't exists"  
-Collect the tags (id, name) concerning the users in database  
-If geolocalisation_allowed is false we need to set or update the location of the users by using the IP in the body  
-Trim and escape characters of the IP  
-If the IP is not a valid IP4  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: IP in the body is invalid"  
-Collect the latitude, longitude, city, zip and country linked to this IP using ip-api.com's API  
-Update the geoposition of the user using this new data, geolocalisation_allowed still false  
-city and country are formated as Title and ZIP as upper case  
-Return HTTP Code 200 Status OK
-
-```
-JSON Content Response :
-  {
-    "username":                string,
-    "email":                   string,
-    "lastname":                string,
-    "firstname":               string,
-    "picture_url_1":           string,
-    "picture_url_2":           string,
-    "picture_url_3":           string,
-    "picture_url_4":           string,
-    "picture_url_5":           string,
-    "biography":               string,
-    "birthday":                string, /* Format Date DD/MM/YYYY */
-    "genre":                   string,
-    "interesting_in":          string,
-    "latitude":                float64,
-    "longitude":               float64,
-    "city":                    string,
-    "zip":                     string,
-    "country":                 string,
-    "geolocalisation_allowed": bool,
-    "tags":                    []string,
-  }
-```
 
 ___
 
