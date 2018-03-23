@@ -121,11 +121,11 @@ func removeLinkUserTag(db *sqlx.DB, tagID, userID string) (int, string) {
 //    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Tag name is not valid"
 // If the tag name doesn't exists in the table Tags of the database
 // we need to insert it
-// Return his tagID
+// Collect his tagID
 // If the user own own already this tag
 //    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Tag name already linked to this user"
 // Else link the userId with the tagID in the table Users_Tags
-// Return HTTP Code 200 Status OK
+// Return HTTP Code 200 Status OK - Return JSON with tag_id
 func addTag(w http.ResponseWriter, r *http.Request, db *sqlx.DB, data tagData, userID string) {
 	errCode, errContent := checkInputName(&data)
 	if errCode != 0 || errContent != "" {
@@ -142,13 +142,15 @@ func addTag(w http.ResponseWriter, r *http.Request, db *sqlx.DB, data tagData, u
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	lib.RespondEmptyHTTP(w, http.StatusOK)
+	lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{
+		"tag_id": tagID,
+	})
 }
 
 // Delete Tag Method DELETE
-// If in the body tag id is empty
+// If in the body tagID is empty
 //    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Tag ID in body can't be empty"
-// Set trim, escape characters and to lower case tag id
+// Set trim, escape characters and to lower case tagID
 // If tag name is not valid
 //    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Tag ID is not valid"
 // Delete the link between the tagID and the userID in the database in the table Users_Tags

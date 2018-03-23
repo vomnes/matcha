@@ -103,12 +103,12 @@ func handleLocation(userDB *lib.User, d userIP, db *sqlx.DB, userID, username st
 // 		-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: User<username> doesn't exists"
 // Collect the tags (id, name) concerning the users in database
 // If geolocalisation_allowed is false we need to set or update the location of the users by using the IP in the body
-// Trim and escapte characters of the IP
+// Trim and escape characters of the IP
 // If the IP is not a valid IP4
 // 		-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: IP in the body is invalid"
 // Collect the latitude, longitude, city, zip and country linked to this IP using ip-api.com's API
 // Update the geoposition of the user using this new data, geolocalisation_allowed still false
-// city and country are fomated as Title and ZIP as upper case
+// city and country are formated as Title and ZIP as upper case
 // Return HTTP Code 200 Status OK - JSON Content User data
 func GetProfile(w http.ResponseWriter, r *http.Request) {
 	db, username, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"GET"})

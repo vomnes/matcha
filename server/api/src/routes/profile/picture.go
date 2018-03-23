@@ -171,7 +171,7 @@ func uploadPicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureN
 	})
 }
 
-// Method Update Picture POST
+// Method Delete Picture DELETE
 // Not possible to only remove the first picture (only update)
 //    -> Return an error - HTTP Code 403 Forbidden - JSON Content "Error: Not possible to delete the 1st picture - Only upload a new one is possible"
 // Update the picture path in the database with an empty string
