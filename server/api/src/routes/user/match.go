@@ -101,23 +101,28 @@ func checkInput(data *bodyData) {
 	if data.Distance.Max > 0 {
 		data.Distance.MaxStr = strconv.Itoa(data.Distance.Max)
 	} else {
+		// Default distance is 50 km
 		data.Distance.MaxStr = "50"
 	}
+	// Manage tags
 	for _, tag := range data.Tags {
 		data.TagsStr = append(data.TagsStr, "'"+strconv.Itoa(tag)+"'")
 	}
 	if len(data.Tags) > 0 && data.SortType == "common_tags" {
+		// No possible to sort by common_tags when tags are selected, default rating
 		data.SortType = "rating"
 	} else if data.SortType != "age" &&
 		data.SortType != "distance" &&
 		data.SortType != "common_tags" {
 		data.SortType = "rating"
 	}
+	// Set sort direction for SQL
 	if data.SortDirection == "reverse" {
 		data.SortDirection = "desc"
 	} else {
 		data.SortDirection = "asc"
 	}
+	// Default number users => 20
 	if data.FinishPosition == 0 {
 		data.FinishPosition = 20
 	}

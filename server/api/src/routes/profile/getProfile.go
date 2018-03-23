@@ -69,10 +69,11 @@ func handleLocation(userDB *lib.User, d userIP, db *sqlx.DB, userID, username st
 		userDB.City = ""
 		userDB.ZIP = ""
 		userDB.Country = ""
+		d.IP = strings.Trim(d.IP, " ")
 		d.IP = html.EscapeString(d.IP)
 		right := lib.IsValidIP4(d.IP)
 		if !right {
-			return 400, "IP in the body is invalid"
+			return 406, "IP in the body is invalid"
 		}
 		dataLocation, errCode, errContent := getIPLocation(d.IP)
 		if errCode != 0 || errContent != "" {
@@ -95,6 +96,20 @@ func handleLocation(userDB *lib.User, d userIP, db *sqlx.DB, userID, username st
 	return 0, ""
 }
 
+// GetProfile is the route '/v1/profiles/edit' with the method GET.
+// The body contains the IP of the users
+// Collect the data concerning the users in the table Users of the database
+// If the user doesn't exists
+// 		-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: User<username> doesn't exists"
+// Collect the tags (id, name) concerning the users in database
+// If geolocalisation_allowed is false we need to set or update the location of the users by using the IP in the body
+// Trim and escapte characters of the IP
+// If the IP is not a valid IP4
+// 		-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: IP in the body is invalid"
+// Collect the latitude, longitude, city, zip and country linked to this IP using ip-api.com's API
+// Update the geoposition of the user using this new data, geolocalisation_allowed still false
+// city and country are fomated as Title and ZIP as upper case
+// Return HTTP Code 200 Status OK - JSON Content User data
 func GetProfile(w http.ResponseWriter, r *http.Request) {
 	db, username, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"GET"})
 	if !ok {
@@ -133,7 +148,7 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 		"picture_url_4":           userDB.PictureURL_4,
 		"picture_url_5":           userDB.PictureURL_5,
 		"biography":               userDB.Biography,
-		"birthday":                fmt.Sprintf("%02d/%02d/%04d", userDB.Birthday.Day(), userDB.Birthday.Month(), userDB.Birthday.Year()),
+		"birthday":                fmt.Sprintf("%02d/%02d/%04d", userDB.Birthday.Day(), userDB.Birthday.Month(), userDB.Birthday.Year()), // DD/MM/YYYY
 		"genre":                   userDB.Genre,
 		"interesting_in":          userDB.InterestingIn,
 		"latitude":                userDB.Latitude,

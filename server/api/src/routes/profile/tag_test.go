@@ -277,7 +277,7 @@ func TestTagAddAlreadyLinkedToTheUser(t *testing.T) {
 	if output != "" {
 		t.Error(output)
 	}
-	strError := tests.CompareResponseJSONCode(w, 400, map[string]interface{}{
+	strError := tests.CompareResponseJSONCode(w, 406, map[string]interface{}{
 		"error": "Tag name already linked to this user",
 	})
 	if strError != nil {

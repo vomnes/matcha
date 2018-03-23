@@ -255,10 +255,10 @@ func TestEditData(t *testing.T) {
 	}
 	birthdayString := "06/03/1995"
 	body := []byte(`{
-    "firstname": "Valentin",
-		"lastname": "Omnes",
-    "email": "valentin.omnes@gmail.com",
-    "biography": "I'm Valentin Omnes",
+    "firstname": "Valentin  ",
+		"lastname": "  Omnes",
+    "email": "  valentin.omnes@gmail.com  ",
+    "biography": "  I'm Valentin Omnes",
     "birthday": "` + birthdayString + `",
     "genre": "male",
     "interesting_in": "female"

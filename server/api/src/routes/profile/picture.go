@@ -132,6 +132,17 @@ func updatePicturePathInDB(db *sqlx.DB, pictureNumber, picturePath, userID, user
 	return oldURL, 0, "", nil
 }
 
+// Method Update Picture POST
+// The body contains the picture_base64
+// Convert the base64 picture a file picture, support only png, jpg and jpeg files.
+// The file picture is stored in '/storage/pictures/profiles/<username>' on the server (specific directory for tests)
+// If the file generating failed
+//    -> Return an error - HTTP Code 500 Server Internal Error - JSON Content "Error: Failed to generate <type>"
+// If the file type is not supported
+//    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Image type <type> not accepted, support only png, jpg and jpeg images"
+// Update the picture path in the database
+// Remove the old file on the server by using the old path from the database
+// Return HTTP Code 200 Status OK - Return an JSON with the new picture path in picture_url
 func uploadPicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureNumber, username, userID string) {
 	var inputData pictureData
 	errCode, errContent, err := lib.GetDataBody(r, &inputData)
@@ -160,6 +171,12 @@ func uploadPicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureN
 	})
 }
 
+// Method Update Picture POST
+// Not possible to only remove the first picture (only update)
+//    -> Return an error - HTTP Code 403 Forbidden - JSON Content "Error: Not possible to delete the 1st picture - Only upload a new one is possible"
+// Update the picture path in the database with an empty string
+// Remove the old file on the server by using the old path from the database
+// Return HTTP Code 200 Status OK
 func deletePicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureNumber, username, userID string) {
 	if pictureNumber == "1" {
 		lib.RespondWithErrorHTTP(w, http.StatusForbidden, "Not possible to delete the 1st picture - Only upload a new one is possible")
@@ -177,7 +194,9 @@ func deletePicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureN
 	lib.RespondEmptyHTTP(w, http.StatusOK)
 }
 
-// Picture is
+// Picture is the route '/v1/profiles/picture/{number}' with the method POST and DELETE.
+// If the url parameter number is not a number between 1 and 5
+//    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Url parameter must be a number between 1 and 5, not <number>"
 func Picture(w http.ResponseWriter, r *http.Request) {
 	db, username, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"POST", "DELETE"})
 	if !ok {

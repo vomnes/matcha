@@ -29,8 +29,11 @@ func checkLocationInput(d *locationData) (int, string, error) {
 	if d.Lng < -180.0 || d.Lng > 180.0 {
 		return 406, "Longitude value is over the limit", errors.New("Longitude overflow")
 	}
+	d.City = strings.Trim(d.City, " ")
 	d.City = html.EscapeString(d.City)
+	d.ZIP = strings.Trim(d.ZIP, " ")
 	d.ZIP = html.EscapeString(d.ZIP)
+	d.Country = strings.Trim(d.Country, " ")
 	d.Country = html.EscapeString(d.Country)
 	if !lib.IsValidCommonName(d.City) {
 		return 406, "City name is invalid", errors.New("City invalid")
@@ -65,7 +68,18 @@ func UpdateLocationInDB(db *sqlx.DB, latitude, longitude float64,
 	return 0, "", nil
 }
 
-// EditLocation is
+// EditLocation is the route '/v1/profiles/edit/location' with the method POST.
+// The body contains the new latitude, longitude, city, zip, country
+// If any field in the body is empty
+//    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: No field inside the body can be empty"
+// If the latitude or longitude is in overflow
+//    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: <type> value is over the limit"
+// Trim and escape characters of city, zip and country
+// If the city, zip or country is invalid (common name)
+//    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: <detail> is invalid"
+// Format as title the city name and country and format as upper case the ZIP
+// Update the table Users in the database with the new values and set geolocalisation_allowed as true
+// Return HTTP Code 200 Status OK
 func EditLocation(w http.ResponseWriter, r *http.Request) {
 	db, username, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"POST"})
 	if !ok {
@@ -89,4 +103,5 @@ func EditLocation(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
+	lib.RespondEmptyHTTP(w, http.StatusOK)
 }
