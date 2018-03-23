@@ -1,4 +1,4 @@
-[Go back to 'Table of Contents'](../../../api)
+Go back to [Table of Contents](../../../)
 
 ### Accounts
 #### POST - /v1/account/register

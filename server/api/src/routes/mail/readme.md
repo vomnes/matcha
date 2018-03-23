@@ -1,4 +1,4 @@
-[Go back to 'Table of Contents'](../../../api)
+Go back to [Table of Contents](../../../)
 
 ### Mails
 #### POST - /v1/mails/forgotpassword

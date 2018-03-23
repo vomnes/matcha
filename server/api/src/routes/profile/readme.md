@@ -1,4 +1,4 @@
-[Go back to 'Table of Contents'](../../../api)
+Go back to [Table of Contents](../../../)
 
 ### Profiles
 #### GET - /v1/profiles/edit
