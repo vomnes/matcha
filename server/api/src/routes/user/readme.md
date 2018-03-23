@@ -34,10 +34,12 @@ Check input :
 - Sort type available are age, common_tags (when there are no selected tags) distance, rating (default)  
 - Sort direction available are reverse and normal  
 - Finish position is an unsigned integer, default value 20  
+
 Collect the logged in user data (users, tags)  
 Handle genre by creating an array with the possible match  
 Create the request according the logged in user data and options from the body that will the matching users  
 - Default range age is between -3 and +3 the age of the logged in user  
+
 Generate an map[string]interface{} array with the users from the SQL request output between StartPosition and FinishPosition  
 Return HTTP Code 200 Status OK  
 If the array is empty return JSON Content "data": "No (more) users"  
@@ -83,6 +85,7 @@ Split the shared and not shared tags
 Check if the connected user  
 - has liked the target user and so if they have liked each other  
 - has reported the user as fake  
+
 Add a profile visit in the table Visits in the database  
 Update target user rating  
 Return HTTP Code 200 Status OK - JSON Content User data  
