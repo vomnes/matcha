@@ -21,6 +21,7 @@ func checkInputName(d *tagData) (int, string) {
 	if d.TagName == "" {
 		return 406, "Tag name in body can't be empty"
 	}
+	d.TagName = strings.Trim(d.TagName, " ")
 	d.TagName = html.EscapeString(d.TagName)
 	d.TagName = strings.ToLower(d.TagName)
 	right := lib.IsValidTag(d.TagName)
@@ -34,6 +35,7 @@ func checkInputId(d *tagData) (int, string) {
 	if d.TagID == "" {
 		return 406, "Tag ID in body can't be empty"
 	}
+	d.TagID = strings.Trim(d.TagID, " ")
 	d.TagID = html.EscapeString(d.TagID)
 	if value, err := strconv.Atoi(d.TagID); err != nil || value < 1 {
 		return 406, "Tag ID is not valid"
@@ -98,7 +100,7 @@ func linkUserTag(db *sqlx.DB, userID, tagID string) (int, string) {
 		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to check if user and tag link exists in database " + err.Error()))
 		return 500, "Failed to check if user and tag link exists"
 	}
-	return 400, "Tag name already linked to this user"
+	return 406, "Tag name already linked to this user"
 }
 
 func removeLinkUserTag(db *sqlx.DB, tagID, userID string) (int, string) {
@@ -111,6 +113,19 @@ func removeLinkUserTag(db *sqlx.DB, tagID, userID string) (int, string) {
 	return 0, ""
 }
 
+// Add Tag Method POST
+// If in the body tag name is empty
+//    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Tag name in body can't be empty"
+// Set trim, escape characters and to lower case tag name
+// If tag name is not valid
+//    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Tag name is not valid"
+// If the tag name doesn't exists in the table Tags of the database
+// we need to insert it
+// Collect his tagID
+// If the user own own already this tag
+//    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Tag name already linked to this user"
+// Else link the userId with the tagID in the table Users_Tags
+// Return HTTP Code 200 Status OK - Return JSON with tag_id
 func addTag(w http.ResponseWriter, r *http.Request, db *sqlx.DB, data tagData, userID string) {
 	errCode, errContent := checkInputName(&data)
 	if errCode != 0 || errContent != "" {
@@ -127,9 +142,19 @@ func addTag(w http.ResponseWriter, r *http.Request, db *sqlx.DB, data tagData, u
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	lib.RespondEmptyHTTP(w, http.StatusOK)
+	lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{
+		"tag_id": tagID,
+	})
 }
 
+// Delete Tag Method DELETE
+// If in the body tagID is empty
+//    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Tag ID in body can't be empty"
+// Set trim, escape characters and to lower case tagID
+// If tag name is not valid
+//    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Tag ID is not valid"
+// Delete the link between the tagID and the userID in the database in the table Users_Tags
+// Return HTTP Code 200 Status OK
 func deleteTag(w http.ResponseWriter, r *http.Request, db *sqlx.DB, data tagData, userID string) {
 	errCode, errContent := checkInputId(&data)
 	if errCode != 0 || errContent != "" {
@@ -144,7 +169,8 @@ func deleteTag(w http.ResponseWriter, r *http.Request, db *sqlx.DB, data tagData
 	lib.RespondEmptyHTTP(w, http.StatusOK)
 }
 
-// Tag is
+// Tag is the route '/v1/profiles/edit/tag' with the method POST and DELETE.
+// The body contains tag_name or tag_id
 func Tag(w http.ResponseWriter, r *http.Request) {
 	if ok := lib.CheckHTTPMethod(r, []string{"POST", "DELETE"}); !ok {
 		lib.RespondWithErrorHTTP(w, 404, "Page not found")

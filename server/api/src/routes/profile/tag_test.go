@@ -162,7 +162,9 @@ func TestTagAddInsertTag(t *testing.T) {
 	if output != "" {
 		t.Error(output)
 	}
-	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{})
+	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{
+		"tag_id": "1",
+	})
 	if strError != nil {
 		t.Errorf("%v", strError)
 	}
@@ -219,7 +221,9 @@ func TestTagAddTagExists(t *testing.T) {
 	if output != "" {
 		t.Error(output)
 	}
-	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{})
+	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{
+		"tag_id": "1",
+	})
 	if strError != nil {
 		t.Errorf("%v", strError)
 	}
@@ -277,7 +281,7 @@ func TestTagAddAlreadyLinkedToTheUser(t *testing.T) {
 	if output != "" {
 		t.Error(output)
 	}
-	strError := tests.CompareResponseJSONCode(w, 400, map[string]interface{}{
+	strError := tests.CompareResponseJSONCode(w, 406, map[string]interface{}{
 		"error": "Tag name already linked to this user",
 	})
 	if strError != nil {

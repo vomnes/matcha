@@ -101,23 +101,28 @@ func checkInput(data *bodyData) {
 	if data.Distance.Max > 0 {
 		data.Distance.MaxStr = strconv.Itoa(data.Distance.Max)
 	} else {
+		// Default distance is 50 km
 		data.Distance.MaxStr = "50"
 	}
+	// Manage tags
 	for _, tag := range data.Tags {
 		data.TagsStr = append(data.TagsStr, "'"+strconv.Itoa(tag)+"'")
 	}
 	if len(data.Tags) > 0 && data.SortType == "common_tags" {
+		// No possible to sort by common_tags when tags are selected, default rating
 		data.SortType = "rating"
 	} else if data.SortType != "age" &&
 		data.SortType != "distance" &&
 		data.SortType != "common_tags" {
 		data.SortType = "rating"
 	}
+	// Set sort direction for SQL
 	if data.SortDirection == "reverse" {
 		data.SortDirection = "desc"
 	} else {
 		data.SortDirection = "asc"
 	}
+	// Default number users => 20
 	if data.FinishPosition == 0 {
 		data.FinishPosition = 20
 	}
@@ -205,7 +210,25 @@ type elementUser struct {
 	Distance   *float32 `db:"distance"`
 }
 
-// Match ...
+// Match is the route '/v1/users' with the method GET.
+// The body may contains the age (min-max), rating (min-max), distance (max),
+// tags, lat, lng, sort_type, sort_direction, start_position and finish_position
+// Check input :
+// - Age must be a float greater than 1
+// - Rating must be a float between 0.1 and 5.0
+// - If min > max, automatic swap
+// - Distance is an integer with default value 50 (km)
+// - Sort type available are age, common_tags (when there are no selected tags) distance, rating (default)
+// - Sort direction available are reverse and normal
+// - Finish position is an unsigned integer, default value 20
+// Collect the logged in user data (users, tags)
+// Handle genre by creating an array with the possible matchs
+// Create the request according the logged in user data and options from the body that will the matching users
+// - Default range age is between -3 and +3 the age of the logged in user
+// Generate an map[string]interface{} array with the users from the SQL request output between StartPosition and FinishPosition
+// Return HTTP Code 200 Status OK
+// If the array is empty return JSON Content "data": "No (more) users",
+// Else JSON Content Array
 func Match(w http.ResponseWriter, r *http.Request) {
 	db, _, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"GET"})
 	if !ok {

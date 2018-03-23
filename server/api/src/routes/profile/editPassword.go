@@ -28,7 +28,7 @@ func checkInputBody(inputData userPassword) (int, string) {
 		return 406, "Both password entered must be identical"
 	}
 	if !lib.IsValidPassword(inputData.NewPassword) {
-		return 406, "Not a valid new password"
+		return 406, "New password field is not a valid password"
 	}
 	return 0, ""
 }
@@ -38,7 +38,7 @@ func checkCurrentUserPassword(r *http.Request, db *sqlx.DB, password, userID, us
 	err := db.Get(&user, "SELECT * FROM Users WHERE id = $1 AND username = $2", userID, username)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return 400, "User does not exists in the database"
+			return 406, "User does not exists in the database"
 		}
 		log.Println(lib.PrettyError(r.URL.String() + " [DB REQUEST - SELECT] " + err.Error()))
 		return 500, "Failed to check if users exists in the database"
@@ -65,7 +65,20 @@ func updateUserPassword(r *http.Request, db *sqlx.DB, password, userID, username
 	return 0, ""
 }
 
-// EditPassword is
+// EditPassword is the route '/v1/profiles/edit/password' with the method POST.
+// The body contains the current password, new_password and new_rePassword
+// If any field in the body is empty
+//    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: No field inside the body can be empty"
+// If the current or new password is invalid
+//    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: <type> password field is not a valid password"
+// If the new password and re entered new password are not identical
+//    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Both password entered must be identical"
+// Check if the userId and username match with an row in the table Users of the database
+//    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: User does not exists in the database"
+// Check if the current password in the body match with the current password of the user
+//    -> Return an error - HTTP Code 403 Forbidden - JSON Content "Error: Current password incorrect"
+// Encrypt the new password and update the table Users in the database
+// Return HTTP Code 200 Status OK
 func EditPassword(w http.ResponseWriter, r *http.Request) {
 	db, username, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"POST"})
 	if !ok {
@@ -93,4 +106,5 @@ func EditPassword(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
+	lib.RespondEmptyHTTP(w, http.StatusOK)
 }

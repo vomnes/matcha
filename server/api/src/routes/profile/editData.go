@@ -30,6 +30,7 @@ func checkDataInput(d *userData) (int, string) {
 	}
 	var right bool
 	if d.Firstname != "" {
+		d.Firstname = strings.Trim(d.Firstname, " ")
 		d.Firstname = html.EscapeString(d.Firstname)
 		right = lib.IsValidFirstLastName(d.Firstname)
 		if right == false {
@@ -37,6 +38,7 @@ func checkDataInput(d *userData) (int, string) {
 		}
 	}
 	if d.Lastname != "" {
+		d.Lastname = strings.Trim(d.Lastname, " ")
 		d.Lastname = html.EscapeString(d.Lastname)
 		right = lib.IsValidFirstLastName(d.Lastname)
 		if right == false {
@@ -44,6 +46,7 @@ func checkDataInput(d *userData) (int, string) {
 		}
 	}
 	if d.EmailAddress != "" {
+		d.EmailAddress = strings.Trim(d.EmailAddress, " ")
 		d.EmailAddress = html.EscapeString(d.EmailAddress)
 		right = lib.IsValidEmailAddress(d.EmailAddress)
 		if right == false {
@@ -51,6 +54,7 @@ func checkDataInput(d *userData) (int, string) {
 		}
 	}
 	if d.Biography != "" {
+		d.Biography = strings.Trim(d.Biography, " ")
 		d.Biography = html.EscapeString(d.Biography)
 		right = lib.IsValidText(d.Biography, 255)
 		if right == false {
@@ -72,6 +76,7 @@ func checkDataInput(d *userData) (int, string) {
 		}
 	}
 	if d.Birthday != "" {
+		d.Birthday = strings.Trim(d.Birthday, " ")
 		d.Birthday = html.EscapeString(d.Birthday)
 		right, err := lib.IsValidDate(d.Birthday)
 		if err != nil {
@@ -114,7 +119,15 @@ func updateDataInDB(db *sqlx.DB, data userData, userID, username string) (int, s
 	return 0, "", nil
 }
 
-// EditData is
+// EditData is the route '/v1/profiles/edit/data' with the method POST.
+// The body contains the lastname, firstname, email, biography, birthday, genre and interesting_in
+// Sanitize by removed the space after and before the variables and escaping characters
+// If any elements in the body is not valid
+//    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Not a valid <details>"
+// Convert string format time from body to *time.Time
+// Update the table Users in the database with the new values
+// If a new field is empty then this field won't be updated
+// Return HTTP Code 200 Status OK
 func EditData(w http.ResponseWriter, r *http.Request) {
 	db, username, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"POST"})
 	if !ok {
@@ -137,4 +150,5 @@ func EditData(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
+	lib.RespondEmptyHTTP(w, http.StatusOK)
 }
