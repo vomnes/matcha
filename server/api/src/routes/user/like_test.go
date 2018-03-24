@@ -97,7 +97,7 @@ func TestLikeAdd(t *testing.T) {
 		return
 	}
 	if user.Rating != 3.7 {
-		t.Errorf("Rating not updated in the table user, expect 3.711111 has \x1b[1;31m%f\033[0m", user.Rating)
+		t.Errorf("Rating not updated in the table user, expect 3.7 has \x1b[1;31m%f\033[0m", user.Rating)
 	}
 }
 
