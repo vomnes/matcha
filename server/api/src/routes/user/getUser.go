@@ -148,8 +148,9 @@ func addVisit(db *sqlx.DB, userID, targetID string) (int, string) {
 // Check if the connected user
 // - has liked the target user and so if they have liked each other
 // - has reported the user as fake
-// Add a profile visit in the table Visits in the database
-// Update target user rating
+// If the targetUser is not the connectedUser
+// - Add a profile visit in the table Visits in the database
+// - Update target user rating
 // Return HTTP Code 200 Status OK - JSON Content User data
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	db, _, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"GET"})
@@ -184,15 +185,17 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	errCode, errContent = addVisit(db, userID, targetUserData.ID)
-	if errCode != 0 || errContent != "" {
-		lib.RespondWithErrorHTTP(w, errCode, errContent)
-		return
-	}
-	errCode, errContent = updateRating(db, targetUserData.ID)
-	if errCode != 0 || errContent != "" {
-		lib.RespondWithErrorHTTP(w, errCode, errContent)
-		return
+	if userID != targetUserData.ID {
+		errCode, errContent = addVisit(db, userID, targetUserData.ID)
+		if errCode != 0 || errContent != "" {
+			lib.RespondWithErrorHTTP(w, errCode, errContent)
+			return
+		}
+		errCode, errContent = updateRating(db, targetUserData.ID)
+		if errCode != 0 || errContent != "" {
+			lib.RespondWithErrorHTTP(w, errCode, errContent)
+			return
+		}
 	}
 	lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{
 		"username":         targetUsername,
@@ -206,7 +209,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		"pictures":         arrayPicture(targetUserData),
 		"rating":           targetUserData.Rating,
 		"liked":            hasLiked,
-		"users_connected":  areConnected,
+		"users_linked":     areConnected,
 		"reported_as_fake": isReportedAsFake,
 		"online":           targetUserData.Online,
 		"tags": map[string]interface{}{

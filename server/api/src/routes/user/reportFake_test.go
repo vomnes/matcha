@@ -250,3 +250,29 @@ func TestHandleReportFakeUserDoesntExists(t *testing.T) {
 		t.Errorf("%v", strError)
 	}
 }
+
+func TestHandleReportFakeMe(t *testing.T) {
+	tests.DbClean()
+	username := "test_" + lib.GetRandomString(43)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: username,
+		UserID:   "1",
+	}
+	r := tests.CreateRequest("POST", "/v1/users/"+username+"/fake", nil, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		testApplicantServer().ServeHTTP(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	strError := tests.CompareResponseJSONCode(w, 400, map[string]interface{}{
+		"error": "Cannot like your own profile",
+	})
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+}

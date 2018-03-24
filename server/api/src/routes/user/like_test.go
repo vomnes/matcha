@@ -15,32 +15,32 @@ func TestLikeAdd(t *testing.T) {
 	username := "test_" + lib.GetRandomString(43)
 	targetUsername := "target_test_" + lib.GetRandomString(43)
 	userData := tests.InsertUser(lib.User{Username: username, Rating: 1.0}, tests.DB)
-	targetData := tests.InsertUser(lib.User{Username: targetUsername}, tests.DB)
+	targetData := tests.InsertUser(lib.User{Username: targetUsername, Rating: 3.5}, tests.DB)
 	_ = tests.InsertLike(lib.Like{UserID: userData.ID, LikedUserID: "42"}, tests.DB)
 	// -> Rating
-	_ = tests.InsertLike(lib.Like{UserID: "11", LikedUserID: userData.ID}, tests.DB)
+	_ = tests.InsertLike(lib.Like{UserID: "11", LikedUserID: targetData.ID}, tests.DB)
 	_ = tests.InsertLike(lib.Like{UserID: "11", LikedUserID: "5"}, tests.DB)
 	_ = tests.InsertLike(lib.Like{UserID: userData.ID, LikedUserID: "11"}, tests.DB)
-	_ = tests.InsertLike(lib.Like{UserID: "3", LikedUserID: userData.ID}, tests.DB)
+	_ = tests.InsertLike(lib.Like{UserID: "3", LikedUserID: targetData.ID}, tests.DB)
 	_ = tests.InsertLike(lib.Like{UserID: "4", LikedUserID: userData.ID}, tests.DB)
-	_ = tests.InsertLike(lib.Like{UserID: "5", LikedUserID: userData.ID}, tests.DB)
-	_ = tests.InsertLike(lib.Like{UserID: "6", LikedUserID: userData.ID}, tests.DB)
-	_ = tests.InsertVisit(lib.Visit{UserID: "2", VisitedUserID: userData.ID}, tests.DB)
-	_ = tests.InsertVisit(lib.Visit{UserID: "3", VisitedUserID: userData.ID}, tests.DB)
-	_ = tests.InsertVisit(lib.Visit{UserID: "4", VisitedUserID: userData.ID}, tests.DB)
-	_ = tests.InsertVisit(lib.Visit{UserID: "5", VisitedUserID: userData.ID}, tests.DB)
-	_ = tests.InsertVisit(lib.Visit{UserID: "6", VisitedUserID: userData.ID}, tests.DB)
-	_ = tests.InsertVisit(lib.Visit{UserID: "7", VisitedUserID: userData.ID}, tests.DB)
-	_ = tests.InsertVisit(lib.Visit{UserID: "8", VisitedUserID: userData.ID}, tests.DB)
-	_ = tests.InsertVisit(lib.Visit{UserID: "9", VisitedUserID: userData.ID}, tests.DB)
-	_ = tests.InsertVisit(lib.Visit{UserID: "10", VisitedUserID: userData.ID}, tests.DB)
-	_ = tests.InsertVisit(lib.Visit{UserID: userData.ID, VisitedUserID: "5"}, tests.DB)
-	_ = tests.InsertVisit(lib.Visit{UserID: userData.ID, VisitedUserID: "5"}, tests.DB)
-	_ = tests.InsertVisit(lib.Visit{UserID: userData.ID, VisitedUserID: "5"}, tests.DB)
-	_ = tests.InsertVisit(lib.Visit{UserID: userData.ID, VisitedUserID: "5"}, tests.DB)
-	_ = tests.InsertFakeReport(lib.FakeReport{UserID: "2", TargetUserID: userData.ID}, tests.DB)
-	_ = tests.InsertFakeReport(lib.FakeReport{UserID: "3", TargetUserID: userData.ID}, tests.DB)
-	_ = tests.InsertFakeReport(lib.FakeReport{UserID: userData.ID, TargetUserID: "5"}, tests.DB)
+	_ = tests.InsertLike(lib.Like{UserID: "5", LikedUserID: targetData.ID}, tests.DB)
+	_ = tests.InsertLike(lib.Like{UserID: "6", LikedUserID: targetData.ID}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: "2", VisitedUserID: targetData.ID}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: "3", VisitedUserID: targetData.ID}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: "4", VisitedUserID: targetData.ID}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: "5", VisitedUserID: targetData.ID}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: "6", VisitedUserID: targetData.ID}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: "7", VisitedUserID: targetData.ID}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: "8", VisitedUserID: targetData.ID}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: "9", VisitedUserID: targetData.ID}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: "10", VisitedUserID: targetData.ID}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: targetData.ID, VisitedUserID: "5"}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: targetData.ID, VisitedUserID: "5"}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: targetData.ID, VisitedUserID: "5"}, tests.DB)
+	_ = tests.InsertVisit(lib.Visit{UserID: targetData.ID, VisitedUserID: "5"}, tests.DB)
+	_ = tests.InsertFakeReport(lib.FakeReport{UserID: "2", TargetUserID: targetData.ID}, tests.DB)
+	_ = tests.InsertFakeReport(lib.FakeReport{UserID: "3", TargetUserID: targetData.ID}, tests.DB)
+	_ = tests.InsertFakeReport(lib.FakeReport{UserID: targetData.ID, TargetUserID: "5"}, tests.DB)
 	context := tests.ContextData{
 		DB:       tests.DB,
 		Username: username,
@@ -89,14 +89,15 @@ func TestLikeAdd(t *testing.T) {
 	if compare := pretty.Compare(&expectedDatabase, likes); compare != "" {
 		t.Error(compare)
 	}
+	// Check rating update
 	var user lib.User
 	err = tests.DB.Get(&user, "SELECT rating FROM users WHERE id = $1", targetData.ID)
 	if err != nil {
 		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
 		return
 	}
-	if user.Rating != 3.711111 {
-		t.Error("\x1b[1;31m Rating not updated in the table user\033[0m", user.Rating)
+	if user.Rating != 3.7 {
+		t.Errorf("Rating not updated in the table user, expect 3.711111 has \x1b[1;31m%f\033[0m", user.Rating)
 	}
 }
 
@@ -285,5 +286,31 @@ func TestLikeDelete(t *testing.T) {
 	}
 	if compare := pretty.Compare(&expectedDatabase, likes); compare != "" {
 		t.Error(compare)
+	}
+}
+
+func TestLikeMe(t *testing.T) {
+	tests.DbClean()
+	username := "test_" + lib.GetRandomString(43)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: username,
+		UserID:   "1",
+	}
+	r := tests.CreateRequest("POST", "/v1/users/"+username+"/like", nil, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		testApplicantServer().ServeHTTP(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	strError := tests.CompareResponseJSONCode(w, 400, map[string]interface{}{
+		"error": "Cannot like your own profile",
+	})
+	if strError != nil {
+		t.Errorf("%v", strError)
 	}
 }

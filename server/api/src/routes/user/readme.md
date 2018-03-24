@@ -85,9 +85,10 @@ Split the shared and not shared tags
 Check if the connected user  
 - has liked the target user and so if they have liked each other  
 - has reported the user as fake  
+If the targetUser is not the connectedUser  
+- Add a profile visit in the table Visits in the database  
+- Update target user rating  
 
-Add a profile visit in the table Visits in the database  
-Update target user rating  
 Return HTTP Code 200 Status OK - JSON Content User data  
 
 ```
@@ -104,12 +105,12 @@ JSON Content Response :
     "pictures":         []string,
     "rating":           float64,
     "liked":            bool,
-    "users_connected":  bool,
+    "users_linked":     bool,
     "reported_as_fake": bool,
     "online":           bool,
     "tags": []interface{
       "shared":   sharedTags,
-      "personal": notSharedTags,  
+      "personal": notSharedTags,
     },
   }
 ```
@@ -121,6 +122,8 @@ ___
 The url contains the parameter username  
 If username is not a valid username  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Username parameter is invalid"  
+If parameter username and logged in username identical  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 400 Bad request - JSON Content "Error: Cannot like your own profile"  
 Collect the userId corresponding to the username in the database  
 If the username doesn't match with any data  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: User<username> doesn't exists"  
@@ -137,6 +140,8 @@ ___
 The url contains the parameter username  
 If username is not a valid username  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Username parameter is invalid"  
+If parameter username and logged in username identical  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 400 Bad request - JSON Content "Error: Cannot like your own profile"  
 Collect the userId corresponding to the username in the database  
 If the username doesn't match with any data  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: User<username> doesn't exists"  
@@ -151,6 +156,8 @@ ___
 The url contains the parameter username  
 If username is not a valid username  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Username parameter is invalid"  
+If parameter username and logged in username identical  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 400 Bad request - JSON Content "Error: Cannot like your own profile"  
 Collect the userId corresponding to the username in the database  
 If the username doesn't match with any data  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: User<username> doesn't exists"  
@@ -167,6 +174,8 @@ ___
 The url contains the parameter username  
 If username is not a valid username  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Username parameter is invalid"  
+If parameter username and logged in username identical  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 400 Bad request - JSON Content "Error: Cannot like your own profile"  
 Collect the userId corresponding to the username in the database  
 If the username doesn't match with any data  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: User<username> doesn't exists"  

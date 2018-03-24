@@ -90,10 +90,12 @@ func deleteLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB, userID, tar
 // If username is not a valid username
 // 		-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Username parameter is invalid"
 // Collect the userId corresponding to the username in the database
+// If parameter username and logged in username identical
+// 		-> Return an error - HTTP Code 400 Bad request - JSON Content "Error: Cannot like your own profile"
 // If the username doesn't match with any data
 // 		-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: User<username> doesn't exists"
 func Like(w http.ResponseWriter, r *http.Request) {
-	db, _, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"POST", "DELETE"})
+	db, username, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"POST", "DELETE"})
 	if !ok {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
@@ -102,6 +104,10 @@ func Like(w http.ResponseWriter, r *http.Request) {
 	targetUsername := vars["username"]
 	if right := lib.IsValidUsername(targetUsername); !right {
 		lib.RespondWithErrorHTTP(w, 406, "Username parameter is invalid")
+		return
+	}
+	if username == targetUsername {
+		lib.RespondWithErrorHTTP(w, 400, "Cannot like your own profile")
 		return
 	}
 	targetUserID, errCode, errContent := getUserIDFromUsername(db, targetUsername)

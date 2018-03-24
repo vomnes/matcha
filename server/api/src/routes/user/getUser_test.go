@@ -86,7 +86,7 @@ func TestGetUser(t *testing.T) {
 		"interesting_in":   "example_interesting_in",
 		"location":         "MYZIP, myCity, myCountry",
 		"liked":            true,
-		"users_connected":  true,
+		"users_linked":     true,
 		"online":           true,
 		"rating":           2.5,
 		"reported_as_fake": false,
@@ -193,7 +193,7 @@ func TestGetUserLikedNoSharedTagsReportedAsFake(t *testing.T) {
 		"interesting_in":   "example_interesting_in",
 		"location":         "MYZIP, myCity, myCountry",
 		"liked":            true,
-		"users_connected":  false,
+		"users_linked":     false,
 		"online":           false,
 		"rating":           2.5,
 		"reported_as_fake": true,
@@ -302,7 +302,7 @@ func TestGetUserNoLikedSharedTagsOnePictures(t *testing.T) {
 		"interesting_in":   "example_interesting_in",
 		"location":         "MYZIP, myCity, myCountry",
 		"liked":            false,
-		"users_connected":  false,
+		"users_linked":     false,
 		"online":           false,
 		"rating":           2.5,
 		"reported_as_fake": false,
@@ -398,5 +398,107 @@ func TestGetUserWrongMethod(t *testing.T) {
 	})
 	if strError != nil {
 		t.Errorf("%v", strError)
+	}
+}
+
+func TestGetUserMe(t *testing.T) {
+	tests.DbClean()
+	username := "test_" + lib.GetRandomString(43)
+	birthdayTime := time.Date(1955, 1, 6, 0, 0, 0, 0, time.UTC)
+	lat := 1.4
+	lng := 56.0
+	userData := tests.InsertUser(lib.User{
+		Username:               username,
+		Email:                  "MyEmail",
+		Lastname:               "MyLastname",
+		Firstname:              "MyFirstname",
+		PictureURL_1:           "MyURL1",
+		PictureURL_2:           "MyURL2",
+		PictureURL_3:           "MyURL3",
+		PictureURL_4:           "MyURL4",
+		PictureURL_5:           "MyURL5",
+		Biography:              "This is my story",
+		Birthday:               &birthdayTime,
+		Genre:                  "example_genre",
+		InterestingIn:          "example_interesting_in",
+		Latitude:               &lat,
+		Longitude:              &lng,
+		City:                   "myCity",
+		ZIP:                    "MYZIP",
+		Country:                "myCountry",
+		GeolocalisationAllowed: false,
+		Online:                 true,
+	}, tests.DB)
+	var viu []lib.User
+	errr := tests.DB.Select(&viu, "SELECT * FROM Users WHERE id = $1", userData.ID)
+	if errr != nil {
+		t.Error("\x1b[1;31m" + errr.Error() + "\033[0m")
+		return
+	}
+	_ = tests.InsertTag(lib.Tag{Name: "zero"}, tests.DB)
+	_ = tests.InsertTag(lib.Tag{Name: "one"}, tests.DB)
+	_ = tests.InsertTag(lib.Tag{Name: "two"}, tests.DB)
+	_ = tests.InsertTag(lib.Tag{Name: "three"}, tests.DB)
+	_ = tests.InsertTag(lib.Tag{Name: "four"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: userData.ID, TagID: "1"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: userData.ID, TagID: "2"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: userData.ID, TagID: "3"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: userData.ID, TagID: "4"}, tests.DB)
+	_ = tests.InsertUserTag(lib.UserTag{UserID: userData.ID, TagID: "5"}, tests.DB)
+	_ = tests.InsertLike(lib.Like{UserID: userData.ID, LikedUserID: userData.ID}, tests.DB)
+	_ = tests.InsertLike(lib.Like{UserID: "44", LikedUserID: userData.ID}, tests.DB)
+	_ = tests.InsertLike(lib.Like{UserID: userData.ID, LikedUserID: "42"}, tests.DB)
+	_ = tests.InsertLike(lib.Like{UserID: userData.ID, LikedUserID: userData.ID}, tests.DB)
+	_ = tests.InsertLike(lib.Like{UserID: "45", LikedUserID: userData.ID}, tests.DB)
+	_ = tests.InsertLike(lib.Like{UserID: userData.ID, LikedUserID: "43"}, tests.DB)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: username,
+		UserID:   userData.ID,
+	}
+	r := tests.CreateRequest("GET", "/v1/users/"+username, nil, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		testApplicantServer().ServeHTTP(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	expectedJSONResponse := map[string]interface{}{
+		"firstname":        "MyFirstname",
+		"lastname":         "MyLastname",
+		"username":         username,
+		"pictures":         []string{"MyURL1", "MyURL2", "MyURL3", "MyURL4", "MyURL5"},
+		"biography":        "This is my story",
+		"age":              63,
+		"genre":            "example_genre",
+		"interesting_in":   "example_interesting_in",
+		"location":         "MYZIP, myCity, myCountry",
+		"liked":            true,
+		"users_linked":     false,
+		"online":           true,
+		"rating":           2.5,
+		"reported_as_fake": false,
+		"tags": map[string]interface{}{
+			"personal": []string{"four", "one", "three", "two", "zero"},
+			"shared":   nil,
+		},
+	}
+	strError := tests.CompareResponseJSONCode(w, 200, expectedJSONResponse)
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+	// Check : Updated data in database
+	var visit []lib.Visit
+	err := tests.DB.Select(&visit, "SELECT * FROM Visits WHERE userID = $1", userData.ID)
+	if err != nil {
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
+		return
+	}
+	expectedDatabase := []lib.Visit{}
+	if compare := pretty.Compare(&expectedDatabase, visit); compare != "" {
+		t.Error(compare)
 	}
 }
