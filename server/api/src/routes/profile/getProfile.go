@@ -17,10 +17,6 @@ type userTags struct {
 	Name string `json:"name"`
 }
 
-type userIP struct {
-	IP string `json:"ip"`
-}
-
 func getUserData(db *sqlx.DB, username, userID string) (lib.User, int, string) {
 	var user lib.User
 	err := db.Get(&user, "SELECT * FROM Users WHERE id = $1 AND username = $2", userID, username)
@@ -61,37 +57,35 @@ func getIPLocation(IP string) (map[string]interface{}, int, string) {
 	return ipData, 0, ""
 }
 
-func handleLocation(userDB *lib.User, d userIP, db *sqlx.DB, userID, username string) (int, string) {
-	if !userDB.GeolocalisationAllowed {
-		nilFloat64 := 0.0
-		userDB.Latitude = &nilFloat64
-		userDB.Longitude = &nilFloat64
-		userDB.City = ""
-		userDB.ZIP = ""
-		userDB.Country = ""
-		d.IP = strings.Trim(d.IP, " ")
-		d.IP = html.EscapeString(d.IP)
-		right := lib.IsValidIP4(d.IP)
-		if !right {
-			return 406, "IP in the body is invalid"
-		}
-		dataLocation, errCode, errContent := getIPLocation(d.IP)
-		if errCode != 0 || errContent != "" {
-			return errCode, errContent
-		}
-		errCode, errContent, err := UpdateLocationInDB(
-			db,
-			dataLocation["lat"].(float64),
-			dataLocation["lon"].(float64),
-			false,
-			strings.Title(dataLocation["city"].(string)),
-			strings.ToUpper(dataLocation["zip"].(string)),
-			strings.Title(dataLocation["country"].(string)),
-			userID,
-			username)
-		if err != nil {
-			return errCode, errContent
-		}
+func handleLocation(userDB *lib.User, db *sqlx.DB, IP, userID, username string) (int, string) {
+	nilFloat64 := 0.0
+	userDB.Latitude = &nilFloat64
+	userDB.Longitude = &nilFloat64
+	userDB.City = ""
+	userDB.ZIP = ""
+	userDB.Country = ""
+	IP = strings.Trim(IP, " ")
+	IP = html.EscapeString(IP)
+	right := lib.IsValidIP4(IP)
+	if !right {
+		return 406, "IP in the header is invalid"
+	}
+	dataLocation, errCode, errContent := getIPLocation(IP)
+	if errCode != 0 || errContent != "" {
+		return errCode, errContent
+	}
+	errCode, errContent, err := UpdateLocationInDB(
+		db,
+		dataLocation["lat"].(float64),
+		dataLocation["lon"].(float64),
+		false,
+		strings.Title(dataLocation["city"].(string)),
+		strings.ToUpper(dataLocation["zip"].(string)),
+		strings.Title(dataLocation["country"].(string)),
+		userID,
+		username)
+	if err != nil {
+		return errCode, errContent
 	}
 	return 0, ""
 }
@@ -116,12 +110,6 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	var inputData userIP
-	errCode, errContent, err := lib.GetDataBody(r, &inputData)
-	if err != nil {
-		lib.RespondWithErrorHTTP(w, errCode, errContent)
-		return
-	}
 	userDB, errCode, errContent := getUserData(db, username, userID)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
@@ -132,10 +120,23 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	errCode, errContent = handleLocation(&userDB, inputData, db, userID, username)
-	if errCode != 0 || errContent != "" {
-		lib.RespondWithErrorHTTP(w, errCode, errContent)
-		return
+	if !userDB.GeolocalisationAllowed {
+		var userIP string
+		ip, right := r.Header["Ip"]
+		if !right {
+			userIP = "172.217.21.142"
+		} else {
+			userIP = ip[0]
+		}
+		errCode, errContent = handleLocation(&userDB, db, userIP, userID, username)
+		if errCode != 0 || errContent != "" {
+			lib.RespondWithErrorHTTP(w, errCode, errContent)
+			return
+		}
+	}
+	birthdayString := "00/00/0000"
+	if userDB.Birthday != nil {
+		birthdayString = fmt.Sprintf("%02d/%02d/%04d", userDB.Birthday.Day(), userDB.Birthday.Month(), userDB.Birthday.Year())
 	}
 	lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{
 		"username":                userDB.Username,
@@ -148,7 +149,7 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 		"picture_url_4":           userDB.PictureURL_4,
 		"picture_url_5":           userDB.PictureURL_5,
 		"biography":               userDB.Biography,
-		"birthday":                fmt.Sprintf("%02d/%02d/%04d", userDB.Birthday.Day(), userDB.Birthday.Month(), userDB.Birthday.Year()), // DD/MM/YYYY
+		"birthday":                birthdayString, // DD/MM/YYYY
 		"genre":                   userDB.Genre,
 		"interesting_in":          userDB.InterestingIn,
 		"latitude":                userDB.Latitude,
