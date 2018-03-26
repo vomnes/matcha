@@ -4,7 +4,7 @@ import './Tags.css';
 const MyTag = (props) => {
   return (
     <div key={props.index} title={'Click here to remove the tag ' + props.tag} className="profile-tag profile-matched-tag">
-      <span onClick={() => props.deleteTag(props.tag)}>
+      <span className="position-tag" onClick={() => props.deleteTag(props.tag)}>
         #{props.tag}
       </span>
     </div>
@@ -14,16 +14,15 @@ const MyTag = (props) => {
 const NewTag = (props) => {
   var confirm = null;
   if (props.newTag) {
-    confirm = (<span>
-      <span className="valid" title="Valid new tag" onClick={() => props.appendTag(props.newTag)}>✓</span>
-    </span>)
+    confirm = (<span className="valid" title="Valid new tag" onClick={() => props.appendTag(props.newTag)}>✓</span>)
   }
   return (
     <div className="profile-tag new-tag">
-      <span>#</span>
+      <span className="position-tag">#
       <input id="new-tag" placeholder="Add a new tag" type="text" name="newTag"
         value={props.newTag} onChange={props.handleUserInput}/>
       {confirm}
+      </span>
     </div>
   )
 }

@@ -26,4 +26,7 @@ yarn-error.log*
 _vendor
 bin
 
+storage
+bin
+
 *.css

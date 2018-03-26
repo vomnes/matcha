@@ -1,5 +1,26 @@
 import React, { Component } from 'react';
 import './Picture.css';
+import api from '../../../library/api'
+
+const getPicture = async (args) => {
+  let res = await api.editpicture(args);
+  if (res) {
+    const response = await res.json();
+    if (response.status >= 500) {
+      throw new Error("Bad response from server - getPicture has failed");
+    } else if (response.status >= 400) {
+      response.json().then(function(data) {
+        console.log(data.error);
+        return;
+      });
+    } else {
+      console.log(response);
+      return;
+    }
+  }
+}
+
+// {number method, base64}
 
 const ButtonEdit = (props) => {
   var deleteBtn = null;
@@ -49,13 +70,13 @@ class EditPicture extends Component {
   uploadPicture() {
     this.inputPicture.click();
   }
-  createPicture(e) {
+  createPicture(props, e) {
     const file = e.target.files[0];
     var base64;
     var reader = new FileReader();
     reader.onloadend = () => {
       base64 = reader.result;
-      console.log(base64);
+      getPicture({number: props.number, method: `POST`, base64});
     };
     if (file) {
       reader.readAsDataURL(file);
@@ -63,7 +84,7 @@ class EditPicture extends Component {
     e.preventDefault();
   }
   render() {
-    var url = this.props.urlPicture
+    console.log();
     return (
       <div className={"profile-picture-" + this.props.className} onMouseEnter={this.showEditPicture} onMouseLeave={this.hideEditPicture}>
         <ButtonEdit
@@ -76,15 +97,15 @@ class EditPicture extends Component {
         <input type="hidden" style={{display:"none"}} name="MAX_FILE_SIZE" value="30000" />
         <input
           ref={(input) => { this.inputPicture = input; }}
-          onChange={this.createPicture}
+          onChange={(e) => this.createPicture(this.props, e)}
           id={"upload-profile-picture-" + this.props.className}
           name="userfile"
           style={{display:"none"}} type="file" accept=".jpg, .jpeg, .png"/>
         <NoPicture
-          url={url}
+          url={this.props.urlPicture}
           uploadPicture={this.uploadPicture}
         />
-        <div className="picture-background-profile" style={{ backgroundImage: "url(" + url + ")" }}></div>
+        <div className="picture-background-profile" style={{ backgroundImage: "url(" + this.props.urlPicture + ")" }}></div>
       </div>
     )
   }
@@ -93,12 +114,12 @@ class EditPicture extends Component {
 const Pictures = (props) => {
  return (
    <div className="pictures">
-     <EditPicture className="one" urlPicture={props.profilePictures[2]} />
+     <EditPicture className="one" number="1" urlPicture={props.profilePictures[0]} />
      <div className="picture-sub-area">
-       <EditPicture className="two" urlPicture={props.profilePictures[2]} deleteAvailable="true" deletePicture={props.clickDeletePicture}/>
-       <EditPicture className="three" urlPicture={props.profilePictures[0]} deleteAvailable="true" deletePicture={props.clickDeletePicture}/>
-       <EditPicture className="four" deleteAvailable="true" deletePicture={props.clickDeletePicture}/>
-       <EditPicture className="five" urlPicture={null} deleteAvailable="true" deletePicture={props.clickDeletePicture}/>
+       <EditPicture className="two" number="2" urlPicture={props.profilePictures[1]} deleteAvailable="true" deletePicture={props.clickDeletePicture}/>
+       <EditPicture className="three" number="3" urlPicture={props.profilePictures[2]} deleteAvailable="true" deletePicture={props.clickDeletePicture}/>
+       <EditPicture className="four" number="4" urlPicture={props.profilePictures[3]} deleteAvailable="true" deletePicture={props.clickDeletePicture}/>
+       <EditPicture className="five" number="5" urlPicture={props.profilePictures[4]} deleteAvailable="true" deletePicture={props.clickDeletePicture}/>
      </div>
    </div>
  )

@@ -14,11 +14,17 @@
   margin: 2px;
   padding: 5px;
   height: 19.5px;
+  font-family: $font-sub;
 }
 
 .profile-matched-tag {
   background: $design-red;
   cursor: url('../../../design/icons/delete-16.png'), pointer;
+}
+
+.position-tag {
+  position: relative;
+  top: -2.5px;
 }
 
 .new-tag {
@@ -31,6 +37,14 @@ input#new-tag {
   font-size: 15px;
   color: white;
   width: 100px;
+  &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+    color: white;
+    opacity: 0.5;
+  }
+  &::-moz-placeholder { /* Firefox 19+ */
+    color: white;
+    opacity: 0.5;
+  }
 }
 
 .delete-tag {

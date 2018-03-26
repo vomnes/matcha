@@ -5,43 +5,61 @@ import Tags  from './Tags.jsx'
 import Location  from './Location.jsx'
 import ConfirmModal from '../../../components/ConfirmModal'
 import utils from '../../../library/utils/array.js'
+import api from '../../../library/api'
+
+const getProfileData = async (ip, updateState, setStateGenre) => {
+  let res = await api.editprofile(ip);
+  if (res) {
+    const response = await res.json();
+    if (response.status >= 500) {
+      throw new Error("Bad response from server - GetProfileData has failed");
+    } else if (response.status >= 400) {
+      response.json().then(function(data) {
+        console.log(data.error);
+        return;
+      });
+    } else {
+      console.log(response);
+      updateState("data", response);
+      setStateGenre();
+      return;
+    }
+  }
+}
+
+const getIP = async (getData, updateState, setStateGenre) => {
+  let res;
+  res = await fetch("https://freegeoip.net/json/", {
+    method: 'GET',
+    mod: 'no-cors',
+  });
+  if (res) {
+    const json = await res.json();
+    getData(json.ip, updateState, setStateGenre);
+    return;
+  }
+}
 
 class MyProfile extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      firstname: '',
-      lastname: '',
-      email: '',
-      biography: '',
-      genre: 'male',
-      preference: 'female',
+      data: {},
+      personal: {},
       password: '',
       rePassword: '',
-      birthday: '2018-03-09',
-      tags: [
-        "hello",
-        "bonjour",
-        "play",
-        "tennis",
-        "hello",
-        "bonjour",
-        "play",
-        "tennis",
-        "hello",
-        "bonjour",
-        "play",
-        "tennis",
-        "yes"
-      ],
       newTag: '',
       variableModal: '',
     }
     this.handleUserInput = this.handleUserInput.bind(this);
+    this.handleUserInputPersonal = this.handleUserInputPersonal.bind(this);
+    this.handleUserInputData = this.handleUserInputData.bind(this);
     this.clickDeletePicture = this.clickDeletePicture.bind(this);
     this.cancelAction = this.cancelAction.bind(this);
     this.confirmDeletePicture = this.confirmDeletePicture.bind(this);
     this.deleteTag = this.deleteTag.bind(this);
+    this.updateState = this.updateState.bind(this);
+    this.setStateGenre = this.setStateGenre.bind(this);
   }
   handleUserInput = (e) => {
     const fieldName = e.target.name;
@@ -49,6 +67,33 @@ class MyProfile extends Component {
     this.setState({
       [fieldName]: data,
     });
+  }
+  handleUserInputPersonal = (e) => {
+    var data = this.state.personal;
+    data[e.target.name] = e.target.value;
+    this.setState({
+      personal: data,
+    });
+  }
+  handleUserInputData = (field, value) => {
+    var data = this.state.data;
+    data[field] = value;
+    this.setState({
+      data: data,
+    });
+  }
+  updateState(key, content) {
+    this.setState({
+      [key]: content,
+    });
+  }
+  setStateGenre() {
+    this.setState({
+      personal: {
+        genre: this.state.data.genre,
+        preference: this.state.data.interesting_in,
+      }
+    })
   }
   cancelAction = () => {
     this.setState({
@@ -79,11 +124,19 @@ class MyProfile extends Component {
       newTag: '',
     })
   }
+
+  componentDidMount() {
+    getIP(getProfileData, this.updateState, this.setStateGenre);
+  }
+
   render() {
+    let userData = Object.assign({}, this.state.data);
     var profilePictures = [
-      require('../../../design/pictures/Register-robson-hatsukami-morgan-250757-unsplash.jpg'),
-      require('../../../design/pictures/Profile-molly-belle-73279-unsplash.jpg'),
-      require('../../../design/pictures/Login-sorasak-217807-unsplash.jpg'),
+      userData.picture_url_1,
+      userData.picture_url_2,
+      userData.picture_url_3,
+      userData.picture_url_4,
+      userData.picture_url_5,
     ];
     return (
       <div>
@@ -98,32 +151,32 @@ class MyProfile extends Component {
               <div className="limit" style={{ width: "10%" }}></div>
               <div className="field-title">
                 Edit your personal settings<br />
-                <span className="profile-username">@vomnes</span><br />
+                <span className="profile-username">@{userData.username || ''}</span><br />
               </div>
               <form className="profile-personal-data">
                 <span className="field-name">Firstname</span><br />
-                <input className="field-input" placeholder="Valentin" type="text" name="firstname"
-                  value={this.state.firstname} onChange={this.handleUserInput}/><br />
+                <input className="field-input" placeholder={userData.firstname || ''} type="text" name="firstname"
+                  value={this.state.firstname} onChange={this.handleUserInputPersonal}/><br />
                 <span className="field-name">Lastname</span><br />
-                <input className="field-input" placeholder="Omnes" type="text" name="lastname"
-                  value={this.state.lastname} onChange={this.handleUserInput}/><br />
+                <input className="field-input" placeholder={userData.lastname || ''} type="text" name="lastname"
+                  value={this.state.lastname} onChange={this.handleUserInputPersonal}/><br />
                 <span className="field-name">Email address</span><br />
-                <input className="field-input" placeholder="valentin.omnes@gmail.com" type="text" name="email"
-                  value={this.state.email} onChange={this.handleUserInput}/><br />
+                <input className="field-input" placeholder={userData.email || ''} type="text" name="email"
+                  value={this.state.email} onChange={this.handleUserInputPersonal}/><br />
                 <span className="field-name">Biography</span><br />
-                <input className="field-input" placeholder="Greatly hearted has who believe..." type="text" name="biography"
-                  value={this.state.biography} onChange={this.handleUserInput}/><br />
+                <input className="field-input" placeholder={userData.biography || ''} type="text" name="biography"
+                  value={this.state.biography} onChange={this.handleUserInputPersonal}/><br />
                 <span className="field-name">Birthday</span><br />
-                <input className="field-input" type="date" name="birthday"
-                  value={this.state.birthday} onChange={this.handleUserInput}/><br />
+                <input className="field-input" placeholder={userData.birthday || ''} type="text" name="birthday"
+                  value={this.state.birthday} onChange={this.handleUserInputPersonal}/><br />
                 <div className="limit" style={{ width: "10%" }}></div>
                 <span className="field-name">Genre</span><br />
-                <select className="field-input" name="genre" value={this.state.genre} onChange={this.handleUserInput}>
+                <select className="field-input" name="genre" value={this.state.personal.genre} onChange={this.handleUserInputPersonal}>
                   <option value="female">Female</option>
                   <option value="male">Male</option>
                 </select><br />
                 <span className="field-name">Interesting in</span><br />
-                <select className="field-input" name="preference" value={this.state.preference} onChange={this.handleUserInput}>
+                <select className="field-input" name="preference" value={this.state.personal.preference} onChange={this.handleUserInputPersonal}>
                   <option value="female">Female</option>
                   <option value="male">Male</option>
                   <option value="bisexual">Bisexual</option>
@@ -146,7 +199,7 @@ class MyProfile extends Component {
               <Location />
               <div className="limit" style={{ width: "10%" }}></div>
               <div className="field-title">Update your tags<br />
-                <Tags tags={this.state.tags} deleteTag={this.deleteTag} newTag={this.state.newTag} appendTag={this.appendTag} handleUserInput={this.handleUserInput}/>
+                <Tags tags={userData.tags || []} deleteTag={this.deleteTag} newTag={this.state.newTag} appendTag={this.appendTag} handleUserInput={this.handleUserInput}/>
               </div>
             </div>
           </div>
