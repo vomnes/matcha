@@ -11,6 +11,7 @@ import (
 	"./routes/account"
 	"./routes/mail"
 	"./routes/profile"
+	"./routes/user"
 
 	"github.com/gorilla/mux"
 )
@@ -31,6 +32,7 @@ func handleAPIRoutes() *mux.Router {
 	api.HandleFunc("/v1/mails/forgotpassword", mail.ForgotPassword).Methods("POST")
 	api.HandleFunc("/v1/profiles/edit", profile.GetProfile)
 	api.HandleFunc("/v1/profiles/picture/{number}", profile.Picture)
+	api.HandleFunc("/storage/pictures/profiles/{username}/{item}", user.GetPicture)
 	return api
 }
 

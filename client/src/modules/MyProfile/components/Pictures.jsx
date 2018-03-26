@@ -2,19 +2,17 @@ import React, { Component } from 'react';
 import './Picture.css';
 import api from '../../../library/api'
 
-const getPicture = async (args) => {
+const getPicture = async (args, updatePicture, updateState) => {
   let res = await api.editpicture(args);
   if (res) {
-    const response = await res.json();
-    if (response.status >= 500) {
+    const json = await res.json();
+    if (res.status >= 500) {
       throw new Error("Bad response from server - getPicture has failed");
-    } else if (response.status >= 400) {
-      response.json().then(function(data) {
-        console.log(data.error);
-        return;
-      });
+    } else if (res.status >= 400) {
+      updateState('newError', json.error);
+      return;
     } else {
-      console.log(response);
+      updatePicture('picture_url_'+args.number, json.picture_url);
       return;
     }
   }
@@ -76,7 +74,7 @@ class EditPicture extends Component {
     var reader = new FileReader();
     reader.onloadend = () => {
       base64 = reader.result;
-      getPicture({number: props.number, method: `POST`, base64});
+      getPicture({number: props.number, method: `POST`, base64}, props.updatePicture, props.updateState);
     };
     if (file) {
       reader.readAsDataURL(file);
@@ -84,7 +82,6 @@ class EditPicture extends Component {
     e.preventDefault();
   }
   render() {
-    console.log();
     return (
       <div className={"profile-picture-" + this.props.className} onMouseEnter={this.showEditPicture} onMouseLeave={this.hideEditPicture}>
         <ButtonEdit
@@ -114,12 +111,12 @@ class EditPicture extends Component {
 const Pictures = (props) => {
  return (
    <div className="pictures">
-     <EditPicture className="one" number="1" urlPicture={props.profilePictures[0]} />
+     <EditPicture className="one" number="1" urlPicture={"http://localhost:8080" + props.profilePictures[0]} updatePicture={props.updatePicture} updateState={props.updateState}/>
      <div className="picture-sub-area">
-       <EditPicture className="two" number="2" urlPicture={props.profilePictures[1]} deleteAvailable="true" deletePicture={props.clickDeletePicture}/>
-       <EditPicture className="three" number="3" urlPicture={props.profilePictures[2]} deleteAvailable="true" deletePicture={props.clickDeletePicture}/>
-       <EditPicture className="four" number="4" urlPicture={props.profilePictures[3]} deleteAvailable="true" deletePicture={props.clickDeletePicture}/>
-       <EditPicture className="five" number="5" urlPicture={props.profilePictures[4]} deleteAvailable="true" deletePicture={props.clickDeletePicture}/>
+       <EditPicture className="two" number="2" urlPicture={"http://localhost:8080" + props.profilePictures[1]} deleteAvailable="true" deletePicture={props.clickDeletePicture} updatePicture={props.updatePicture} updateState={props.updateState}/>
+       <EditPicture className="three" number="3" urlPicture={"http://localhost:8080" + props.profilePictures[2]} deleteAvailable="true" deletePicture={props.clickDeletePicture} updatePicture={props.updatePicture} updateState={props.updateState}/>
+       <EditPicture className="four" number="4" urlPicture={"http://localhost:8080" + props.profilePictures[3]} deleteAvailable="true" deletePicture={props.clickDeletePicture} updatePicture={props.updatePicture} updateState={props.updateState}/>
+       <EditPicture className="five" number="5" urlPicture={"http://localhost:8080" + props.profilePictures[4]} deleteAvailable="true" deletePicture={props.clickDeletePicture} updatePicture={props.updatePicture} updateState={props.updateState}/>
      </div>
    </div>
  )

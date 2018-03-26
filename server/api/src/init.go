@@ -54,8 +54,12 @@ func withRights() adapter {
 				"/v1/accounts/register",
 				"/v1/mails/forgotpassword",
 				"/v1/accounts/resetpassword",
+				"/v1/picture",
 			}
 			if lib.StringInArray(routeURL.String(), noCheckJWT) {
+				h.ServeHTTP(w, r)
+				return
+			} else if strings.Contains(routeURL.String(), "/storage/pictures/profiles/") {
 				h.ServeHTTP(w, r)
 				return
 			}

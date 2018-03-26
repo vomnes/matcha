@@ -58,7 +58,7 @@ func generatePng(path string, res io.Reader) (string, error) {
 }
 
 func generateJpeg(path string, res io.Reader) (string, error) {
-	img, err := png.Decode(res)
+	img, err := jpeg.Decode(res)
 	if err != nil {
 		return "", err
 	}
@@ -71,12 +71,7 @@ func generateJpeg(path string, res io.Reader) (string, error) {
 	return path + ".jpeg", nil
 }
 
-func base64ToImageFile(base64 string, pictureNumber, username string) (string, int, string, error) {
-	path, err := os.Getwd()
-	if err != nil {
-		return "", 500, "Failed to get the root path name - EncodeBase64", err
-	}
-	path = strings.TrimSuffix(path, "/api/src/routes/profile")
+func base64ToImageFile(path, base64, pictureNumber, username string) (string, int, string, error) {
 	subPath := "/storage/pictures/profiles/"
 	if username == "test_SjzjhD5dbEmjhB6GEhZui7es3oWbi9_wyL5Zo7kDbs7" {
 		subPath = "/storage/tests/"
@@ -87,9 +82,10 @@ func base64ToImageFile(base64 string, pictureNumber, username string) (string, i
 	preBase64 := trimStringFromString(base64, ";base64")
 	typeImage := string(preBase64)[5:]
 	imageBase64 := string(base64)[len(preBase64)+8:]
-	unbased, _ := base64Decode(imageBase64)
+	unbased, _ := base64Decode(imageBase64) // No need to check the error here, this will be handled just after
 	res := bytes.NewReader(unbased)
 	var imagePath string
+	var err error
 	switch typeImage {
 	case "image/png":
 		imagePath, err = generatePng(newpath+"/"+fileName, res)
@@ -112,7 +108,7 @@ func base64ToImageFile(base64 string, pictureNumber, username string) (string, i
 	default:
 		return "", 406, "Image type [" + typeImage + "] not accepted, support only png, jpg and jpeg images", errors.New("Unsupported file type")
 	}
-	return imagePath, 0, "", nil
+	return strings.TrimPrefix(imagePath, path), 0, "", nil
 }
 
 func updatePicturePathInDB(db *sqlx.DB, pictureNumber, picturePath, userID, username string) (string, int, string, error) {
@@ -150,7 +146,13 @@ func uploadPicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureN
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	picturePath, errCode, errContent, err := base64ToImageFile(inputData.Base64, pictureNumber, username)
+	path, err := os.Getwd()
+	if err != nil {
+		lib.RespondWithErrorHTTP(w, 500, "Failed to get the root path name - EncodeBase64")
+		return
+	}
+	path = strings.TrimSuffix(strings.TrimSuffix(path, "/src/routes/profile"), "/api")
+	picturePath, errCode, errContent, err := base64ToImageFile(path, inputData.Base64, pictureNumber, username)
 	if err != nil {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
@@ -161,7 +163,7 @@ func uploadPicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureN
 		return
 	}
 	if oldPicturePath != "" {
-		err = os.Remove(oldPicturePath)
+		err = os.Remove(path + oldPicturePath)
 		if err != nil {
 			log.Println(lib.PrettyError("[OS] Failed to remove old picture - " + username + " - " + err.Error()))
 		}

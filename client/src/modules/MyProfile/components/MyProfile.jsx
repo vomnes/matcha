@@ -4,6 +4,7 @@ import Pictures  from './Pictures.jsx'
 import Tags  from './Tags.jsx'
 import Location  from './Location.jsx'
 import ConfirmModal from '../../../components/ConfirmModal'
+import Modal from '../../../components/Modal'
 import utils from '../../../library/utils/array.js'
 import api from '../../../library/api'
 
@@ -11,13 +12,10 @@ const getProfileData = async (ip, updateState, setStateGenre) => {
   let res = await api.editprofile(ip);
   if (res) {
     const response = await res.json();
-    if (response.status >= 500) {
+    if (res.status >= 500) {
       throw new Error("Bad response from server - GetProfileData has failed");
-    } else if (response.status >= 400) {
-      response.json().then(function(data) {
-        console.log(data.error);
-        return;
-      });
+    } else if (res.status >= 400) {
+      console.log(response.error);
     } else {
       console.log(response);
       updateState("data", response);
@@ -50,6 +48,8 @@ class MyProfile extends Component {
       rePassword: '',
       newTag: '',
       variableModal: '',
+      newError: '',
+      newSuccess: '',
     }
     this.handleUserInput = this.handleUserInput.bind(this);
     this.handleUserInputPersonal = this.handleUserInputPersonal.bind(this);
@@ -60,6 +60,7 @@ class MyProfile extends Component {
     this.deleteTag = this.deleteTag.bind(this);
     this.updateState = this.updateState.bind(this);
     this.setStateGenre = this.setStateGenre.bind(this);
+    this.closeModal = this.closeModal.bind(this);
   }
   handleUserInput = (e) => {
     const fieldName = e.target.name;
@@ -124,6 +125,13 @@ class MyProfile extends Component {
       newTag: '',
     })
   }
+  closeModal(event) {
+    this.setState({
+      newError: '',
+      newSuccess: ''
+    });
+    event.preventDefault();
+  }
 
   componentDidMount() {
     getIP(getProfileData, this.updateState, this.setStateGenre);
@@ -144,6 +152,8 @@ class MyProfile extends Component {
         <Pictures
           profilePictures={profilePictures}
           clickDeletePicture={this.clickDeletePicture}
+          updatePicture={this.handleUserInputData}
+          updateState={this.updateState}
         />
         <div className="myprofile-data">
           <div className="myprofile-id">
@@ -208,6 +218,8 @@ class MyProfile extends Component {
           cancelAction={this.cancelAction}
           confirmAction={this.confirmDeletePicture}
         />
+        <Modal type="error" content={this.state.newError} onClose={this.closeModal}/>
+        <Modal type="success" content={this.state.newSuccess} onClose={this.closeModal}/>
       </div>
     )
   }
