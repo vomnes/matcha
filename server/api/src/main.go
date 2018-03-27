@@ -33,6 +33,7 @@ func handleAPIRoutes() *mux.Router {
 	api.HandleFunc("/v1/profiles/edit", profile.GetProfile)
 	api.HandleFunc("/v1/profiles/picture/{number}", profile.Picture)
 	api.HandleFunc("/v1/profiles/edit/location", profile.EditLocation)
+	api.HandleFunc("/v1/profiles/edit/data", profile.EditData)
 	api.HandleFunc("/storage/pictures/profiles/{username}/{item}", user.GetPicture)
 	return api
 }
