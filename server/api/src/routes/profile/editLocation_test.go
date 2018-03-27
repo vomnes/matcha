@@ -59,8 +59,8 @@ var locationTests = []struct {
 		"",
 		"",
 		406,
-		"No field inside the body can be empty",
-		"Empty fields",
+		"Latitude and longitude cannot be null",
+		"Empty fields - Latitude and longitude",
 	},
 	{
 		"-91.0",
@@ -183,7 +183,7 @@ func TestEditLocation(t *testing.T) {
     "lat": 1.2,
     "lng": 1.2,
 		"city": "myCity",
-		"zip": "my90ZIP",
+		"zip": "",
 		"country": "myCountry"
     }`)
 	r := tests.CreateRequest("POST", "/v1/profiles/edit/location", body, context)
@@ -215,7 +215,7 @@ func TestEditLocation(t *testing.T) {
 		Latitude:               &lat,
 		Longitude:              &lng,
 		City:                   "MyCity",
-		ZIP:                    "MY90ZIP",
+		ZIP:                    "",
 		Country:                "MyCountry",
 		GeolocalisationAllowed: true,
 	}

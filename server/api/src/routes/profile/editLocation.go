@@ -20,8 +20,8 @@ type locationData struct {
 }
 
 func checkLocationInput(d *locationData) (int, string, error) {
-	if (d.Lat == 0 && d.Lng == 0) || d.City == "" || d.ZIP == "" || d.Country == "" {
-		return 406, "No field inside the body can be empty", errors.New("Empty fields")
+	if d.Lat == 0 && d.Lng == 0 {
+		return 406, "Latitude and longitude cannot be null", errors.New("Empty fields")
 	}
 	if d.Lat < -90.0 || d.Lat > 90.0 {
 		return 406, "Latitude value is over the limit", errors.New("Latitude overflow")
@@ -35,18 +35,24 @@ func checkLocationInput(d *locationData) (int, string, error) {
 	d.ZIP = html.EscapeString(d.ZIP)
 	d.Country = strings.Trim(d.Country, " ")
 	d.Country = html.EscapeString(d.Country)
-	if !lib.IsValidCommonName(d.City) {
-		return 406, "City name is invalid", errors.New("City invalid")
+	if d.City != "" {
+		if !lib.IsValidCommonName(d.City) {
+			return 406, "City name is invalid", errors.New("City invalid")
+		}
+		d.City = strings.Title(d.City)
 	}
-	if !lib.IsValidCommonName(d.ZIP) {
-		return 406, "ZIP value is invalid", errors.New("ZIP invalid")
+	if d.ZIP != "" {
+		if !lib.IsValidCommonName(d.ZIP) {
+			return 406, "ZIP value is invalid", errors.New("ZIP invalid")
+		}
+		d.ZIP = strings.ToUpper(d.ZIP)
 	}
-	if !lib.IsValidCommonName(d.Country) {
-		return 406, "Country name is invalid", errors.New("Country invalid")
+	if d.Country != "" {
+		if !lib.IsValidCommonName(d.Country) {
+			return 406, "Country name is invalid", errors.New("Country invalid")
+		}
+		d.Country = strings.Title(d.Country)
 	}
-	d.City = strings.Title(d.City)
-	d.ZIP = strings.ToUpper(d.ZIP)
-	d.Country = strings.Title(d.Country)
 	return 0, "", nil
 }
 
@@ -70,8 +76,8 @@ func UpdateLocationInDB(db *sqlx.DB, latitude, longitude float64,
 
 // EditLocation is the route '/v1/profiles/edit/location' with the method POST.
 // The body contains the new latitude, longitude, city, zip, country
-// If any field in the body is empty
-//    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: No field inside the body can be empty"
+// If latitude and longitude are null
+//    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Latitude and longitude cannot be null"
 // If the latitude or longitude is in overflow
 //    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: <type> value is over the limit"
 // Trim and escape characters of city, zip and country

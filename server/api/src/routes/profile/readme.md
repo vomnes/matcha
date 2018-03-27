@@ -4,7 +4,7 @@ Go back to [Table of Contents](../../../)
 #### GET - /v1/profiles/edit
 
 ```
-JSON Body :
+Header :
   {
     "ip" string
   }
@@ -14,10 +14,10 @@ Collect the data concerning the user in the table Users of the database
 If the user doesn't exists  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: User<username> doesn't exists"  
 Collect the tags (id, name) concerning the user in database  
-If geolocalisation_allowed is false we need to set or update the location of the user by using the IP in the body  
+If geolocalisation_allowed is false we need to set or update the location of the user by using the IP in the header  
 Trim and escape characters of the IP  
 If the IP is not a valid IP4  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: IP in the body is invalid"  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: IP in the header is invalid"  
 Collect the latitude, longitude, city, zip and country linked to this IP using ip-api.com's API  
 Update the geoposition of the user using this new data, geolocalisation_allowed still false  
 city and country are formated as Title and ZIP as upper case  
@@ -89,8 +89,8 @@ JSON Body :
   }
 ```
 
-If any field in the body is empty  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: No field inside the body can be empty"  
+If latitude and longitude are null  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Latitude and longitude cannot be null"  
 If the latitude or longitude is in overflow  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: <type> value is over the limit"  
 Trim and escape characters of city, zip and country  
