@@ -9,7 +9,7 @@ import utils from '../../../library/utils/array.js'
 import api from '../../../library/api'
 
 const getProfileData = async (ip, updateState, setStateGenre) => {
-  let res = await api.editprofile(ip);
+  let res = await api.getprofile(ip);
   if (res) {
     const response = await res.json();
     if (res.status >= 500) {
@@ -35,6 +35,28 @@ const getIP = async (getData, updateState, setStateGenre) => {
     const json = await res.json();
     getData(json.ip, updateState, setStateGenre);
     return;
+  }
+}
+
+const editProfile = async (args, originalData) => {
+  console.log(args, originalData);
+  if (args.genre === originalData.genre) {
+    args.genre = '';
+  }
+  if (args.preference === originalData.interesting_in) {
+    args.preference = '';
+  }
+  let res = await api.editprofile(args);
+  if (res) {
+    const response = await res.json();
+    if (res.status >= 500) {
+      throw new Error("Bad response from server - EditProfile has failed");
+    } else if (res.status >= 400) {
+      console.log(response.error);
+    } else {
+      console.log(response);
+      return;
+    }
   }
 }
 
@@ -65,6 +87,7 @@ class MyProfile extends Component {
     this.updateState = this.updateState.bind(this);
     this.setStateGenre = this.setStateGenre.bind(this);
     this.closeModal = this.closeModal.bind(this);
+    this.handleSubmitPersonal = this.handleSubmitPersonal.bind(this);
   }
   handleUserInput = (e) => {
     const fieldName = e.target.name;
@@ -136,6 +159,10 @@ class MyProfile extends Component {
     });
     event.preventDefault();
   }
+  handleSubmitPersonal = (event) => {
+    editProfile(this.state.personal, this.state.data);
+    event.preventDefault();
+  }
 
   componentDidMount() {
     getIP(getProfileData, this.updateState, this.setStateGenre);
@@ -177,7 +204,7 @@ class MyProfile extends Component {
                 Edit your personal settings<br />
                 <span className="profile-username">@{userData.username || ''}</span><br />
               </div>
-              <form className="profile-personal-data">
+              <form className="profile-personal-data" onSubmit={this.handleSubmitPersonal}>
                 <span className="field-name">Firstname</span><br />
                 <input className="field-input" placeholder={userData.firstname || ''} type="text" name="firstname"
                   value={this.state.firstname} onChange={this.handleUserInputPersonal}/><br />
