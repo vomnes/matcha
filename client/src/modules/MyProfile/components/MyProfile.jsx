@@ -38,6 +38,10 @@ const getIP = async (getData, updateState, setStateGenre) => {
   }
 }
 
+const isEmpty = (value) => {
+  return value !== undefined && value !== ''
+}
+
 class MyProfile extends Component {
   constructor(props) {
     super(props);
@@ -146,6 +150,16 @@ class MyProfile extends Component {
       userData.picture_url_4,
       userData.picture_url_5,
     ];
+    var updatePersonalDataBtn;
+    if (isEmpty(this.state.personal.firstname) || isEmpty(this.state.personal.lastname) || isEmpty(this.state.personal.email) ||
+  isEmpty(this.state.personal.biography) || isEmpty(this.state.personal.birthday) ||
+  this.state.personal.genre !== this.state.data.genre || this.state.personal.preference !== this.state.data.interesting_in) {
+        updatePersonalDataBtn = <input className="submit-profile" type="submit" value="Save" title="Save personal data"/>
+    }
+    var updatePasswordBtn;
+    if (isEmpty(this.state.password) && isEmpty(this.state.rePassword)) {
+        updatePasswordBtn = <input className="submit-profile" type="submit" value="Update" title="Update password"/>
+    }
     return (
       <div>
         <h1 className="top-title">Your profile</h1>
@@ -191,7 +205,7 @@ class MyProfile extends Component {
                   <option value="male">Male</option>
                   <option value="bisexual">Bisexual</option>
                 </select><br />
-                <input className="submit-profile" type="submit" value="Save"/>
+                {updatePersonalDataBtn}
               </form>
               <div className="limit" style={{ width: "10%" }}></div>
               <div className="field-title">Set your password</div>
@@ -202,11 +216,16 @@ class MyProfile extends Component {
                 <span className="field-name">Type it again</span><br />
                   <input className="field-input" type="password" name="rePassword"
                     value={this.state.rePassword} onChange={this.handleUserInput}/><br />
-                <input className="submit-profile" type="submit" value="Update password"/>
+                {updatePasswordBtn}
               </form>
               <div className="limit" style={{ width: "10%" }}></div>
               <div className="field-title">Update your location</div>
-              <Location />
+              <Location
+                lat={this.state.data.latitude}
+                lng={this.state.data.longitude}
+                geolocalisation_allowed={this.state.data.geolocalisation_allowed}
+                updateState={this.updateState}
+              />
               <div className="limit" style={{ width: "10%" }}></div>
               <div className="field-title">Update your tags<br />
                 <Tags tags={userData.tags || []} deleteTag={this.deleteTag} newTag={this.state.newTag} appendTag={this.appendTag} handleUserInput={this.handleUserInput}/>

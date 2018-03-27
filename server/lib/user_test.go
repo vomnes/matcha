@@ -225,11 +225,12 @@ var CommonNameTests = []struct {
 	expected    bool   // expected result
 	testContent string // test details
 }{
-	{"aB12-_.", true, "Valid"},
-	{"37.169.43.146", true, "Valid"},
+	{"aB12-_. ", true, "Valid"},
+	{"37.169.43. 146", true, "Valid"},
 	{"validContent", true, "Valid"},
 	{"<h1>Title</h1>", false, "HTML"},
 	{"Title§è!çà)", false, "Invalid characters"},
+	{"abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc", false, "Too long"},
 }
 
 func TestIsValidCommonName(t *testing.T) {

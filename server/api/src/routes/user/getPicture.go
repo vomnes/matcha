@@ -26,7 +26,7 @@ func GetPicture(w http.ResponseWriter, r *http.Request) {
 	} else if strings.HasSuffix(vars["item"], ".jpeg") || strings.HasSuffix(vars["item"], ".jpg") {
 		isJPEG = true
 	} else {
-		lib.RespondWithErrorHTTP(w, http.StatusNotFound, "Wrong File Extension, support only png")
+		lib.RespondWithErrorHTTP(w, http.StatusNotFound, "Wrong File Extension, support only png, jpeg and jpg")
 		return
 	}
 	absPath, err := filepath.Abs("./../storage/pictures/profiles/" + vars["username"] + "/" + vars["item"])

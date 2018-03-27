@@ -116,13 +116,13 @@ func IsOnlyLowercaseLetters(s string, lengthMax int) bool {
 }
 
 // IsValidCommonName check if the string parameter is a common name
-// Check length maximum and authorized characters (a-zA-Z0-9.-_)
+// Check length maximum and authorized characters (a-zA-Z0-9.-_ )
 // Return a boolean
 func IsValidCommonName(s string) bool {
 	if len(s) < 1 || len(s) > UsernameMaxLength {
 		return false
 	}
-	if !regexp.MustCompile(`^[a-zA-Z0-9\.\-_]+$`).MatchString(s) {
+	if !regexp.MustCompile(`^[a-zA-Z0-9\.\-_\ ]+$`).MatchString(s) {
 		return false
 	}
 	return true
