@@ -36,15 +36,16 @@ const GetGeocode = (address, updateData) => {
 const UpdateLocation = async (args, updateState) => {
   let res = await api.location(args);
   if (res) {
-    const response = await res.json();
-    if (res.status >= 500) {
-      throw new Error("Bad response from server - GetProfileData has failed");
-    } else if (res.status >= 400) {
-      console.log(response.error);
-    } else {
-      updateState('newSuccess', 'Location updated');
-      return;
+    if (res.status >= 400) {
+      const response = await res.json();
+      if (res.status >= 400) {
+        throw new Error("Bad response from server - UpdateLocation has failed");
+      } else if (res.status >= 400) {
+        updateState('newError', 'Location: ' + response.error);
+        return
+      }
     }
+    return;
   }
 }
 
