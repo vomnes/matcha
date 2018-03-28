@@ -36,6 +36,7 @@ func checkDataInput(d *userData) (int, string) {
 		if right == false {
 			return 406, "Not a valid firstname"
 		}
+		d.Firstname = strings.Title(d.Firstname)
 	}
 	if d.Lastname != "" {
 		d.Lastname = strings.Trim(d.Lastname, " ")
@@ -44,6 +45,7 @@ func checkDataInput(d *userData) (int, string) {
 		if right == false {
 			return 406, "Not a valid lastname"
 		}
+		d.Lastname = strings.Title(d.Lastname)
 	}
 	if d.EmailAddress != "" {
 		d.EmailAddress = strings.Trim(d.EmailAddress, " ")
@@ -52,6 +54,7 @@ func checkDataInput(d *userData) (int, string) {
 		if right == false {
 			return 406, "Not a valid email address"
 		}
+		d.EmailAddress = strings.ToLower(d.EmailAddress)
 	}
 	if d.Biography != "" {
 		d.Biography = strings.Trim(d.Biography, " ")
@@ -60,6 +63,7 @@ func checkDataInput(d *userData) (int, string) {
 		if right == false {
 			return 406, "Not a valid biography text"
 		}
+		d.Biography = strings.ToLower(d.Biography)
 	}
 	if d.Genre != "" {
 		d.Genre = html.EscapeString(d.Genre)

@@ -38,26 +38,44 @@ const getIP = async (getData, updateState, setStateGenre) => {
   }
 }
 
-const editProfile = async (args, originalData, updateState) => {
-  console.log(args, originalData);
-  if (args.genre === originalData.genre) {
-    args.genre = '';
-  }
-  if (args.preference === originalData.interesting_in) {
-    args.preference = '';
-  }
+const editProfile = async (args, originalData, updateState, updatePersonal, updateData) => {;
+  console.log("args: ", args.age, args.interesting_in);
+  console.log("original data: ", originalData.age, originalData.interesting_in);
   let res = await api.editprofile(args);
   if (res && res.status >= 400) {
     const response = await res.json();
     if (res.status >= 500) {
-      console.log(response.error);
-      throw new Error("Bad response from server - EditProfile has failed");
+      throw new Error("Bad response from server - EditProfile has failed - ", response.error);
     } else if (res.status >= 400) {
-      console.log(response.error);
       updateState('newError', response.error);
     }
   } else {
-    updateState('newSuccess', 'Data updated');
+    if (args.firstname) {
+      updateData('firstname', args.firstname);
+      updatePersonal('firstname', '');
+    }
+    if (args.lastname) {
+      updateData('lastname', args.lastname);
+      updatePersonal('lastname', '');
+    }
+    if (args.email) {
+      updateData('email', args.email);
+      updatePersonal('email', '');
+    }
+    if (args.biography) {
+      updateData('firstname', args.firstname);
+      updatePersonal('firstname', '');
+    }
+    if (args.birthday) {
+      updateData('birthday', args.birthday);
+      updatePersonal('birthday', '');
+    }
+    if (args.genre !== originalData.genre) {
+      updateData('genre', args.genre);
+    }
+    if (args.interesting_in !== originalData.interesting_in) {
+      updateData('interesting_in', args.interesting_in);
+    }
   }
 }
 
@@ -81,6 +99,7 @@ class MyProfile extends Component {
     this.handleUserInput = this.handleUserInput.bind(this);
     this.handleUserInputPersonal = this.handleUserInputPersonal.bind(this);
     this.handleUserInputData = this.handleUserInputData.bind(this);
+    this.updateStatePersonal = this.updateStatePersonal.bind(this);
     this.clickDeletePicture = this.clickDeletePicture.bind(this);
     this.cancelAction = this.cancelAction.bind(this);
     this.confirmDeletePicture = this.confirmDeletePicture.bind(this);
@@ -107,8 +126,17 @@ class MyProfile extends Component {
   handleUserInputData = (field, value) => {
     var data = this.state.data;
     data[field] = value;
+    console.log("data:", data);
     this.setState({
       data: data,
+    });
+  }
+  updateStatePersonal = (field, value) => {
+    var personal = this.state.personal;
+    personal[field] = value;
+    console.log("personal:", personal);
+    this.setState({
+      personal: personal,
     });
   }
   updateState(key, content) {
@@ -120,7 +148,7 @@ class MyProfile extends Component {
     this.setState({
       personal: {
         genre: this.state.data.genre,
-        preference: this.state.data.interesting_in,
+        interesting_in: this.state.data.interesting_in,
       }
     })
   }
@@ -161,7 +189,7 @@ class MyProfile extends Component {
     event.preventDefault();
   }
   handleSubmitPersonal = (event) => {
-    editProfile(this.state.personal, this.state.data, this.updateState);
+    editProfile(this.state.personal, this.state.data, this.updateState, this.updateStatePersonal, this.handleUserInputData);
     event.preventDefault();
   }
 
@@ -181,7 +209,7 @@ class MyProfile extends Component {
     var updatePersonalDataBtn;
     if (isEmpty(this.state.personal.firstname) || isEmpty(this.state.personal.lastname) || isEmpty(this.state.personal.email) ||
   isEmpty(this.state.personal.biography) || isEmpty(this.state.personal.birthday) ||
-  this.state.personal.genre !== this.state.data.genre || this.state.personal.preference !== this.state.data.interesting_in) {
+  this.state.personal.genre !== this.state.data.genre || this.state.personal.interesting_in !== this.state.data.interesting_in) {
         updatePersonalDataBtn = <input className="submit-profile" type="submit" value="Save" title="Save personal data"/>
     }
     var updatePasswordBtn;
@@ -207,20 +235,20 @@ class MyProfile extends Component {
               </div>
               <form className="profile-personal-data" onSubmit={this.handleSubmitPersonal}>
                 <span className="field-name">Firstname</span><br />
-                <input className="field-input" placeholder={userData.firstname || ''} type="text" name="firstname"
-                  value={this.state.firstname} onChange={this.handleUserInputPersonal}/><br />
+                <input className="field-input" placeholder={this.state.data.firstname || ''} type="text" name="firstname"
+                  value={this.state.personal.firstname || ''} onChange={this.handleUserInputPersonal}/><br />
                 <span className="field-name">Lastname</span><br />
                 <input className="field-input" placeholder={userData.lastname || ''} type="text" name="lastname"
-                  value={this.state.lastname} onChange={this.handleUserInputPersonal}/><br />
+                  value={this.state.personal.lastname || ''} onChange={this.handleUserInputPersonal}/><br />
                 <span className="field-name">Email address</span><br />
                 <input className="field-input" placeholder={userData.email || ''} type="text" name="email"
-                  value={this.state.email} onChange={this.handleUserInputPersonal}/><br />
+                  value={this.state.personal.email || ''} onChange={this.handleUserInputPersonal}/><br />
                 <span className="field-name">Biography</span><br />
                 <input className="field-input" placeholder={userData.biography || ''} type="text" name="biography"
-                  value={this.state.biography} onChange={this.handleUserInputPersonal}/><br />
+                  value={this.state.personal.biography || ''} onChange={this.handleUserInputPersonal}/><br />
                 <span className="field-name">Birthday</span><br />
                 <input className="field-input" placeholder={userData.birthday || ''} type="text" name="birthday"
-                  value={this.state.birthday} onChange={this.handleUserInputPersonal}/><br />
+                  value={this.state.personal.birthday || ''} onChange={this.handleUserInputPersonal}/><br />
                 <div className="limit" style={{ width: "10%" }}></div>
                 <span className="field-name">Genre</span><br />
                 <select className="field-input" name="genre" value={this.state.personal.genre} onChange={this.handleUserInputPersonal}>
@@ -228,7 +256,7 @@ class MyProfile extends Component {
                   <option value="male">Male</option>
                 </select><br />
                 <span className="field-name">Interesting in</span><br />
-                <select className="field-input" name="preference" value={this.state.personal.preference} onChange={this.handleUserInputPersonal}>
+                <select className="field-input" name="interesting_in" value={this.state.personal.interesting_in} onChange={this.handleUserInputPersonal}>
                   <option value="female">Female</option>
                   <option value="male">Male</option>
                   <option value="bisexual">Bisexual</option>

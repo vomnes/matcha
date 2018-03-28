@@ -28,6 +28,7 @@ const GetGeocode = (address, updateData) => {
       updateData('lng', location.lng);
       updateData('geolocalisation_allowed', true);
       updateData('address', '');
+      updateData('newAddress', true);
       updateData('error', '');
     })
 }
@@ -90,6 +91,7 @@ class Location extends Component {
       lng: this.props.lng,
       geolocalisation_allowed: this.props.geolocalisation_allowed,
       error: '',
+      newAddress: false,
     }
     this.handleUserInput = this.handleUserInput.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -122,17 +124,18 @@ class Location extends Component {
   componentWillReceiveProps() {
     this.updateData('lat', this.props.lat);
     this.updateData('lng', this.props.lng);
+    this.updateData('geolocalisation_allowed', this.props.geolocalisation_allowed);
   }
   render () {
     return (
       <div>
-        <Map lat={this.state.lat} lng={this.state.lng}/>
+        {this.state.geolocalisation_allowed ? (<Map lat={this.state.lat} lng={this.state.lng}/>) : null}
         <form className="profile-personal-data" onSubmit={this.handleSubmit}>
           <input className="field-input" placeholder="Enter your location address" type="text" name="address"
             value={this.state.address} onChange={this.handleUserInput}/>
           <span id="search-location" onClick={() => GetGeocode(this.state.address, this.updateData)} title="Search for address location">{this.state.address ? '↪' : null}</span>
           <span id="map-error">{this.state.error}</span>
-          {this.state.geolocalisation_allowed ? (<input className="submit-profile" type="submit" value="Set" title="Save as location"/>) : null}
+          {this.state.newAddress ? (<input className="submit-profile" type="submit" value="Set" title="Save as location"/>) : null}
         </form>
       </div>
     );
