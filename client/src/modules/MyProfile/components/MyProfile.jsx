@@ -265,8 +265,8 @@ class MyProfile extends Component {
           cancelAction={this.cancelAction}
           confirmAction={this.confirmDeletePicture}
         />
-        <Modal type="error" content={this.state.newError} onClose={this.closeModal}/>
-        <Modal type="success" content={this.state.newSuccess} onClose={this.closeModal}/>
+        <Modal online={true} type="error" content={this.state.newError} onClose={this.closeModal}/>
+        <Modal online={true} type="success" content={this.state.newSuccess} onClose={this.closeModal}/>
       </div>
     )
   }

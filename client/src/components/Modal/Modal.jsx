@@ -9,7 +9,7 @@ class Modal extends Component {
     }
     if (this.props.type === 'error') {
       return (
-        <div id="modal-error" className="modal-popup error-color" style={{ top: this.props.online ? "-60px" :  "-5px" } }>
+        <div className="modal-popup error-color">
           <span className="modal-warning">&#9888;</span>
           <span>Error : {this.props.content}</span>
           <span className="modal-close" onClick={this.props.onClose}>&times;</span>
@@ -17,7 +17,7 @@ class Modal extends Component {
       )
     } else {
       return (
-        <div className="modal-popup success-color" style={{ top: this.props.online ? "-60px" :  "-5px" } }>
+        <div className="modal-popup success-color">
           <span>{this.props.content}</span>
           <span className="modal-close" onClick={this.props.onClose}>&times;</span>
         </div>
