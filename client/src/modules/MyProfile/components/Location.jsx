@@ -4,7 +4,7 @@ import './Location.css';
 import Pin from '../../../design/icons/map-pin-64.png';
 import api from '../../../library/api'
 
-const GetGeocode = (address, updateData) => {
+const GetGeocode = (address, updateData, updateState) => {
     fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=AIzaSyCPhgHvPYOdkj1t5RLcvlRP_sTt6hgK71o`)
     .then(response => {
       return response.json();
@@ -33,7 +33,7 @@ const GetGeocode = (address, updateData) => {
     })
 }
 
-const UpdateLocation = async (args, updateState) => {
+const UpdateLocation = async (args, updateGlobalState, updateState) => {
   let res = await api.location(args);
   if (res) {
     if (res.status >= 400) {
@@ -41,10 +41,11 @@ const UpdateLocation = async (args, updateState) => {
       if (res.status >= 400) {
         throw new Error("Bad response from server - UpdateLocation has failed");
       } else if (res.status >= 400) {
-        updateState('newError', 'Location: ' + response.error);
+        updateGlobalState('newError', 'Location: ' + response.error);
         return
       }
     }
+    updateState('newAddress', false);
     return;
   }
 }
@@ -95,6 +96,7 @@ class Location extends Component {
     }
     this.handleUserInput = this.handleUserInput.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.updateState = this.updateState.bind(this);
   }
   handleUserInput = (e) => {
     const fieldName = e.target.name;
@@ -103,7 +105,7 @@ class Location extends Component {
       [fieldName]: data,
     });
   }
-  updateData = (fieldName, data) => {
+  updateState = (fieldName, data) => {
     this.setState({
       [fieldName]: data,
     });
@@ -118,13 +120,13 @@ class Location extends Component {
       city: this.state.city,
       zip: this.state.zip,
       country: this.state.country,
-    }, this.props.updateState);
+    }, this.props.updateState, this.updateState);
     e.preventDefault();
   }
   componentWillReceiveProps() {
-    this.updateData('lat', this.props.lat);
-    this.updateData('lng', this.props.lng);
-    this.updateData('geolocalisation_allowed', this.props.geolocalisation_allowed);
+    this.updateState('lat', this.props.lat);
+    this.updateState('lng', this.props.lng);
+    this.updateState('geolocalisation_allowed', this.props.geolocalisation_allowed);
   }
   render () {
     return (
@@ -133,7 +135,7 @@ class Location extends Component {
         <form className="profile-personal-data" onSubmit={this.handleSubmit}>
           <input className="field-input" placeholder="Enter your location address" type="text" name="address"
             value={this.state.address} onChange={this.handleUserInput}/>
-          <span id="search-location" onClick={() => GetGeocode(this.state.address, this.updateData)} title="Search for address location">{this.state.address ? '↪' : null}</span>
+          <span id="search-location" onClick={() => GetGeocode(this.state.address, this.updateState)} title="Search for address location">{this.state.address ? '↪' : null}</span>
           <span id="map-error">{this.state.error}</span>
           {this.state.newAddress ? (<input className="submit-profile" type="submit" value="Set" title="Save as location"/>) : null}
         </form>
