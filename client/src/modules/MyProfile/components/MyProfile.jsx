@@ -5,7 +5,6 @@ import Tags  from './Tags.jsx'
 import Location  from './Location.jsx'
 import ConfirmModal from '../../../components/ConfirmModal'
 import Modal from '../../../components/Modal'
-import utils from '../../../library/utils/array.js'
 import api from '../../../library/api'
 
 const getProfileData = async (ip, updateState, setStateGenre) => {
@@ -17,7 +16,6 @@ const getProfileData = async (ip, updateState, setStateGenre) => {
     } else if (res.status >= 400) {
       console.log(response.error);
     } else {
-      console.log(response);
       updateState("data", response);
       setStateGenre();
       return;
@@ -117,7 +115,7 @@ class MyProfile extends Component {
     }
     this.handleUserInput = this.handleUserInput.bind(this);
     this.handleUserInputPersonal = this.handleUserInputPersonal.bind(this);
-    this.handleUserInputData = this.handleUserInputData.bind(this);
+    this.updateStateData = this.updateStateData.bind(this);
     this.updateStatePersonal = this.updateStatePersonal.bind(this);
     this.clickDeletePicture = this.clickDeletePicture.bind(this);
     this.cancelAction = this.cancelAction.bind(this);
@@ -143,9 +141,10 @@ class MyProfile extends Component {
       personal: data,
     });
   }
-  handleUserInputData = (field, value) => {
+  updateStateData = (field, value) => {
     var data = this.state.data;
     data[field] = value;
+    console.log("updateStateData:", data);
     console.log("data:", data);
     this.setState({
       data: data,
@@ -188,18 +187,22 @@ class MyProfile extends Component {
       variableModal: '',
     })
   }
-  deleteTag = (name) => {
-    var newTags = utils.removeItemByValue(this.state.tags, name);
-    this.setState({
-      tags: newTags,
-    })
+  deleteTag = (name, id) => {
+    this.updateStateData('tags', this.state.data.tags.filter(item => item.name !== name));
   }
-  appendTag = (name) => {
-    var newTags = this.state.tags.concat(name);
-    this.setState({
-      tags: newTags,
-      newTag: '',
-    })
+  appendTag = (name, id) => {
+    var newTags;
+    const newElem = {
+      name: name.toLowerCase(),
+      id,
+    }
+    if (this.state.data.tags === undefined) {
+      newTags = [newElem];
+    } else {
+      newTags = this.state.data.tags.concat(newElem);
+    }
+    this.updateStateData('tags', newTags);
+    this.updateState('newTag', '');
   }
   closeModal(event) {
     this.setState({
@@ -209,7 +212,7 @@ class MyProfile extends Component {
     event.preventDefault();
   }
   handleSubmitPersonal = (event) => {
-    editProfile(this.state.personal, this.state.data, this.updateState, this.updateStatePersonal, this.handleUserInputData);
+    editProfile(this.state.personal, this.state.data, this.updateState, this.updateStatePersonal, this.updateStateData);
     event.preventDefault();
   }
   handleSubmitPassword = (event) => {
@@ -250,7 +253,7 @@ class MyProfile extends Component {
         <Pictures
           profilePictures={profilePictures}
           clickDeletePicture={this.clickDeletePicture}
-          updatePicture={this.handleUserInputData}
+          updatePicture={this.updateStateData}
           updateState={this.updateState}
         />
         <div className="myprofile-data">
@@ -307,15 +310,10 @@ class MyProfile extends Component {
               </form>
               <div className="limit" style={{ width: "10%" }}></div>
               <div className="field-title">Update your location</div>
-              <Location
-                lat={this.state.data.latitude}
-                lng={this.state.data.longitude}
-                geolocalisation_allowed={this.state.data.geolocalisation_allowed}
-                updateState={this.updateState}
-              />
+              <Location lat={this.state.data.latitude} lng={this.state.data.longitude} geolocalisation_allowed={this.state.data.geolocalisation_allowed} updateState={this.updateState}/>
               <div className="limit" style={{ width: "10%" }}></div>
               <div className="field-title">Update your tags<br />
-                <Tags tags={userData.tags || []} deleteTag={this.deleteTag} newTag={this.state.newTag} appendTag={this.appendTag} handleUserInput={this.handleUserInput}/>
+                <Tags tags={userData.tags || []} deleteTag={this.deleteTag} newTag={this.state.newTag} appendTag={this.appendTag} handleUserInput={this.handleUserInput} updateState={this.updateState}/>
               </div>
             </div>
           </div>

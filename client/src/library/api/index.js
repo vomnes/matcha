@@ -8,6 +8,7 @@ import editpicture from './editpicture';
 import location from './location';
 import editprofile from './editprofile';
 import editpassword from './editpassword';
+import tag from './tag';
 
 const apiConf = {
   BACK_URL: `http://localhost:8080`,
@@ -24,4 +25,5 @@ export default {
   location: (params) => location(params, apiConf),
   editprofile: (params) => editprofile(params, apiConf),
   editpassword: (params) => editpassword(params, apiConf),
+  tag: (method, params) => tag(method, params, apiConf),
 }

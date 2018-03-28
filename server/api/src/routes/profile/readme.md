@@ -45,7 +45,12 @@ JSON Content Response :
     "zip":                     string,
     "country":                 string,
     "geolocalisation_allowed": bool,
-    "tags":                    []string,
+    "tags":                    [
+        {
+          "id": string,
+          "name": string,
+        },
+      ],
   }
 ```
 
