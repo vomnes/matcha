@@ -56,6 +56,7 @@ func checkLocationInput(d *locationData) (int, string, error) {
 	return 0, "", nil
 }
 
+// UpdateLocationInDB is used to insert location in the database
 func UpdateLocationInDB(db *sqlx.DB, latitude, longitude float64,
 	geolocalisationAllowed bool, city, zip, country, userID, username string) (int, string, error) {
 	updateLocation := `UPDATE users SET

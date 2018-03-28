@@ -38,9 +38,7 @@ const getIP = async (getData, updateState, setStateGenre) => {
   }
 }
 
-const editProfile = async (args, originalData, updateState, updatePersonal, updateData) => {;
-  console.log("args: ", args.age, args.interesting_in);
-  console.log("original data: ", originalData.age, originalData.interesting_in);
+const editProfile = async (args, originalData, updateState, updatePersonal, updateData) => {
   let res = await api.editprofile(args);
   if (res && res.status >= 400) {
     const response = await res.json();

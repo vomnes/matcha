@@ -31,7 +31,7 @@ func checkInputName(d *tagData) (int, string) {
 	return 0, ""
 }
 
-func checkInputId(d *tagData) (int, string) {
+func checkInputID(d *tagData) (int, string) {
 	if d.TagID == "" {
 		return 406, "Tag ID in body can't be empty"
 	}
@@ -47,19 +47,19 @@ func insertNewTag(db *sqlx.DB, tagName string) (string, int, string) {
 	stmt, err := db.Preparex(`INSERT INTO Tags (name) VALUES ($1) RETURNING id`)
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request insert tag" + err.Error()))
-		return "", 500, "Insert new tag failed"
+		return "", 500, "Insert new tag failed - DB"
 	}
 	row := stmt.QueryRow(tagName)
 	var tagID string
 	err = row.Scan(&tagID)
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to insert tag" + err.Error()))
-		return "", 500, "Insert new tag failed"
+		return "", 500, "Insert new tag failed - DB"
 	}
 	return tagID, 0, ""
 }
 
-func getTagId(db *sqlx.DB, tagName string) (string, int, string) {
+func getTagID(db *sqlx.DB, tagName string) (string, int, string) {
 	var tag lib.Tag
 	err := db.Get(&tag, "SELECT * FROM Tags WHERE name = $1", tagName)
 	if err != nil {
@@ -132,7 +132,7 @@ func addTag(w http.ResponseWriter, r *http.Request, db *sqlx.DB, data tagData, u
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	tagID, errCode, errContent := getTagId(db, data.TagName)
+	tagID, errCode, errContent := getTagID(db, data.TagName)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
@@ -156,7 +156,7 @@ func addTag(w http.ResponseWriter, r *http.Request, db *sqlx.DB, data tagData, u
 // Delete the link between the tagID and the userID in the database in the table Users_Tags
 // Return HTTP Code 200 Status OK
 func deleteTag(w http.ResponseWriter, r *http.Request, db *sqlx.DB, data tagData, userID string) {
-	errCode, errContent := checkInputId(&data)
+	errCode, errContent := checkInputID(&data)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return

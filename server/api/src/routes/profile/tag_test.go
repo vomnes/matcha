@@ -289,8 +289,8 @@ func TestTagAddAlreadyLinkedToTheUser(t *testing.T) {
 	}
 }
 
-var tagIdTests = []struct {
-	tagId           string // input
+var tagIDTests = []struct {
+	tagID           string // input
 	expectedCode    int    // expected http code
 	expectedContent string // expected http content
 	testContent     string // test aims
@@ -328,7 +328,7 @@ var tagIdTests = []struct {
 }
 
 func TestTagDeleteCheckFields(t *testing.T) {
-	for _, tt := range tagIdTests {
+	for _, tt := range tagIDTests {
 		tests.DbClean()
 		username := "test_" + lib.GetRandomString(43)
 		userData := tests.InsertUser(lib.User{Username: username}, tests.DB)
@@ -338,7 +338,7 @@ func TestTagDeleteCheckFields(t *testing.T) {
 			UserID:   userData.ID,
 		}
 		body := []byte(`{
-			"tag_id": "` + tt.tagId + `"
+			"tag_id": "` + tt.tagID + `"
 			}`)
 		r := tests.CreateRequest("DELETE", "/v1/profiles/edit/tag", body, context)
 		r.Header.Add("Content-Type", "application/json")

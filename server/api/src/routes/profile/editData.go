@@ -63,7 +63,6 @@ func checkDataInput(d *userData) (int, string) {
 		if right == false {
 			return 406, "Not a valid biography text"
 		}
-		d.Biography = strings.ToLower(d.Biography)
 	}
 	if d.Genre != "" {
 		d.Genre = html.EscapeString(d.Genre)
@@ -128,6 +127,7 @@ func updateDataInDB(db *sqlx.DB, data userData, userID, username string) (int, s
 // Sanitize by removed the space after and before the variables and escaping characters
 // If any elements in the body is not valid
 //    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Not a valid <details>"
+// Set firstname and lastname with Title format and biography with all lower case
 // Convert string format time from body to *time.Time
 // Update the table Users in the database with the new values
 // If a new field is empty then this field won't be updated

@@ -319,15 +319,15 @@ func TestGetProfileUpdateLocation(t *testing.T) {
 		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
 		return
 	}
-	lat = 48.8628
-	lng = 2.3292
+	lat = 48.9917
+	lng = 1.9097
 	expectedDatabase := lib.User{
 		ID:                     "1",
 		Username:               username,
 		Latitude:               &lat,
 		Longitude:              &lng,
-		City:                   "Paris",
-		ZIP:                    "75001",
+		City:                   "Les Mureaux",
+		ZIP:                    "78130",
 		Country:                "France",
 		GeolocalisationAllowed: false,
 	}
