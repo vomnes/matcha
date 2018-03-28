@@ -15,7 +15,6 @@ const GetGeocode = (address, updateData) => {
         return;
       }
       const location = data.results[0].geometry.location;
-      console.log(data.results[0]);
       data.results[0].address_components.forEach((elem) => {
         if (elem.types[0] === "locality") {
           updateData("city", elem.long_name);

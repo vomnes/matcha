@@ -38,7 +38,7 @@ const getIP = async (getData, updateState, setStateGenre) => {
   }
 }
 
-const editProfile = async (args, originalData) => {
+const editProfile = async (args, originalData, updateState) => {
   console.log(args, originalData);
   if (args.genre === originalData.genre) {
     args.genre = '';
@@ -47,16 +47,17 @@ const editProfile = async (args, originalData) => {
     args.preference = '';
   }
   let res = await api.editprofile(args);
-  if (res) {
+  if (res && res.status >= 400) {
     const response = await res.json();
     if (res.status >= 500) {
+      console.log(response.error);
       throw new Error("Bad response from server - EditProfile has failed");
     } else if (res.status >= 400) {
       console.log(response.error);
-    } else {
-      console.log(response);
-      return;
+      updateState('newError', response.error);
     }
+  } else {
+    updateState('newSuccess', 'Data updated');
   }
 }
 
@@ -160,7 +161,7 @@ class MyProfile extends Component {
     event.preventDefault();
   }
   handleSubmitPersonal = (event) => {
-    editProfile(this.state.personal, this.state.data);
+    editProfile(this.state.personal, this.state.data, this.updateState);
     event.preventDefault();
   }
 

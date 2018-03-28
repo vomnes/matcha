@@ -127,7 +127,7 @@ var locationTests = []struct {
 		"-180.0",
 		"myCity",
 		"2345678904",
-		"^$^ù$^ù`$^",
+		"^$^ù$^ù`$^qwdqwdqwdqwdqwdqwdqwwqdqwdqwdqwdqwdqwdqwdqwdqwdqwdqwdwqdqwdqwd",
 		406,
 		"Country name is invalid",
 		"Country name",

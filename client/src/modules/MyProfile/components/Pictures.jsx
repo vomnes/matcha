@@ -109,14 +109,15 @@ class EditPicture extends Component {
 }
 
 const Pictures = (props) => {
+  let url = "http://localhost:8080"
  return (
    <div className="pictures">
-     <EditPicture className="one" number="1" urlPicture={"http://localhost:8080" + props.profilePictures[0]} updatePicture={props.updatePicture} updateState={props.updateState}/>
+     <EditPicture className="one" number="1" urlPicture={props.profilePictures[0] ? (url + props.profilePictures[0]) : null} updatePicture={props.updatePicture} updateState={props.updateState}/>
      <div className="picture-sub-area">
-       <EditPicture className="two" number="2" urlPicture={"http://localhost:8080" + props.profilePictures[1]} deleteAvailable="true" deletePicture={props.clickDeletePicture} updatePicture={props.updatePicture} updateState={props.updateState}/>
-       <EditPicture className="three" number="3" urlPicture={"http://localhost:8080" + props.profilePictures[2]} deleteAvailable="true" deletePicture={props.clickDeletePicture} updatePicture={props.updatePicture} updateState={props.updateState}/>
-       <EditPicture className="four" number="4" urlPicture={"http://localhost:8080" + props.profilePictures[3]} deleteAvailable="true" deletePicture={props.clickDeletePicture} updatePicture={props.updatePicture} updateState={props.updateState}/>
-       <EditPicture className="five" number="5" urlPicture={"http://localhost:8080" + props.profilePictures[4]} deleteAvailable="true" deletePicture={props.clickDeletePicture} updatePicture={props.updatePicture} updateState={props.updateState}/>
+       <EditPicture className="two" number="2" urlPicture={props.profilePictures[1] ? (url + props.profilePictures[1]) : null} deleteAvailable="true" deletePicture={props.clickDeletePicture} updatePicture={props.updatePicture} updateState={props.updateState}/>
+       <EditPicture className="three" number="3" urlPicture={props.profilePictures[2] ? (url + props.profilePictures[2]) : null} deleteAvailable="true" deletePicture={props.clickDeletePicture} updatePicture={props.updatePicture} updateState={props.updateState}/>
+       <EditPicture className="four" number="4" urlPicture={props.profilePictures[3] ? (url + props.profilePictures[3]) : null} deleteAvailable="true" deletePicture={props.clickDeletePicture} updatePicture={props.updatePicture} updateState={props.updateState}/>
+       <EditPicture className="five" number="5" urlPicture={props.profilePictures[4] ? (url + props.profilePictures[4]) : null} deleteAvailable="true" deletePicture={props.clickDeletePicture} updatePicture={props.updatePicture} updateState={props.updateState}/>
      </div>
    </div>
  )

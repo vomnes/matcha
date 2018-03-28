@@ -18,7 +18,6 @@ lint:
 	golint .
 
 launch:
-	./../../setVarEnv.sh
 	./bin/api -port=8080
 
 run: build launch

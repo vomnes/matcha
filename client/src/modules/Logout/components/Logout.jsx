@@ -13,10 +13,10 @@ class Logout extends Component {
     api.logout()
     .then(function(response) {
       if (response.status >= 400) {
-        createError();
-        throw new Error("Bad response from server - Logout has failed");
-      } else {
         localStorage.removeItem('matcha_token');
+        createError();
+        throw new Error("Bad response from server - Logout");
+      } else {
         document.location = "/login";
         return;
       }
@@ -34,7 +34,7 @@ class Logout extends Component {
     } else {
       return (
         <div>
-          <span>An error has occured, it is not possible to logout - Please contact us - </span>
+          <span>An error has occured during logout - Please contact us - </span>
           <a href='/home'><u>Click here to go back on home page</u></a>
         </div>
       );
