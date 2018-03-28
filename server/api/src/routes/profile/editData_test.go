@@ -244,6 +244,29 @@ func TestEditDataInputInvalidBirthdayDate(t *testing.T) {
 	}
 }
 
+func TestEditDataInputInvalidBirthdayFutur(t *testing.T) {
+	tests.DbClean()
+	userData := tests.InsertUser(lib.User{}, tests.DB)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: "test",
+		UserID:   userData.ID,
+	}
+	body := []byte(`{
+    "birthday": "06/03/2999"
+    }`)
+	r := tests.CreateRequest("POST", "/v1/profiles/edit/data", body, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	EditData(w, r)
+	strError := tests.CompareResponseJSONCode(w, 406, map[string]interface{}{
+		"error": "Cannot have futur data as birthday",
+	})
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+}
+
 func TestEditData(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)

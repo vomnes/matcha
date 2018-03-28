@@ -134,7 +134,7 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	birthdayString := "00/00/0000"
+	birthdayString := "dd/mm/yyyy"
 	if userDB.Birthday != nil {
 		birthdayString = fmt.Sprintf("%02d/%02d/%04d", userDB.Birthday.Day(), userDB.Birthday.Month(), userDB.Birthday.Year())
 	}
@@ -149,7 +149,7 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 		"picture_url_4":           userDB.PictureURL_4,
 		"picture_url_5":           userDB.PictureURL_5,
 		"biography":               userDB.Biography,
-		"birthday":                birthdayString, // DD/MM/YYYY
+		"birthday":                birthdayString, // dd/mm/yyyy
 		"genre":                   userDB.Genre,
 		"interesting_in":          userDB.InterestingIn,
 		"latitude":                userDB.Latitude,

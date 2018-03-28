@@ -36,7 +36,7 @@ JSON Content Response :
     "picture_url_4":           string,
     "picture_url_5":           string,
     "biography":               string,
-    "birthday":                string, /* Format Date DD/MM/YYYY */
+    "birthday":                string, /* Format Date DD/MM/YYYY - dd/mm/yyyy if date is null */
     "genre":                   string,
     "interesting_in":          string,
     "latitude":                float64,

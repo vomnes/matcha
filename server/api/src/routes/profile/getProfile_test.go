@@ -159,7 +159,7 @@ func TestGetProfileNoTagsNoBirthdate(t *testing.T) {
 		"picture_url_4":           "MyURL4",
 		"picture_url_5":           "MyURL5",
 		"biography":               "This is my story",
-		"birthday":                "00/00/0000",
+		"birthday":                "dd/mm/yyyy",
 		"genre":                   "example_genre",
 		"interesting_in":          "example_interesting_in",
 		"latitude":                1.4,

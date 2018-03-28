@@ -196,7 +196,7 @@ class MyProfile extends Component {
       name: name.toLowerCase(),
       id,
     }
-    if (this.state.data.tags === undefined) {
+    if (this.state.data.tags === null) {
       newTags = [newElem];
     } else {
       newTags = this.state.data.tags.concat(newElem);
@@ -244,7 +244,8 @@ class MyProfile extends Component {
         updatePersonalDataBtn = <input className="submit-profile" type="submit" value="Save" title="Save personal data"/>
     }
     var updatePasswordBtn;
-    if (isEmpty(this.state.password) && isEmpty(this.state.new_password) && isEmpty(this.state.new_rePassword)) {
+    if (isEmpty(this.state.password) && isEmpty(this.state.new_password) && isEmpty(this.state.new_rePassword)
+      && this.state.new_password === this.state.new_rePassword) {
         updatePasswordBtn = <input className="submit-profile" type="submit" value="Update" title="Update password"/>
     }
     return (
@@ -267,18 +268,21 @@ class MyProfile extends Component {
               <form className="profile-personal-data" onSubmit={this.handleSubmitPersonal}>
                 <span className="field-name">Firstname</span><br />
                 <input className="field-input" placeholder={this.state.data.firstname || ''} type="text" name="firstname"
+                  pattern="[a-zA-Z\-]{1,64}" title="Firstname must be between 1 and 64 characters and contain only lowercase and uppercase characters and dash."
                   value={this.state.personal.firstname || ''} onChange={this.handleUserInputPersonal}/><br />
                 <span className="field-name">Lastname</span><br />
                 <input className="field-input" placeholder={userData.lastname || ''} type="text" name="lastname"
+                  pattern="[a-zA-Z\-]{1,64}" title="Lastname must be between 1 and 64 characters and contain only lowercase and uppercase characters and dash."
                   value={this.state.personal.lastname || ''} onChange={this.handleUserInputPersonal}/><br />
                 <span className="field-name">Email address</span><br />
-                <input className="field-input" placeholder={userData.email || ''} type="text" name="email"
+                <input className="field-input" placeholder={userData.email || ''} minLength="6" maxLength="254" type="email" name="email"
                   value={this.state.personal.email || ''} onChange={this.handleUserInputPersonal}/><br />
                 <span className="field-name">Biography</span><br />
                 <input className="field-input" placeholder={userData.biography || ''} type="text" name="biography"
                   value={this.state.personal.biography || ''} onChange={this.handleUserInputPersonal}/><br />
                 <span className="field-name">Birthday</span><br />
                 <input className="field-input" placeholder={userData.birthday || ''} type="text" name="birthday"
+                  pattern="[0-9/]{10,10}" title="mm/dd/yyyy - Birthday must contains 10 characters and only number and slash."
                   value={this.state.personal.birthday || ''} onChange={this.handleUserInputPersonal}/><br />
                 <div className="limit" style={{ width: "10%" }}></div>
                 <span className="field-name">Genre</span><br />
@@ -302,9 +306,11 @@ class MyProfile extends Component {
                   value={this.state.password} onChange={this.handleUserInput}/><br />
                 <span className="field-name">New password</span><br />
                   <input className="field-input" type="password" name="new_password"
+                    pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,100}$" title="Must contain only and at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
                     value={this.state.new_password} onChange={this.handleUserInput}/><br />
                 <span className="field-name">Type it again</span><br />
                   <input className="field-input" type="password" name="new_rePassword"
+                    pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,100}$" title="Must contain only and at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
                     value={this.state.new_rePassword} onChange={this.handleUserInput}/><br />
                 {updatePasswordBtn}
               </form>
