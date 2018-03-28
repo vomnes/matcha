@@ -48,6 +48,7 @@ const editProfile = async (args, originalData, updateState, updatePersonal, upda
       updateState('newError', response.error);
     }
   } else {
+    updateState('newError', '');
     if (args.firstname) {
       updateData('firstname', args.firstname);
       updatePersonal('firstname', '');
@@ -61,8 +62,8 @@ const editProfile = async (args, originalData, updateState, updatePersonal, upda
       updatePersonal('email', '');
     }
     if (args.biography) {
-      updateData('firstname', args.firstname);
-      updatePersonal('firstname', '');
+      updateData('biography', args.biography);
+      updatePersonal('biography', '');
     }
     if (args.birthday) {
       updateData('birthday', args.birthday);
@@ -77,6 +78,25 @@ const editProfile = async (args, originalData, updateState, updatePersonal, upda
   }
 }
 
+const editPassword = async (args, updateState) => {
+  console.log(args);
+  let res = await api.editpassword(args);
+  if (res && res.status >= 400) {
+    const response = await res.json();
+    if (res.status >= 500) {
+      throw new Error("Bad response from server - editPassword has failed - ", response.error);
+    } else if (res.status >= 400) {
+      updateState('newError', response.error);
+    }
+  } else {
+    updateState('newError', '');
+    updateState('newSuccess', 'Password updated');
+    updateState('password', '');
+    updateState('new_password', '');
+    updateState('new_rePassword', '');
+  }
+}
+
 const isEmpty = (value) => {
   return value !== undefined && value !== ''
 }
@@ -88,7 +108,8 @@ class MyProfile extends Component {
       data: {},
       personal: {},
       password: '',
-      rePassword: '',
+      new_password: '',
+      new_rePassword: '',
       newTag: '',
       variableModal: '',
       newError: '',
@@ -106,6 +127,7 @@ class MyProfile extends Component {
     this.setStateGenre = this.setStateGenre.bind(this);
     this.closeModal = this.closeModal.bind(this);
     this.handleSubmitPersonal = this.handleSubmitPersonal.bind(this);
+    this.handleSubmitPassword = this.handleSubmitPassword.bind(this);
   }
   handleUserInput = (e) => {
     const fieldName = e.target.name;
@@ -190,6 +212,14 @@ class MyProfile extends Component {
     editProfile(this.state.personal, this.state.data, this.updateState, this.updateStatePersonal, this.handleUserInputData);
     event.preventDefault();
   }
+  handleSubmitPassword = (event) => {
+    editPassword({
+      password:         this.state.password,
+      new_password:     this.state.new_password,
+      new_rePassword:   this.state.new_rePassword,
+    }, this.updateState);
+    event.preventDefault();
+  }
 
   componentDidMount() {
     getIP(getProfileData, this.updateState, this.setStateGenre);
@@ -211,7 +241,7 @@ class MyProfile extends Component {
         updatePersonalDataBtn = <input className="submit-profile" type="submit" value="Save" title="Save personal data"/>
     }
     var updatePasswordBtn;
-    if (isEmpty(this.state.password) && isEmpty(this.state.rePassword)) {
+    if (isEmpty(this.state.password) && isEmpty(this.state.new_password) && isEmpty(this.state.new_rePassword)) {
         updatePasswordBtn = <input className="submit-profile" type="submit" value="Update" title="Update password"/>
     }
     return (
@@ -263,13 +293,16 @@ class MyProfile extends Component {
               </form>
               <div className="limit" style={{ width: "10%" }}></div>
               <div className="field-title">Set your password</div>
-              <form className="profile-personal-data">
-                <span className="field-name">New password</span><br />
+              <form className="profile-personal-data" onSubmit={this.handleSubmitPassword}>
+                <span className="field-name">Current password</span><br />
                 <input className="field-input" type="password" name="password"
                   value={this.state.password} onChange={this.handleUserInput}/><br />
+                <span className="field-name">New password</span><br />
+                  <input className="field-input" type="password" name="new_password"
+                    value={this.state.new_password} onChange={this.handleUserInput}/><br />
                 <span className="field-name">Type it again</span><br />
-                  <input className="field-input" type="password" name="rePassword"
-                    value={this.state.rePassword} onChange={this.handleUserInput}/><br />
+                  <input className="field-input" type="password" name="new_rePassword"
+                    value={this.state.new_rePassword} onChange={this.handleUserInput}/><br />
                 {updatePasswordBtn}
               </form>
               <div className="limit" style={{ width: "10%" }}></div>

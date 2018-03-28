@@ -3,12 +3,14 @@ import fetch from 'isomorphic-fetch';
 const editpassword = (params, conf) => {
   let token = localStorage.getItem('matcha_token');
   return fetch (
-    `${conf.BACK_URL}/v1/profiles/picture/${params.number}`,
+    `${conf.BACK_URL}/v1/profiles/edit/password`,
     {
       credentials: 'include',
-      method: params.method,
+      method: `POST`,
       body: JSON.stringify({
-        picture_base64: params.base64,
+        password:         params.password,
+        new_password:     params.new_password,
+        new_rePassword:   params.new_rePassword,
       }),
       headers: {
         'Authorization': 'Bearer ' + token,
