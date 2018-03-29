@@ -260,7 +260,7 @@ func TestEditDataInputInvalidBirthdayFutur(t *testing.T) {
 	w := httptest.NewRecorder()
 	EditData(w, r)
 	strError := tests.CompareResponseJSONCode(w, 406, map[string]interface{}{
-		"error": "Cannot have futur data as birthday",
+		"error": "Cannot set birthday in the futur",
 	})
 	if strError != nil {
 		t.Errorf("%v", strError)

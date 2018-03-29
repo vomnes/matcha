@@ -94,7 +94,7 @@ func checkDataInput(d *userData) (int, string) {
 			return 500, "Failed to decode birthday date"
 		}
 		if time.Now().Sub(dateTime) < 0 {
-			return 406, "Cannot have futur data as birthday"
+			return 406, "Cannot set birthday in the futur"
 		}
 		d.BirthdayTime = &dateTime
 	}

@@ -119,11 +119,10 @@ func TestGetUser(t *testing.T) {
 	}
 }
 
-func TestGetUserLikedNoSharedTagsReportedAsFake(t *testing.T) {
+func TestGetUserLikedNoSharedTagsReportedAsFakeAgeNil(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)
 	targetUsername := "target_test_" + lib.GetRandomString(43)
-	birthdayTime := time.Date(1955, 1, 6, 0, 0, 0, 0, time.UTC)
 	lat := 1.4
 	lng := 56.0
 	targetUser := tests.InsertUser(lib.User{
@@ -137,7 +136,6 @@ func TestGetUserLikedNoSharedTagsReportedAsFake(t *testing.T) {
 		PictureURL_4:  "",
 		PictureURL_5:  "MyURL5",
 		Biography:     "This is my story",
-		Birthday:      &birthdayTime,
 		Genre:         "example_genre",
 		InterestingIn: "example_interesting_in",
 		Latitude:      &lat,
@@ -188,7 +186,7 @@ func TestGetUserLikedNoSharedTagsReportedAsFake(t *testing.T) {
 		"username":         targetUsername,
 		"pictures":         []string{"MyURL1", "MyURL3", "MyURL5"},
 		"biography":        "This is my story",
-		"age":              63,
+		"age":              0,
 		"genre":            "example_genre",
 		"interesting_in":   "example_interesting_in",
 		"location":         "MYZIP, myCity, myCountry",

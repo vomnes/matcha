@@ -51,8 +51,11 @@ func arrayPicture(data lib.User) []string {
 	return pictureArray
 }
 
-func getUserAge(date time.Time) int {
-	return int(time.Since(date).Hours() / 8760)
+func getUserAge(date *time.Time) int {
+	if date == nil {
+		return 0
+	}
+	return int(time.Since(*date).Hours() / 8760)
 }
 
 func getTags(db *sqlx.DB, userID, targetID string) ([]string, []string, int, string, error) {
@@ -205,7 +208,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		"genre":            targetUserData.Genre,
 		"interesting_in":   targetUserData.InterestingIn,
 		"location":         targetUserData.ZIP + ", " + targetUserData.City + ", " + targetUserData.Country,
-		"age":              getUserAge(*targetUserData.Birthday),
+		"age":              getUserAge(targetUserData.Birthday),
 		"pictures":         arrayPicture(targetUserData),
 		"rating":           targetUserData.Rating,
 		"liked":            hasLiked,
