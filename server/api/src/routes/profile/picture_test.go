@@ -429,14 +429,14 @@ func TestPictureDelete(t *testing.T) {
 	tests.DbClean()
 	path := getPathNameTest(t)
 	testDirectory := "test_SjzjhD5dbEmjhB6GEhZui7es3oWbi9_wyL5Zo7kDbs7A"
-	oldPicturePath := path + "/storage/tests/" + "thisIsTheUrl_TestPictureDelete"
+	oldPicturePath := "/storage/tests/" + "thisIsTheUrl_TestPictureDelete"
 	userData := tests.InsertUser(lib.User{Username: testDirectory, PictureURL_1: "thisIsTheUrl1", PictureURL_2: oldPicturePath}, tests.DB)
 	context := tests.ContextData{
 		DB:       tests.DB,
 		Username: testDirectory,
 		UserID:   userData.ID,
 	}
-	f, err := os.Create(oldPicturePath)
+	f, err := os.Create(path + oldPicturePath)
 	if err != nil {
 		t.Error(err)
 		return

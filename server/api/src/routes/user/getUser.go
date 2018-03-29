@@ -131,7 +131,12 @@ func addVisit(db *sqlx.DB, userID, targetID string) (int, string) {
 		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request insert visit" + "UserId: " + userID + " " + err.Error()))
 		return 500, "Insert new visit failed"
 	}
-	_ = stmt.QueryRow(userID, targetID)
+	rows, err := stmt.Queryx(userID, targetID)
+	defer rows.Close()
+	if err != nil {
+		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request insert visit" + "UserId: " + userID + " " + err.Error()))
+		return 500, "Insert new visit failed"
+	}
 	errCode, errContent := updateRating(db, userID)
 	if errCode != 0 || errContent != "" {
 		return errCode, errContent

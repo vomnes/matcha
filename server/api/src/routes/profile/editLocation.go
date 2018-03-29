@@ -67,7 +67,8 @@ func UpdateLocationInDB(db *sqlx.DB, latitude, longitude float64,
 		longitude = $5,
     geolocalisation_allowed = $6
   	WHERE  users.id = $7 AND users.username = $8`
-	_, err := db.Queryx(updateLocation, city, zip, country, latitude, longitude, geolocalisationAllowed, userID, username)
+	rows, err := db.Queryx(updateLocation, city, zip, country, latitude, longitude, geolocalisationAllowed, userID, username)
+	defer rows.Close()
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - Update] Failed to update User[" + userID + "] Location Data " + err.Error()))
 		return 500, "Failed to update data in database", err

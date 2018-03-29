@@ -115,9 +115,10 @@ func updateDataInDB(db *sqlx.DB, data userData, userID, username string) (int, s
 	genre = COALESCE(NULLIF($6,''), genre),
 	interesting_in = COALESCE(NULLIF($7,''), interesting_in)
 	WHERE  users.id = $8 AND users.username = $9`
-	_, err := db.Queryx(updateProfileData, data.Lastname, data.Firstname,
+	rows, err := db.Queryx(updateProfileData, data.Lastname, data.Firstname,
 		data.EmailAddress, data.Biography, data.BirthdayTime, data.Genre,
 		data.InterestingIn, userID, username)
+	defer rows.Close()
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - Update] Failed to update User[" + userID + "] Profile Data " + err.Error()))
 		return 500, "Failed to update data in database", err

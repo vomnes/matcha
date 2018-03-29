@@ -93,7 +93,8 @@ func updateRating(db *sqlx.DB, userID string) (int, string) {
 	updateRequest := `UPDATE users SET
     rating = $1
     WHERE  users.id = $2`
-	_, err := db.Queryx(updateRequest, rating, userID)
+	rows, err := db.Queryx(updateRequest, rating, userID)
+	defer rows.Close()
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - Update] Failed to update User[" + userID + "] Rating Data " + err.Error()))
 		return 500, "Failed to update rating data in database"

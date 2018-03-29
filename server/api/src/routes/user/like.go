@@ -25,11 +25,17 @@ func getUserIDFromUsername(db *sqlx.DB, username string) (string, int, string) {
 
 func insertLike(db *sqlx.DB, userID, targetUserID string) (int, string) {
 	stmt, err := db.Preparex(`INSERT INTO Likes (userid, liked_userID) VALUES ($1, $2)`)
+	defer stmt.Close()
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request insert like" + err.Error()))
 		return 500, "Insert new like failed"
 	}
-	_ = stmt.QueryRow(userID, targetUserID)
+	rows, err := stmt.Queryx(userID, targetUserID)
+	rows.Close()
+	if err != nil {
+		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request insert like" + err.Error()))
+		return 500, "Insert new like failed"
+	}
 	return 0, ""
 }
 
@@ -71,12 +77,19 @@ func addLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB,
 // Return HTTP Code 200 Status OK
 func deleteLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB, userID, targetUserID string) {
 	stmt, err := db.Preparex(`DELETE FROM Likes WHERE userId = $1 AND liked_userID = $2;`)
+	defer stmt.Close()
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request delete like " + err.Error()))
 		lib.RespondWithErrorHTTP(w, 500, "Failed to delete like")
 		return
 	}
-	_ = stmt.QueryRowx(userID, targetUserID)
+	rows, err := stmt.Queryx(userID, targetUserID)
+	rows.Close()
+	if err != nil {
+		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request delete like " + err.Error()))
+		lib.RespondWithErrorHTTP(w, 500, "Failed to delete like")
+		return
+	}
 	errCode, errContent := updateRating(db, targetUserID)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)

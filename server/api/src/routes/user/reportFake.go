@@ -12,11 +12,17 @@ import (
 
 func insertFake(db *sqlx.DB, userID, targetUserID string) (int, string) {
 	stmt, err := db.Preparex(`INSERT INTO Fake_Reports (userid, target_userID) VALUES ($1, $2)`)
+	defer stmt.Close()
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request insert fake report" + err.Error()))
 		return 500, "Insert new fake report failed"
 	}
-	_ = stmt.QueryRow(userID, targetUserID)
+	rows, err := stmt.Queryx(userID, targetUserID)
+	rows.Close()
+	if err != nil {
+		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request insert fake report" + err.Error()))
+		return 500, "Insert new fake report failed"
+	}
 	return 0, ""
 }
 
@@ -57,12 +63,19 @@ func addFake(w http.ResponseWriter, r *http.Request, db *sqlx.DB, userID, target
 // Return HTTP Code 200 Status OK
 func deleteFake(w http.ResponseWriter, r *http.Request, db *sqlx.DB, userID, targetUserID string) {
 	stmt, err := db.Preparex(`DELETE FROM Fake_Reports WHERE userId = $1 AND target_userID = $2;`)
+	defer stmt.Close()
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request delete fake report " + err.Error()))
 		lib.RespondWithErrorHTTP(w, 500, "Failed to delete fake report")
 		return
 	}
-	_ = stmt.QueryRowx(userID, targetUserID)
+	rows, err := stmt.Queryx(userID, targetUserID)
+	rows.Close()
+	if err != nil {
+		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request delete fake report " + err.Error()))
+		lib.RespondWithErrorHTTP(w, 500, "Failed to delete fake report")
+		return
+	}
 	errCode, errContent := updateRating(db, targetUserID)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)

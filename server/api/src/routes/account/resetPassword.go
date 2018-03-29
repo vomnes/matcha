@@ -50,11 +50,17 @@ func updateUserPassword(r *http.Request, db *sqlx.DB, password, randomToken stri
 		return 500, "Password encryption failed"
 	}
 	stmt, err := db.Preparex(`UPDATE users SET password = $1, random_token = '' WHERE random_token = $2`)
+	defer stmt.Close()
 	if err != nil {
-		log.Fatal(lib.PrettyError(r.URL.String() + "[DB REQUEST - INSERT] Failed to prepare request update user" + err.Error()))
+		log.Fatal(lib.PrettyError(r.URL.String() + "[DB REQUEST - UPDATE] Failed to prepare request update user" + err.Error()))
 		return 500, "Prepare SQL request failed"
 	}
-	_ = stmt.QueryRow(hashedPassword, randomToken)
+	rows, err := stmt.Queryx(hashedPassword, randomToken)
+	rows.Close()
+	if err != nil {
+		log.Fatal(lib.PrettyError(r.URL.String() + "[DB REQUEST - UPDATE] Failed to prepare request update user" + err.Error()))
+		return 500, "UPDATE - SQL request failed"
+	}
 	return 0, ""
 }
 

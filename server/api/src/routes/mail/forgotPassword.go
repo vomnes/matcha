@@ -30,11 +30,17 @@ func checkEmailAddress(r *http.Request, db *sqlx.DB, emailAddress string) (lib.U
 
 func insertTokenDatabase(db *sqlx.DB, randomToken, emailAddress string) (int, string) {
 	stmt, err := db.Preparex(`UPDATE users SET random_token = $1 WHERE email = $2`)
+	defer stmt.Close()
 	if err != nil {
-		log.Fatal(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request update user" + err.Error()))
+		log.Fatal(lib.PrettyError("[DB REQUEST - UPDATE] Failed to prepare request update user" + err.Error()))
 		return 500, "Prepare SQL request failed"
 	}
-	_ = stmt.QueryRow(randomToken, emailAddress)
+	rows, err := stmt.Queryx(randomToken, emailAddress)
+	rows.Close()
+	if err != nil {
+		log.Fatal(lib.PrettyError("[DB REQUEST - UPDATE] Failed to prepare request update user" + err.Error()))
+		return 500, "UPDATE - SQL request failed"
+	}
 	return 0, ""
 }
 

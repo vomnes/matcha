@@ -44,7 +44,8 @@ func checkInputID(d *tagData) (int, string) {
 }
 
 func insertNewTag(db *sqlx.DB, tagName string) (string, int, string) {
-	stmt, err := db.Preparex(`INSERT INTO Tags (name) VALUES ($1) RETURNING id`)
+	stmt, err := db.Prepare(`INSERT INTO Tags (name) VALUES ($1) RETURNING id`)
+	defer stmt.Close()
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request insert tag" + err.Error()))
 		return "", 500, "Insert new tag failed - DB"
@@ -78,11 +79,17 @@ func getTagID(db *sqlx.DB, tagName string) (string, int, string) {
 
 func insertNewLink(db *sqlx.DB, userID, tagID string) (int, string) {
 	stmt, err := db.Preparex(`INSERT INTO Users_Tags (userId, tagId) VALUES ($1, $2)`)
+	defer stmt.Close()
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request insert link user and tag " + err.Error()))
 		return 500, "Insert new tag failed"
 	}
-	_ = stmt.QueryRow(userID, tagID)
+	rows, err := stmt.Queryx(userID, tagID)
+	rows.Close()
+	if err != nil {
+		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request insert link user and tag " + err.Error()))
+		return 500, "Insert new tag failed"
+	}
 	return 0, ""
 }
 
@@ -105,11 +112,17 @@ func linkUserTag(db *sqlx.DB, userID, tagID string) (int, string) {
 
 func removeLinkUserTag(db *sqlx.DB, tagID, userID string) (int, string) {
 	stmt, err := db.Preparex(`DELETE FROM Users_Tags WHERE userId = $1 AND tagId = $2;`)
+	defer stmt.Close()
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request delete link user and tag " + err.Error()))
 		return 500, "Failed to delete tag and user link"
 	}
-	_ = stmt.QueryRowx(userID, tagID)
+	rows, err := stmt.Queryx(userID, tagID)
+	rows.Close()
+	if err != nil {
+		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request delete link user and tag " + err.Error()))
+		return 500, "Failed to delete tag and user link"
+	}
 	return 0, ""
 }
 
