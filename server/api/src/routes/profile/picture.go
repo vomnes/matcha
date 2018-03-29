@@ -139,19 +139,13 @@ func updatePicturePathInDB(db *sqlx.DB, pictureNumber, picturePath, userID, user
 // Update the picture path in the database
 // Remove the old file on the server by using the old path from the database
 // Return HTTP Code 200 Status OK - Return an JSON with the new picture path in picture_url
-func uploadPicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureNumber, username, userID string) {
+func uploadPicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureNumber, username, userID, path string) {
 	var inputData pictureData
 	errCode, errContent, err := lib.GetDataBody(r, &inputData)
 	if err != nil {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	path, err := os.Getwd()
-	if err != nil {
-		lib.RespondWithErrorHTTP(w, 500, "Failed to get the root path name - EncodeBase64")
-		return
-	}
-	path = strings.TrimSuffix(strings.TrimSuffix(path, "/src/routes/profile"), "/api")
 	picturePath, errCode, errContent, err := base64ToImageFile(path, inputData.Base64, pictureNumber, username)
 	if err != nil {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
@@ -179,7 +173,7 @@ func uploadPicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureN
 // Update the picture path in the database with an empty string
 // Remove the old file on the server by using the old path from the database
 // Return HTTP Code 200 Status OK
-func deletePicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureNumber, username, userID string) {
+func deletePicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureNumber, username, userID, path string) {
 	if pictureNumber == "1" {
 		lib.RespondWithErrorHTTP(w, http.StatusForbidden, "Not possible to delete the 1st picture - Only upload a new one is possible")
 		return
@@ -189,7 +183,7 @@ func deletePicture(w http.ResponseWriter, r *http.Request, db *sqlx.DB, pictureN
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	err = os.Remove(oldPicturePath)
+	err = os.Remove(path + oldPicturePath)
 	if err != nil {
 		log.Println(lib.PrettyError("[OS] Failed to remove old picture - " + username + " - " + err.Error()))
 	}
@@ -212,12 +206,18 @@ func Picture(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
+	path, err := os.Getwd()
+	if err != nil {
+		lib.RespondWithErrorHTTP(w, 500, "Failed to get the root path name - EncodeBase64")
+		return
+	}
+	path = strings.TrimSuffix(strings.TrimSuffix(path, "/src/routes/profile"), "/api")
 	switch r.Method {
 	case "POST":
-		uploadPicture(w, r, db, pictureNumber, username, userID)
+		uploadPicture(w, r, db, pictureNumber, username, userID, path)
 		return
 	case "DELETE":
-		deletePicture(w, r, db, pictureNumber, username, userID)
+		deletePicture(w, r, db, pictureNumber, username, userID, path)
 		return
 	}
 }
