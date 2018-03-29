@@ -210,7 +210,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		"biography":        targetUserData.Biography,
 		"genre":            targetUserData.Genre,
 		"interesting_in":   targetUserData.InterestingIn,
-		"location":         targetUserData.ZIP + ", " + targetUserData.City + ", " + targetUserData.Country,
+		"location":         targetUserData.ZIP + " " + targetUserData.City + " " + targetUserData.Country,
 		"age":              getUserAge(targetUserData.Birthday),
 		"pictures":         arrayPicture(targetUserData),
 		"rating":           targetUserData.Rating,
