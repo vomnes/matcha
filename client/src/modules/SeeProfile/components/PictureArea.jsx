@@ -19,19 +19,38 @@ class PictureArea extends Component {
     super(props);
     this.state = {
       moreInformationOpen: false,
+      index: 0,
+      pictureArrayLength: 0,
+      picture: '',
     }
     this.openInformation = this.openInformation.bind(this);
+    this.updateState = this.updateState.bind(this);
   }
   openInformation() {
     this.setState({
       moreInformationOpen: !this.state.moreInformationOpen,
     });
   }
+  updateState(key, content) {
+    this.setState({
+      [key]: content,
+    });
+  }
+  componentWillReceiveProps(nextProps) {
+    this.updateState('pictureArrayLength', nextProps.pictureArrayLength);
+    this.updateState('index', nextProps.index);
+    this.updateState('picture', nextProps.picture);
+  }
   render() {
-    const index = this.props.index;
+    const index =  this.state.index;
+    var pictureURL = '';
+    if (this.state.picture) {
+      pictureURL = "http://localhost:8080" + this.state.picture
+    }
+    var length = this.state.pictureArrayLength
     return (
       <div className="picture-area">
-        <div className="picture-user-background" style={{ backgroundImage: "url(" + this.props.picture + ")" }}></div>
+        <div className="picture-user-background" style={{ backgroundImage: "url(" + pictureURL + ")" }}></div>
         <div className="more-information" title={ 'See ' + (this.state.moreInformationOpen ? "less" :  "more") + ' options' }>
           <span className="more" onClick={this.openInformation}>{this.state.moreInformationOpen ? '-' : '+'}</span>
         </div>
@@ -42,12 +61,12 @@ class PictureArea extends Component {
             }<br />
             {this.props.liked ? <span onClick={() => this.props.updateState("liked", "You have just unliked this profile")}>Unlike profile</span> : null}
         </div>
-        <IndexPictures pictureArrayLength={this.props.pictureArrayLength} index={index}/>
+        <IndexPictures pictureArrayLength={length} index={index}/>
         <div id="picture-previous" style={{ visibility: (index === 0) ? "hidden" :  "visible" }}>
-          <span className="arrow" onClick={() => this.props.changePicture(0, this.props.pictureArrayLength)}>&#x21A9;</span>
+          <span className="arrow" onClick={() => this.props.changePicture(0, length)}>&#x21A9;</span>
         </div>
-        <div id="picture-next" style={{ visibility: (index === (this.props.pictureArrayLength - 1)) ? "hidden" :  "visible" } }>
-          <span className="arrow" onClick={() => this.props.changePicture(1, this.props.pictureArrayLength)}>&#x21AA;</span>
+        <div id="picture-next" style={{ visibility: (!length || index === (length - 1)) ? "hidden" :  "visible" } }>
+          <span className="arrow" onClick={() => this.props.changePicture(1, length)}>&#x21AA;</span>
         </div>
         {!this.props.usersAreConnected ? (
         <div title="Like profile" className="btn-like"

@@ -9,6 +9,7 @@ import location from './location';
 import editprofile from './editprofile';
 import editpassword from './editpassword';
 import tag from './tag';
+import getuser from './getuser';
 
 const apiConf = {
   BACK_URL: `http://localhost:8080`,
@@ -26,4 +27,5 @@ export default {
   editprofile: (params) => editprofile(params, apiConf),
   editpassword: (params) => editpassword(params, apiConf),
   tag: (method, params) => tag(method, params, apiConf),
+  getuser: (username) => getuser(username, apiConf),
 }

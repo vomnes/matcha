@@ -18,8 +18,6 @@ const getPicture = async (args, updatePicture, updateState) => {
   }
 }
 
-// {number method, base64}
-
 const ButtonEdit = (props) => {
   var deleteBtn = null;
   if (props.deleteAvailable) {

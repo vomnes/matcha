@@ -36,30 +36,41 @@ const ShowTags = (props) => {
 class DataArea extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-    }
+    this.state = {};
+    this.updateState = this.updateState.bind(this);
   }
+  updateState(key, content) {
+    this.setState({
+      [key]: content,
+    });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.updateState('data', nextProps.data);
+  }
+
   render() {
+    var u = this.state.data
     return (
       <div className="data-area">
         <div className="profile-id">
-          <span className="profile-title">{this.props.firstname + ' ' + this.props.lastname}</span><br />
+          <span className="profile-title">{(u && u.firstname) || ''} {(u && u.lastname) || ''}</span><br />
           <span className="profile-username"> @{this.props.username}</span><br />
           <div className="profile-bio">
-            <span>Greatly hearted has who believe...</span>
+            <span>{(u && u.biography) || ''}</span>
           </div>
           <div className="limit" style={{ width: "10%" }}></div>
           <div className="profile-data-list">
-            <img alt="Age logo" title="Age" src={AgeLogo}/><span>22 years old</span><br />
-            <img alt="Gender logo" title="Gender" src={GenderLogo}/><span>Male</span><br />
-            <img alt="Preferred gender logo" title="Preferred gender" src={HeartLogo}/><span>Female</span><br />
-            <img alt="Location logo" title="Location" src={LocationLogo}/><span>Paris, France</span><br />
-            <img alt="Rating logo" title="Rating" src={Star}/><span>95/100</span><br />
+            <img alt="Age logo" title="Age" src={AgeLogo}/><span>{(u && u.age) || ''} years old</span><br />
+            <img alt="Gender logo" title="Gender" src={GenderLogo}/><span>{(u && u.genre) || ''}</span><br />
+            <img alt="Preferred gender logo" title="Preferred gender" src={HeartLogo}/><span>{(u && u.interesting_in) || ''}</span><br />
+            <img alt="Location logo" title="Location" src={LocationLogo}/><span>{(u && u.location) || ''}</span><br />
+            <img alt="Rating logo" title="Rating" src={Star}/><span>{(u && u.rating) || ''}/5</span><br />
             <img alt="Connected status logo" title="Connected status" src={ConnectedLogo}/>
-            <span>{this.props.online ? "Online" : "Offline - Last connection 60 minutes ago"}</span><br />
+            <span>{u && u.online ? "Online" : "Offline - Last connection 60 minutes ago"}</span><br />
           </div>
           <div className="limit" style={{ width: "10%" }}></div>
-          <ShowTags matchedTags={this.props.matchedTags} otherTags={this.props.otherTags}/>
+          <ShowTags matchedTags={(u && u.tags && u.tags.matched) || []} otherTags={(u && u.tags && u.tags.personal) || []}/>
         </div>
       </div>
     )
