@@ -38,6 +38,8 @@ func handleAPIRoutes() *mux.Router {
 	api.HandleFunc("/v1/profiles/edit/password", profile.EditPassword)
 	api.HandleFunc("/v1/profiles/edit/tag", profile.Tag)
 	api.HandleFunc("/v1/users/{username}", user.GetUser)
+	api.HandleFunc("/v1/users/{username}/like", user.Like)
+	api.HandleFunc("/v1/users/{username}/fake", user.HandleReportFake)
 	return api
 }
 
