@@ -123,10 +123,12 @@ class Location extends Component {
     }, this.props.updateState, this.updateState);
     e.preventDefault();
   }
-  componentWillReceiveProps() {
-    this.updateState('lat', this.props.lat);
-    this.updateState('lng', this.props.lng);
-    this.updateState('geolocalisation_allowed', this.props.geolocalisation_allowed);
+  componentWillReceiveProps(nextProps) {
+    if (!this.state.lat && !this.state.lng) {
+      this.updateState('lat', nextProps.lat);
+      this.updateState('lng', nextProps.lng);
+      this.updateState('geolocalisation_allowed', nextProps.geolocalisation_allowed);
+    }
   }
   render () {
     return (

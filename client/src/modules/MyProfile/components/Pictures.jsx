@@ -87,7 +87,7 @@ class EditPicture extends Component {
           uploadPicture={this.uploadPicture}
           deleteAvailable={this.props.deleteAvailable}
           deletePicture={this.props.deletePicture}
-          id={this.props.className}
+          id={this.props.number}
         />
         <input type="hidden" style={{display:"none"}} name="MAX_FILE_SIZE" value="30000" />
         <input

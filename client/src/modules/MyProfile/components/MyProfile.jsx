@@ -99,6 +99,23 @@ const isEmpty = (value) => {
   return value !== undefined && value !== ''
 }
 
+const deletePicture = async (args, updateStateData, updateState) => {
+  let res = await api.editpicture(args);
+  if (res) {
+    if (res.status >= 400) {
+      const json = await res.json();
+      if (res.status >= 500) {
+        throw new Error("Bad response from server - deletePicture has failed");
+      } else if (res.status >= 400) {
+        updateState('newError', json.error);
+        return;
+      }
+    }
+    updateStateData('picture_url_'+args.number, '');
+    return;
+  }
+}
+
 class MyProfile extends Component {
   constructor(props) {
     super(props);
@@ -144,8 +161,6 @@ class MyProfile extends Component {
   updateStateData = (field, value) => {
     var data = this.state.data;
     data[field] = value;
-    console.log("updateStateData:", data);
-    console.log("data:", data);
     this.setState({
       data: data,
     });
@@ -183,6 +198,7 @@ class MyProfile extends Component {
   }
   confirmDeletePicture = () => {
     console.log("Picture " + this.state.variableModal + " deleted");
+    deletePicture({number: this.state.variableModal, method: `DELETE`}, this.updateStateData, this.updateState);
     this.setState({
       variableModal: '',
     })
