@@ -197,7 +197,6 @@ class MyProfile extends Component {
     })
   }
   confirmDeletePicture = () => {
-    console.log("Picture " + this.state.variableModal + " deleted");
     deletePicture({number: this.state.variableModal, method: `DELETE`}, this.updateStateData, this.updateState);
     this.setState({
       variableModal: '',

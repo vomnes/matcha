@@ -114,6 +114,7 @@ class SeeProfile extends Component {
             reportedAsFakeAccount={this.state.reportedAsFakeAccount}
             usersAreConnected={this.state.usersAreConnected}
             firstname={this.state.data.firstname}
+            isMe={this.state.data.isMe}
           />
           <div className="right-side-profile">
             <div style={{ backgroundImage: "url(" + rightPicture + ")" }}></div>

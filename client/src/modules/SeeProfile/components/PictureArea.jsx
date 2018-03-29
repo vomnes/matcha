@@ -40,6 +40,11 @@ class PictureArea extends Component {
     this.updateState('pictureArrayLength', nextProps.pictureArrayLength);
     this.updateState('index', nextProps.index);
     this.updateState('picture', nextProps.picture);
+    this.updateState('liked', nextProps.liked);
+    this.updateState('reportedAsFakeAccount', nextProps.reportedAsFakeAccount);
+    this.updateState('usersAreConnected', nextProps.usersAreConnected);
+    this.updateState('firstname', nextProps.firstname);
+    this.updateState('isMe', nextProps.isMe);
   }
   render() {
     const index =  this.state.index;
@@ -51,16 +56,20 @@ class PictureArea extends Component {
     return (
       <div className="picture-area">
         <div className="picture-user-background" style={{ backgroundImage: "url(" + pictureURL + ")" }}></div>
-        <div className="more-information" title={ 'See ' + (this.state.moreInformationOpen ? "less" :  "more") + ' options' }>
-          <span className="more" onClick={this.openInformation}>{this.state.moreInformationOpen ? '-' : '+'}</span>
-        </div>
-        <div className="information-area" style={{ visibility: this.state.moreInformationOpen ? "visible" :  "hidden" } }>
-            {this.props.reportedAsFakeAccount ?
-              <span onClick={() => this.props.updateState("reportedAsFakeAccount", "You have just invalide you fake account report.")}>Invalidate fake account report</span> :
-              <span onClick={() => this.props.updateState("reportedAsFakeAccount", "This profile has been declared as fake account.")}>Report as a fake account</span>
-            }<br />
-            {this.props.liked ? <span onClick={() => this.props.updateState("liked", "You have just unliked this profile")}>Unlike profile</span> : null}
-        </div>
+        {!this.state.isMe ? (
+          <div>
+            <div className="more-information" title={ 'See ' + (this.state.moreInformationOpen ? "less" :  "more") + ' options' }>
+              <span className="more" onClick={this.openInformation}>{this.state.moreInformationOpen ? '-' : '+'}</span>
+            </div>
+            <div className="information-area" style={{ visibility: this.state.moreInformationOpen ? "visible" :  "hidden" } }>
+                {this.state.reportedAsFakeAccount ?
+                  <span onClick={() => this.props.updateState("reportedAsFakeAccount", "You have just invalide you fake account report.")}>Invalidate fake account report</span> :
+                  <span onClick={() => this.props.updateState("reportedAsFakeAccount", "This profile has been declared as fake account.")}>Report as a fake account</span>
+                }<br />
+                {this.state.liked ? <span onClick={() => this.props.updateState("liked", "You have just unliked this profile")}>Unlike profile</span> : null}
+            </div>
+          </div>
+        ) : null }
         <IndexPictures pictureArrayLength={length} index={index}/>
         <div id="picture-previous" style={{ visibility: (index === 0) ? "hidden" :  "visible" }}>
           <span className="arrow" onClick={() => this.props.changePicture(0, length)}>&#x21A9;</span>
@@ -68,27 +77,26 @@ class PictureArea extends Component {
         <div id="picture-next" style={{ visibility: (!length || index === (length - 1)) ? "hidden" :  "visible" } }>
           <span className="arrow" onClick={() => this.props.changePicture(1, length)}>&#x21AA;</span>
         </div>
-        {!this.props.usersAreConnected ? (
-        <div title="Like profile" className="btn-like"
-          onClick={() => this.props.likeUser()}
-          style={{
-            background: (this.props.liked ? "white" :  "#F80759"),
-            color: (this.props.liked ? "#F80759" :  "white"),
-            cursor: (this.props.liked ? "default" :  "pointer") }}
-          >
-          <span>&#9829;</span>
-        </div>
-        ) : null }
-        <div>
-        {this.props.usersAreConnected ? (
-          <div className="profiles-linked-picture">
-            <span
-              role="img" aria-labelledby="Connected with"
-              title={'You are connected with ' + this.props.firstname + ' - Click here to take contact ;)' }
-            >&#x1f525;</span>
+        {!this.state.isMe ? (
+          !this.state.usersAreConnected ? (
+          <div title="Like profile" className="btn-like"
+            onClick={() => this.props.likeUser()}
+            style={{
+              background: (this.state.liked ? "white" :  "#F80759"),
+              color: (this.state.liked ? "#F80759" :  "white"),
+              cursor: (this.state.liked ? "default" :  "pointer") }}
+            >
+            <span>&#9829;</span>
           </div>
-        ) : null }
-        </div>
+          ) : (
+            <div className="profiles-linked-picture">
+              <span
+                role="img" aria-labelledby="Connected with"
+                title={'You are connected with ' + this.state.firstname + ' - Click here to take contact ;)' }
+              >&#x1f525;</span>
+            </div>
+          )
+        ) : null}
       </div>
     )
   }
