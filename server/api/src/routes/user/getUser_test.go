@@ -94,6 +94,7 @@ func TestGetUser(t *testing.T) {
 			"shared":   []string{"sharedone", "sharedzero"},
 			"personal": []string{"notsharedthree", "notsharedtwo"},
 		},
+		"isMe": false,
 	}
 	strError := tests.CompareResponseJSONCode(w, 200, expectedJSONResponse)
 	if strError != nil {
@@ -199,6 +200,7 @@ func TestGetUserLikedNoSharedTagsReportedAsFakeAgeNil(t *testing.T) {
 			"shared":   nil,
 			"personal": []string{"notsharedone", "notsharedthree", "notsharedtwo", "notsharedzero"},
 		},
+		"isMe": false,
 	})
 	if strError != nil {
 		t.Errorf("%v", strError)
@@ -308,6 +310,7 @@ func TestGetUserNoLikedSharedTagsOnePictures(t *testing.T) {
 			"shared":   []string{"sharedone", "sharedthree", "sharedtwo", "sharedzero"},
 			"personal": nil,
 		},
+		"isMe": false,
 	})
 	if strError != nil {
 		t.Errorf("%v", strError)
@@ -483,6 +486,7 @@ func TestGetUserMe(t *testing.T) {
 			"personal": []string{"four", "one", "three", "two", "zero"},
 			"shared":   nil,
 		},
+		"isMe": true,
 	}
 	strError := tests.CompareResponseJSONCode(w, 200, expectedJSONResponse)
 	if strError != nil {

@@ -188,6 +188,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
+	var isUser bool
 	if userID != targetUserData.ID {
 		errCode, errContent = addVisit(db, userID, targetUserData.ID)
 		if errCode != 0 || errContent != "" {
@@ -199,6 +200,8 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 			lib.RespondWithErrorHTTP(w, errCode, errContent)
 			return
 		}
+	} else {
+		isUser = true
 	}
 	lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{
 		"username":         targetUsername,
@@ -219,5 +222,6 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 			"shared":   sharedTags,
 			"personal": notSharedTags,
 		},
+		"isMe": isUser,
 	})
 }

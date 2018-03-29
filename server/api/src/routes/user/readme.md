@@ -112,6 +112,7 @@ JSON Content Response :
       "shared":   sharedTags,
       "personal": notSharedTags,
     },
+    "isMe": bool,
   }
 ```
 
