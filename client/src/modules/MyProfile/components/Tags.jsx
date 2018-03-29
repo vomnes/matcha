@@ -3,7 +3,6 @@ import './Tags.css';
 import api from '../../../library/api'
 
 const unlinkTag = async (args, updateState, deleteTag) => {
-  console.log("Has been here 1!");
   let res = await api.tag(`DELETE`, args);
   if (res && res.status >= 400) {
     const response = await res.json();

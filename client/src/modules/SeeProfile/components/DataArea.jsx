@@ -21,14 +21,22 @@ const ShowTags = (props) => {
   });
   return (
     <div >
-      <span className="tag-title">I like as you</span>
-      <div id="data-tags">
-        {matchedTags}
-      </div>
-      <span className="tag-title">I like also</span>
-      <div id="data-tags">
-        {otherTags}
-      </div>
+      {matchedTags.length ? (
+        <div>
+          <span className="tag-title">I like as you</span>
+          <div id="data-tags">
+            {matchedTags}
+          </div>
+        </div>
+      ) : null}
+      {otherTags.length ? (
+        <div>
+          <span className="tag-title">I like</span>
+          <div id="data-tags">
+            {otherTags}
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }

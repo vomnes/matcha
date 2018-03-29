@@ -32,16 +32,11 @@ class SeeProfile extends Component {
       data: {},
       indexProfilePictures: 0,
       lengthProfilePictures: 0,
-      liked: false,
-      reportedAsFakeAccount: false,
       newSuccess: '',
-      online: true,
-      usersAreConnected: false
     }
     this.changePicture = this.changePicture.bind(this);
     this.updateState = this.updateState.bind(this);
     this.closeModal = this.closeModal.bind(this);
-    this.likeUser = this.likeUser.bind(this);
     this.updateStateData = this.updateStateData.bind(this);
   }
   changePicture(value, len) {
@@ -57,15 +52,6 @@ class SeeProfile extends Component {
     }
     this.setState({
       indexProfilePictures: update
-    });
-  }
-  likeUser() {
-    if (this.state.liked) {
-      return
-    }
-    this.setState({
-      liked: true,
-      newSuccess: 'You have just liked xxx\'s profile'
     });
   }
   updateState(key, successContent) {
@@ -108,13 +94,13 @@ class SeeProfile extends Component {
             changePicture={this.changePicture}
             pictureArrayLength={(userData.pictures && userData.pictures.length) || 0}
             index={this.state.indexProfilePictures}
-            liked={this.state.liked}
-            likeUser={this.likeUser}
-            updateState={this.updateState}
-            reportedAsFakeAccount={this.state.reportedAsFakeAccount}
-            usersAreConnected={this.state.usersAreConnected}
-            firstname={this.state.data.firstname}
-            isMe={this.state.data.isMe}
+            liked={userData.liked}
+            updateState={this.updateStateData}
+            reportedAsFakeAccount={userData.reportedAsFakeAccount}
+            usersAreConnected={userData.usersAreConnected}
+            firstname={userData.firstname}
+            username={userData.username}
+            isMe={userData.isMe}
           />
           <div className="right-side-profile">
             <div style={{ backgroundImage: "url(" + rightPicture + ")" }}></div>

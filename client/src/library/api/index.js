@@ -10,6 +10,8 @@ import editprofile from './editprofile';
 import editpassword from './editpassword';
 import tag from './tag';
 import getuser from './getuser';
+import like from './like';
+import fake from './fake';
 
 const apiConf = {
   BACK_URL: `http://localhost:8080`,
@@ -28,4 +30,6 @@ export default {
   editpassword: (params) => editpassword(params, apiConf),
   tag: (method, params) => tag(method, params, apiConf),
   getuser: (username) => getuser(username, apiConf),
+  like: (method, username) => like(method, username, apiConf),
+  fake: (method, username) => fake(method, username, apiConf),
 }

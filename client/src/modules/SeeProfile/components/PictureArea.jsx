@@ -1,5 +1,30 @@
 import React, { Component } from 'react';
 import './PictureArea.css';
+import api from '../../../library/api'
+
+const like = async (isLiked, method, username, updateState) => {
+  console.log(isLiked, method, username);
+  if (method === `POST` && isLiked) {
+    return;
+  }
+  let res = await api.like(method, username);
+  if (res.status >= 400) {
+    const response = await res.json();
+    if (res.status >= 500) {
+      throw new Error("Bad response from server - Like has failed - ", response.error);
+    } else if (res.status >= 400) {
+      updateState('newError', response.error);
+      return;
+    }
+  }
+  var type = "liked"
+  updateState("liked", true)
+  if (method === `DELETE`) {
+    type = "unliked"
+    updateState("liked", false)
+  }
+  updateState('newError', `You have just ${type} ${username}'s profile`);
+}
 
 const IndexPictures = (props) => {
   var elements = [];
@@ -22,6 +47,8 @@ class PictureArea extends Component {
       index: 0,
       pictureArrayLength: 0,
       picture: '',
+      reportedAsFakeAccount: null,
+      liked: null,
     }
     this.openInformation = this.openInformation.bind(this);
     this.updateState = this.updateState.bind(this);
@@ -40,10 +67,15 @@ class PictureArea extends Component {
     this.updateState('pictureArrayLength', nextProps.pictureArrayLength);
     this.updateState('index', nextProps.index);
     this.updateState('picture', nextProps.picture);
-    this.updateState('liked', nextProps.liked);
-    this.updateState('reportedAsFakeAccount', nextProps.reportedAsFakeAccount);
+    if (this.state.liked == null) {
+      this.updateState('liked', nextProps.liked);
+    }
+    if (this.state.reportedAsFakeAccount == null) {
+      this.updateState('reportedAsFakeAccount', nextProps.reportedAsFakeAccount);
+    }
     this.updateState('usersAreConnected', nextProps.usersAreConnected);
     this.updateState('firstname', nextProps.firstname);
+    this.updateState('username', nextProps.username);
     this.updateState('isMe', nextProps.isMe);
   }
   render() {
@@ -66,7 +98,7 @@ class PictureArea extends Component {
                   <span onClick={() => this.props.updateState("reportedAsFakeAccount", "You have just invalide you fake account report.")}>Invalidate fake account report</span> :
                   <span onClick={() => this.props.updateState("reportedAsFakeAccount", "This profile has been declared as fake account.")}>Report as a fake account</span>
                 }<br />
-                {this.state.liked ? <span onClick={() => this.props.updateState("liked", "You have just unliked this profile")}>Unlike profile</span> : null}
+                {this.state.liked ? <span onClick={() => like(null, `DELETE`, this.state.username, this.updateState)}>Unlike profile</span> : null}
             </div>
           </div>
         ) : null }
@@ -79,8 +111,8 @@ class PictureArea extends Component {
         </div>
         {!this.state.isMe ? (
           !this.state.usersAreConnected ? (
-          <div title="Like profile" className="btn-like"
-            onClick={() => this.props.likeUser()}
+          <div title={(this.state.liked ? "You like this profile" :  "Like profile")} className="btn-like"
+            onClick={() => like(this.state.liked, `POST`, this.state.username, this.updateState)}
             style={{
               background: (this.state.liked ? "white" :  "#F80759"),
               color: (this.state.liked ? "#F80759" :  "white"),
