@@ -95,8 +95,9 @@ class SeeProfile extends Component {
             pictureArrayLength={(userData.pictures && userData.pictures.length) || 0}
             index={this.state.indexProfilePictures}
             liked={userData.liked}
-            updateState={this.updateStateData}
-            reportedAsFakeAccount={userData.reportedAsFakeAccount}
+            updateStateData={this.updateStateData}
+            updateState={this.updateState}
+            reportedAsFakeAccount={userData.reported_as_fake}
             usersAreConnected={userData.usersAreConnected}
             firstname={userData.firstname}
             username={userData.username}

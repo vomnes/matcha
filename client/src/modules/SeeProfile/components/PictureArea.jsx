@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import './PictureArea.css';
 import api from '../../../library/api'
 
-const like = async (isLiked, method, username, updateState) => {
-  console.log(isLiked, method, username);
+const like = async (isLiked, method, username, updateStateHere, updateState) => {
   if (method === `POST` && isLiked) {
     return;
   }
@@ -18,12 +17,32 @@ const like = async (isLiked, method, username, updateState) => {
     }
   }
   var type = "liked"
-  updateState("liked", true)
+  updateStateHere("liked", true);
   if (method === `DELETE`) {
     type = "unliked"
-    updateState("liked", false)
+    updateStateHere("liked", false);
   }
   updateState('newError', `You have just ${type} ${username}'s profile`);
+}
+
+const fake = async (method, username, updateStateHere, updateState) => {
+  let res = await api.fake(method, username);
+  if (res.status >= 400) {
+    const response = await res.json();
+    if (res.status >= 500) {
+      throw new Error("Bad response from server - Fake has failed - ", response.error);
+    } else if (res.status >= 400) {
+      updateState('newError', response.error);
+      return;
+    }
+  }
+  if (method === `DELETE`) {
+    updateStateHere("reportedAsFakeAccount", false);
+    updateState('newError', `You have just invalide you fake account report.`);
+  } else {
+    updateStateHere("reportedAsFakeAccount", true);
+    updateState('newError', `You have just declared this profile as fake account.`);
+  }
 }
 
 const IndexPictures = (props) => {
@@ -95,10 +114,10 @@ class PictureArea extends Component {
             </div>
             <div className="information-area" style={{ visibility: this.state.moreInformationOpen ? "visible" :  "hidden" } }>
                 {this.state.reportedAsFakeAccount ?
-                  <span onClick={() => this.props.updateState("reportedAsFakeAccount", "You have just invalide you fake account report.")}>Invalidate fake account report</span> :
-                  <span onClick={() => this.props.updateState("reportedAsFakeAccount", "This profile has been declared as fake account.")}>Report as a fake account</span>
+                  <span onClick={() => fake(`DELETE`, this.state.username, this.updateState, this.props.updateState)}>Invalidate fake account report</span> :
+                  <span onClick={() => fake(`POST`, this.state.username, this.updateState, this.props.updateState)}>Report as a fake account</span>
                 }<br />
-                {this.state.liked ? <span onClick={() => like(null, `DELETE`, this.state.username, this.updateState)}>Unlike profile</span> : null}
+                {this.state.liked ? <span onClick={() => like(null, `DELETE`, this.state.username, this.updateState, this.props.updateState)}>Unlike profile</span> : null}
             </div>
           </div>
         ) : null }
@@ -112,7 +131,7 @@ class PictureArea extends Component {
         {!this.state.isMe ? (
           !this.state.usersAreConnected ? (
           <div title={(this.state.liked ? "You like this profile" :  "Like profile")} className="btn-like"
-            onClick={() => like(this.state.liked, `POST`, this.state.username, this.updateState)}
+            onClick={() => like(this.state.liked, `POST`, this.state.username, this.updateState, this.props.updateState)}
             style={{
               background: (this.state.liked ? "white" :  "#F80759"),
               color: (this.state.liked ? "#F80759" :  "white"),
