@@ -11,27 +11,25 @@ const PositionMark = ({ text }) => {
     )
 }
 
-class Map extends Component {
-  render() {
-    if (this.props.lat && this.props.lng) {
-      const lat = this.props.lat;
-      const lng = this.props.lng;
-      return (
-        <GoogleMapReact
-          bootstrapURLKeys={{ key: 'AIzaSyCPhgHvPYOdkj1t5RLcvlRP_sTt6hgK71o' }}
-          center={{ lat: lat, lng: lng }}
-          defaultZoom={12}
-        >
-        <PositionMark
-          lat={lat}
-          lng={lng}
-          text={'Your location'}
-        />
-        </GoogleMapReact>
-      )
-    }
-    return null;
+const Map = (props) => {
+  if (props.lat && props.lng) {
+    const lat = props.lat;
+    const lng = props.lng;
+    return (
+      <GoogleMapReact
+        bootstrapURLKeys={{ key: 'AIzaSyCPhgHvPYOdkj1t5RLcvlRP_sTt6hgK71o' }}
+        center={{ lat: lat, lng: lng }}
+        defaultZoom={12}
+      >
+      <PositionMark
+        lat={lat}
+        lng={lng}
+        text={'Your location'}
+      />
+      </GoogleMapReact>
+    )
   }
+  return null;
 }
 
 class DataMap extends Component {
@@ -59,7 +57,7 @@ class DataMap extends Component {
   render() {
     return (
       <div id="data-map" style={{ height: window.innerWidth > 650 ? this.state.mapHeight : 200 }}>
-        <Map lat={48.4083868} lng={-4.5696403}/>
+        <Map lat={this.props.lat} lng={this.props.lng}/>
       </div>
     )
   }

@@ -3,27 +3,45 @@ import Browsing from './Browsing.jsx'
 import DataMap from './DataMap.jsx'
 import List from './List.jsx'
 import './Search.css';
+import api from '../../../library/api'
 
+const GetMe = async (updateState) => {
+  let res = await api.me();
+  if (res) {
+    const response = await res.json();
+    if (res.status >= 500) {
+      throw new Error("Bad response from server - GetMe has failed");
+    } else if (res.status >= 400) {
+      console.log(response.error);
+    } else {
+      console.log(response);
+      updateState("me", response);
+      return;
+    }
+  }
+}
 class Search extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      me: {},
     }
-    this.handleUserInput = this.handleUserInput.bind(this);
+    this.updateState = this.updateState.bind(this);
   }
-  handleUserInput = (e) => {
-    const fieldName = e.target.name;
-    var data = e.target.value;
+  updateState(key, content) {
     this.setState({
-      [fieldName]: data,
+      [key]: content,
     });
+  }
+  componentDidMount() {
+    GetMe(this.updateState);
   }
   render() {
     return (
       <div>
         <Browsing />
         <div id="result-area">
-          <DataMap />
+          <DataMap lat={this.state.me.lat} lng={this.state.me.lng}/>
           <List />
         </div>
       </div>

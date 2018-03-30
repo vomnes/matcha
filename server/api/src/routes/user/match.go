@@ -210,7 +210,7 @@ type elementUser struct {
 	Distance   *float32 `db:"distance"`
 }
 
-// Match is the route '/v1/users' with the method GET.
+// Match is the route '/v1/users/match' with the method GET.
 // The body may contains the age (min-max), rating (min-max), distance (max),
 // tags, lat, lng, sort_type, sort_direction, start_position and finish_position
 // Check input :

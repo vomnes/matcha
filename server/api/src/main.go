@@ -34,12 +34,14 @@ func handleAPIRoutes() *mux.Router {
 	api.HandleFunc("/v1/profiles/picture/{number}", profile.Picture)
 	api.HandleFunc("/v1/profiles/edit/location", profile.EditLocation)
 	api.HandleFunc("/v1/profiles/edit/data", profile.EditData)
-	api.HandleFunc("/storage/pictures/profiles/{username}/{item}", user.GetPicture)
 	api.HandleFunc("/v1/profiles/edit/password", profile.EditPassword)
 	api.HandleFunc("/v1/profiles/edit/tag", profile.Tag)
 	api.HandleFunc("/v1/users/{username}", user.GetUser)
 	api.HandleFunc("/v1/users/{username}/like", user.Like)
 	api.HandleFunc("/v1/users/{username}/fake", user.HandleReportFake)
+	api.HandleFunc("/v1/users/match", user.Match)
+	api.HandleFunc("/v1/users/data/me", user.GetMe)
+	api.HandleFunc("/storage/pictures/profiles/{username}/{item}", user.GetPicture)
 	return api
 }
 

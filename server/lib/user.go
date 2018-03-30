@@ -4,6 +4,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 	"unicode"
 )
 
@@ -197,4 +198,12 @@ func IsValidIP4(ipAddress string) bool {
 		return false
 	}
 	return true
+}
+
+// GetAge take a *time.Time as parameter and return the date age in a int
+func GetAge(date *time.Time) int {
+	if date == nil {
+		return 0
+	}
+	return int(time.Since(*date).Hours() / 8760)
 }
