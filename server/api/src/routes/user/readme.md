@@ -132,7 +132,15 @@ If the profile is already liked by the connected user
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Profile already liked by the user"  
 Insert like in the table Likes in the database  
 Update target user rating  
+Check if now the user are connected  
 Return HTTP Code 200 Status OK  
+
+```
+JSON Content Response :
+  {
+    "users_linked":     bool,
+  }
+```
 
 ___
 

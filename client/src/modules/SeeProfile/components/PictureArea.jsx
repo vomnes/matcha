@@ -17,10 +17,14 @@ const like = async (isLiked, method, username, updateStateHere, updateState) => 
     }
   }
   var type = "liked"
-  updateStateHere("liked", true);
   if (method === `DELETE`) {
     type = "unliked"
     updateStateHere("liked", false);
+    updateStateHere("usersAreConnected", false);
+  } else {
+    updateStateHere("liked", true);
+    const response = await res.json();
+    updateStateHere("usersAreConnected", response.users_linked);
   }
   updateState('newError', `You have just ${type} ${username}'s profile`);
 }

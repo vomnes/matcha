@@ -44,7 +44,8 @@ func insertLike(db *sqlx.DB, userID, targetUserID string) (int, string) {
 // 		-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Profile already liked by the user"
 // Insert like in the table Likes in the database
 // Update target user rating
-// Return HTTP Code 200 Status OK
+// Check if now the user are connected
+// Return HTTP Code 200 Status OK - JSON Content
 func addLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB,
 	userID, targetUserID string) {
 	var like lib.Like
@@ -61,7 +62,21 @@ func addLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB,
 				lib.RespondWithErrorHTTP(w, errCode, errContent)
 				return
 			}
-			lib.RespondEmptyHTTP(w, http.StatusOK)
+			err = db.Get(&like, "SELECT id FROM Likes WHERE userid = $1 AND liked_userID = $2", targetUserID, userID)
+			if err != nil {
+				if err == sql.ErrNoRows {
+					lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{
+						"users_linked": false,
+					})
+					return
+				}
+				log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to check if like exists in database" + err.Error()))
+				lib.RespondWithErrorHTTP(w, 500, "Failed to check if like exists in database")
+				return
+			}
+			lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{
+				"users_linked": true,
+			})
 			return
 		}
 		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to check if like exists in database" + err.Error()))
