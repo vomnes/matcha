@@ -13,6 +13,7 @@ import getuser from './getuser';
 import like from './like';
 import fake from './fake';
 import me from './me';
+import match from './match';
 
 const apiConf = {
   BACK_URL: `http://localhost:8080`,
@@ -34,4 +35,5 @@ export default {
   like: (method, username) => like(method, username, apiConf),
   fake: (method, username) => fake(method, username, apiConf),
   me: () => me(apiConf),
+  match: (options) => match(options, apiConf),
 }

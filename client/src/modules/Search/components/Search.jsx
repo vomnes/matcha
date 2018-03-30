@@ -20,6 +20,23 @@ const GetMe = async (updateState) => {
     }
   }
 }
+
+const GetMatch = async (updateState) => {
+  let res = await api.match();
+  if (res) {
+    const response = await res.json();
+    if (res.status >= 500) {
+      throw new Error("Bad response from server - GetMatch has failed");
+    } else if (res.status >= 400) {
+      console.log(response.error);
+    } else {
+      console.log(response);
+      updateState("profiles", response);
+      return;
+    }
+  }
+}
+
 class Search extends Component {
   constructor(props) {
     super(props);
@@ -35,6 +52,7 @@ class Search extends Component {
   }
   componentDidMount() {
     GetMe(this.updateState);
+    GetMatch(this.updateState);
   }
   render() {
     return (

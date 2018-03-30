@@ -236,11 +236,11 @@ func Match(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var inputData bodyData
-	errCode, errContent, err := lib.GetDataBody(r, &inputData)
-	if err != nil {
-		lib.RespondWithErrorHTTP(w, errCode, errContent)
-		return
-	}
+	// errCode, errContent, err := lib.GetDataBody(r, &inputData)
+	// if err != nil {
+	// 	lib.RespondWithErrorHTTP(w, errCode, errContent)
+	// 	return
+	// }
 	checkInput(&inputData)
 	users, errCode, errContent := getUsers(db, userID, inputData)
 	if errCode != 0 || errContent != "" {
@@ -269,6 +269,7 @@ func Match(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{
 			"data": "No (more) users",
 		})
+		return
 	}
 	lib.RespondWithJSON(w, http.StatusOK, listUsers)
 }
