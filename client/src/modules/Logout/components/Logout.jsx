@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import api from '../../../library/api'
+import api from '../../../library/api';
+import { Redirect } from 'react-router-dom';
 
 class Logout extends Component {
   constructor(props) {
@@ -17,26 +18,20 @@ class Logout extends Component {
         createError();
         throw new Error("Bad response from server - Logout");
       } else {
-        document.location = "/login";
         return;
       }
     })
   }
 
   render() {
-    console.log(this.state.hasError);
+    localStorage.removeItem('matcha_token');
     if (!this.state.hasError) {
       return (
-        <span>
-          Logging out...
-        </span>
+        <Redirect to='/login'/>
       );
     } else {
       return (
-        <div>
-          <span>An error has occured during logout - Please contact us - </span>
-          <a href='/home'><u>Click here to go back on home page</u></a>
-        </div>
+        <Redirect to='/login'/>
       );
     }
   }
