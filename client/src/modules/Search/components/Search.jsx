@@ -30,7 +30,6 @@ const GetMatch = async (updateState) => {
     } else if (res.status >= 400) {
       console.log(response.error);
     } else {
-      console.log(response);
       updateState("profiles", response);
       return;
     }
@@ -59,8 +58,8 @@ class Search extends Component {
       <div>
         <Browsing />
         <div id="result-area">
-          <DataMap lat={this.state.me.lat} lng={this.state.me.lng}/>
-          <List />
+          <DataMap lat={this.state.me.lat} lng={this.state.me.lng} profiles={this.state.profiles}/>
+          <List profiles={this.state.profiles}/>
         </div>
       </div>
     )

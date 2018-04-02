@@ -6,6 +6,28 @@
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 
+.picture-pin{
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+  border-radius: 25px;
+  background: white;
+  top: -36px;
+  left: -5px;
+}
+
+.picture-pin-background {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 25px;
+  height: 100%;
+  right: 0;
+  left: 0;
+  top: 0;
+}
+
 @media (max-width: 650px) {
   #data-map {
     width: 100%;

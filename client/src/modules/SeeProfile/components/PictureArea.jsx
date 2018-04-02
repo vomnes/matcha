@@ -104,7 +104,9 @@ class PictureArea extends Component {
   render() {
     const index =  this.state.index;
     var pictureURL = '';
-    if (this.state.picture) {
+    if (this.state.picture.includes('images.unsplash.com/photo-')) {
+      pictureURL = this.state.picture
+    } else if (this.state.picture) {
       pictureURL = "http://localhost:8080" + this.state.picture
     }
     var length = this.state.pictureArrayLength

@@ -108,9 +108,15 @@ class EditPicture extends Component {
 
 const Pictures = (props) => {
   let url = "http://localhost:8080"
+  var url1 = props.profilePictures[0]
+  if (url1 === undefined) {
+    url1 = ''
+  } else if (!url1.includes('images.unsplash.com/photo-')) {
+    url1 = "http://localhost:8080" + url1
+  }
  return (
    <div className="pictures">
-     <EditPicture className="one" number="1" urlPicture={props.profilePictures[0] ? (url + props.profilePictures[0]) : null} updatePicture={props.updatePicture} updateState={props.updateState}/>
+     <EditPicture className="one" number="1" urlPicture={url1} updatePicture={props.updatePicture} updateState={props.updateState}/>
      <div className="picture-sub-area">
        <EditPicture className="two" number="2" urlPicture={props.profilePictures[1] ? (url + props.profilePictures[1]) : null} deleteAvailable="true" deletePicture={props.clickDeletePicture} updatePicture={props.updatePicture} updateState={props.updateState}/>
        <EditPicture className="three" number="3" urlPicture={props.profilePictures[2] ? (url + props.profilePictures[2]) : null} deleteAvailable="true" deletePicture={props.clickDeletePicture} updatePicture={props.updatePicture} updateState={props.updateState}/>

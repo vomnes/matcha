@@ -9,7 +9,7 @@ const Item = (props) => {
       <div className="picture-list">
         <div className="picture-list-background" style={{ backgroundImage: "url(" + props.picture + ")" }}></div>
       </div>
-      <a href="/profile/vomnes"><span className="name-list" title="See profile">{props.name}</span></a>
+      <a href={`/profile/${props.username}`}><span className="name-list" title={`See ${props.firstname}'s profile`}>{props.name}</span></a>
       <span className="age-list">{props.age} year old</span>
       <div className="distance-list">
         <img alt="Distance icon" src={Pin} className="list-icon"/>
@@ -23,27 +23,27 @@ const Item = (props) => {
   )
 }
 
-const List = () => {
-  var profilePictures = [
-    require('../../../design/pictures/Register-robson-hatsukami-morgan-250757-unsplash.jpg'),
-    require('../../../design/pictures/Profile-molly-belle-73279-unsplash.jpg'),
-    require('../../../design/pictures/Login-sorasak-217807-unsplash.jpg'),
-  ];
+const List = (props) => {
+  var listProfiles = [];
+  if (props.profiles) {
+    var index = 0;
+    props.profiles.forEach((profile) => {
+      listProfiles.push(<Item
+        key={index}
+        picture={profile.picture_url}
+        firstname={profile.firstname}
+        name={`${profile.firstname} ${profile.lastname}`}
+        age={profile.age}
+        distance={profile.distance}
+        rating={profile.rating}
+        username={profile.username}/>);
+      index++;
+    });
+  }
   return (
     <div id="list">
       <div id="view-list">
-        <Item picture={profilePictures[0]} name="Valentin Omnes" age={22} distance={10} rating={5}/>
-        <Item picture={profilePictures[1]} name="Valentin Omnes" age={22} distance={10} rating={5}/>
-        <Item picture={profilePictures[2]} name="Valentin Omnes" age={22} distance={10} rating={5}/>
-        <Item picture={profilePictures[0]} name="Valentin Omnes" age={22} distance={10} rating={5}/>
-        <Item picture={profilePictures[1]} name="Valentin Omnes" age={22} distance={10} rating={5}/>
-        <Item picture={profilePictures[2]} name="Valentin Omnes" age={22} distance={10} rating={5}/>
-        <Item picture={profilePictures[0]} name="Valentin Omnes" age={22} distance={10} rating={5}/>
-        <Item picture={profilePictures[1]} name="Valentin Omnes" age={22} distance={10} rating={5}/>
-        <Item picture={profilePictures[2]} name="Valentin Omnes" age={22} distance={10} rating={5}/>
-        <Item picture={profilePictures[0]} name="Valentin Omnes" age={22} distance={10} rating={5}/>
-        <Item picture={profilePictures[1]} name="Valentin Omnes" age={22} distance={10} rating={5}/>
-        <Item picture={profilePictures[2]} name="Valentin Omnes" age={22} distance={10} rating={5}/>
+        {listProfiles}
       </div>
     </div>
   )
