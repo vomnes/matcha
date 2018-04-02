@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"../../../../lib"
 	"github.com/jmoiron/sqlx"
@@ -151,10 +152,13 @@ func getUsers(db *sqlx.DB, userID string, optionData bodyData) ([]match, int, st
 	if errCode != 0 && errContent != "" {
 		return []match{}, errCode, errContent
 	}
+	if loggedInUserTags == nil {
+		loggedInUserTags = []string{"'a'"}
+	}
 	matchGenre, matchInterestingIn := handleGenre(loggedInUser)
 	var users []match
+	// (Select COUNT(*) from users_tags Where userid = u.id AND tagid IN (` + strings.Join(loggedInUserTags, ", ") + `)) as common_tags,
 	request := `SELECT u.id, u.username, u.firstname, u.lastname, u.picture_url_1, u.latitude, u.longitude,
-		(Select COUNT(*) from users_tags Where userid = u.id AND tagid IN (` + strings.Join(loggedInUserTags, ", ") + `)) as common_tags,
 	  geodistance(u.latitude, u.longitude, $1, $2) as distance,
 	  date_part('year',age(now(), u.birthday)) as age,
 		u.rating
@@ -176,6 +180,10 @@ func getUsers(db *sqlx.DB, userID string, optionData bodyData) ([]match, int, st
 	if optionData.Age.MinStr != "" && optionData.Age.MaxStr != "" {
 		request += ` AND date_part('year',age(now(), u.birthday)) BETWEEN ` + optionData.Age.MinStr + ` AND ` + optionData.Age.MaxStr
 	} else {
+		if loggedInUser.Birthday == nil {
+			date := time.Date(1995, 0, 0, 0, 0, 0, 0, time.UTC)
+			loggedInUser.Birthday = &date
+		}
 		userBirthdateLess3Years := loggedInUser.Birthday.AddDate(-3, 0, 0).Format("2006-01-02")
 		userBirthdateAdd3Years := loggedInUser.Birthday.AddDate(3, 0, 0).Format("2006-01-02")
 		request += ` AND u.birthday BETWEEN to_timestamp('` + userBirthdateLess3Years + `', 'YYYY-MM-DD') AND to_timestamp('` + userBirthdateAdd3Years + `', 'YYYY-MM-DD')`
