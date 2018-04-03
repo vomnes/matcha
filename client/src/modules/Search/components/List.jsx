@@ -13,11 +13,11 @@ const Item = (props) => {
       <span className="age-list">{props.age} year old</span>
       <div className="distance-list">
         <img alt="Distance icon" src={Pin} className="list-icon"/>
-        <span className="list-value">{props.distance} km</span>
+        <span className="list-value"> {props.distance} km</span>
       </div>
       <div className="rating-list">
         <img alt="Rating icon" src={Star} className="list-icon"/>
-        <span className="list-value"> {props.rating}/5</span>
+        <span className="list-value"> {Math.round(props.rating * 100) / 100} / 5</span>
       </div>
     </div>
   )

@@ -1,3 +1,5 @@
+@import '../../../design/style/variables.scss';
+
 #browsing {
   position: relative;
   background: white;
@@ -6,5 +8,56 @@
 
 #parameters {
   position: relative;
-  height: 130px;
+  height: 150px;
+}
+
+#range-rating {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+}
+
+#range-distance {
+  position: absolute;
+  right: 0px;
+  top: 50px;
+}
+
+/* Range */
+
+.range-area {
+  position: relative;
+  height: 50px;
+  width: 49.8%;
+  // border: 1px solid;
+}
+
+.range-logo {
+  position: absolute;
+  height: 30px;
+  top: 10px;
+  left: 2.5px;
+}
+
+.range-values {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-family: $font-sub;
+}
+
+.range-title {
+  position: absolute;
+  top: 1.5px;
+  left: 50px;
+  font-weight: bold;
+  font-size: 20px;
+  font-family: $font-sub;
+}
+
+.range-slider {
+  position: absolute;
+  width: 90%;
+  bottom: 5px;
+  right: 5px;
 }
