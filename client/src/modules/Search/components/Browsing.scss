@@ -8,19 +8,42 @@
 
 #parameters {
   position: relative;
-  height: 150px;
+  height: 100px;
 }
 
 #range-rating {
   position: absolute;
-  right: 0px;
+  left: 24.8%;
   top: 0px;
 }
 
 #range-distance {
   position: absolute;
-  right: 0px;
-  top: 50px;
+  right: 25%;
+  top: 0px;
+}
+
+#location {
+  position: absolute;
+  right: 25px;
+  top: 15px;
+  font-size: 13.5px;
+  border: 1.5px solid $design-red;
+  padding: 2.5px;
+}
+
+#send-location {
+  position: absolute;
+  right: 5px;
+  top: 20px;
+  cursor: pointer;
+}
+
+#browsing-tags {
+  position: relative;
+  border: 1px solid red;
+  height: 40px;
+  width: 100%;
 }
 
 /* Range */
@@ -28,7 +51,7 @@
 .range-area {
   position: relative;
   height: 50px;
-  width: 49.8%;
+  width: 24.8%;
   // border: 1px solid;
 }
 
@@ -41,23 +64,24 @@
 
 .range-values {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 10.5px;
+  right: 3px;
+  font-size: 12.5px;
   font-family: $font-sub;
 }
 
 .range-title {
   position: absolute;
-  top: 1.5px;
-  left: 50px;
+  top: 7.5px;
+  left: 42px;
   font-weight: bold;
-  font-size: 20px;
+  font-size: 15px;
   font-family: $font-sub;
 }
 
 .range-slider {
   position: absolute;
-  width: 90%;
+  width: 80%;
   bottom: 5px;
-  right: 5px;
+  right: 2.5px;
 }

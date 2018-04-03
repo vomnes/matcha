@@ -4,7 +4,7 @@ import './Location.css';
 import Pin from '../../../design/icons/map-pin-64.png';
 import api from '../../../library/api'
 
-const GetGeocode = (address, updateData, updateState) => {
+const GetGeocode = (address, updateData) => {
     fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=AIzaSyCPhgHvPYOdkj1t5RLcvlRP_sTt6hgK71o`)
     .then(response => {
       return response.json();

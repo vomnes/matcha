@@ -6,6 +6,23 @@ import AgeLogo from '../../../design/icons/avatar.svg'
 import StarLogo from '../../../design/icons/star-128.png'
 import DistanceLogo from '../../../design/icons/distance.svg'
 
+const GetGeocode = (location, updateState) => {
+    fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=AIzaSyCPhgHvPYOdkj1t5RLcvlRP_sTt6hgK71o`)
+    .then(response => {
+      return response.json();
+    })
+    .then(data => {
+      if (!data.results[0] || !data.results[0].formatted_address) {
+        return;
+      }
+      const location = data.results[0].geometry.location;
+      updateState('lat', location.lat);
+      updateState('lng', location.lng);
+      updateState('location', '');
+      updateState('newLocation', data.results[0].formatted_address)
+    })
+}
+
 class SliderDynamicBounds extends Component {
   constructor(props) {
     super(props);
@@ -128,23 +145,56 @@ class SimpleSlider extends Component {
   }
 }
 
-const Browsing = () => {
-  const marksRating = {
-    10: '',
-    20: '',
-    30: '',
-    40: '',
-    50: '',
-  };
-  return (
-    <div id="browsing">
-      <div id="parameters">
-        <SliderDynamicBounds id="range-age" min={16} max={100} defaultValue={[22, 28]} logo={AgeLogo} title="Age" unit="year old"/>
-        <SliderDynamicBounds id="range-rating" min={1} max={50} defaultValue={[25, 50]} logo={StarLogo} title="Rating" unit="star(s)" div={10} marks={marksRating}/>
-        <SimpleSlider id="range-distance" min={0} max={150} defaultValue={50} logo={DistanceLogo} title="Distance" unit="km"/>
+class Browsing extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      newLocation: 'Enter a new location',
+      location: '',
+      lat: 0,
+      lng: 0,
+    };
+    this.handleUserInput = this.handleUserInput.bind(this);
+    this.updateState = this.updateState.bind(this);
+  }
+  handleUserInput = (e) => {
+    const fieldName = e.target.name;
+    var data = e.target.value;
+    this.setState({
+      [fieldName]: data,
+    });
+  }
+  updateState = (fieldName, data) => {
+    this.setState({
+      [fieldName]: data,
+    });
+  }
+
+  render() {
+    const marksRating = {
+      10: '',
+      20: '',
+      30: '',
+      40: '',
+      50: '',
+    };
+    return (
+      <div id="browsing">
+        <div id="parameters">
+          <SliderDynamicBounds id="range-age" min={16} max={100} defaultValue={[22, 28]} logo={AgeLogo} title="Age" unit="year old"/>
+          <SliderDynamicBounds id="range-rating" min={1} max={50} defaultValue={[25, 50]} logo={StarLogo} title="Rating" unit="star(s)" div={10} marks={marksRating}/>
+          <SimpleSlider id="range-distance" min={0} max={150} defaultValue={50} logo={DistanceLogo} title="Distance" unit="km"/>
+          <input id="location" type="text" name="location"
+            placeholder={this.state.newLocation} value={this.state.location} onChange={this.handleUserInput}/>
+          <span id="send-location" onClick={() => GetGeocode(this.state.location, this.updateState)} title="Search for location">{this.state.location ? '↪' : null}</span>
+          <div className="limit" style={{ width: "70%", margin: "2.5px" }}></div>
+          <div id="browsing-tags">
+
+          </div>
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 }
 
 export default Browsing;
