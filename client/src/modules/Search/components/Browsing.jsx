@@ -5,6 +5,7 @@ import 'rc-slider/assets/index.css';
 import AgeLogo from '../../../design/icons/avatar.svg'
 import StarLogo from '../../../design/icons/star-128.png'
 import DistanceLogo from '../../../design/icons/distance.svg'
+import Downshift from 'downshift'
 
 const GetGeocode = (location, updateState) => {
     fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=AIzaSyCPhgHvPYOdkj1t5RLcvlRP_sTt6hgK71o`)
@@ -145,6 +146,98 @@ class SimpleSlider extends Component {
   }
 }
 
+const MyTag = (props) => {
+  return (<span key={props.index} tagid={props.tagid} className="picture-tag matched-tag" onClick={() => props.deleteTag(props.tagName, props.tagid)} title={`Click to delete ${props.tagName}`} style={{ cursor: "pointer" }}>#{props.tagName}</span>)
+}
+
+const Tags = (props) => {
+  var index = 0;
+  var tags = [];
+  props.tags.forEach((tag) => {
+    tags.push(<MyTag key={index} index={index} tagid={tag.id} tagName={tag.name} deleteTag={props.deleteTag}/>);
+    index += 1;
+  });
+  return (
+    <div id="hide-scroll">
+      <div id="list-tags">
+        {tags}
+      </div>
+    </div>
+  )
+}
+
+class BasicAutocomplete extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      menuTagsIsOpen: false,
+    };
+    this.outerClick = this.outerClick.bind(this);
+  }
+  outerClick = () => {
+    this.setState({
+        menuTagsIsOpen: false,
+        selectedItem: ''
+    });
+  }
+  onChange = (selectedItem, func) => {
+    if (selectedItem) {
+      this.props.appendTag(selectedItem[0], selectedItem[1]);
+    }
+    func.clearSelection();
+  }
+  render() {
+    return (
+      <Downshift
+        onChange={this.onChange}
+        onOuterClick={this.outerClick}
+        render={({
+          getInputProps,
+          getItemProps,
+          isOpen = this.state.menuTagsIsOpen,
+          inputValue,
+          selectedItem,
+          highlightedIndex,
+        }) => (
+          <div id="new-tag-area">
+            <input {...getInputProps({placeholder: 'Which tag ?', className: 'picture-tag matched-tag', id: 'browsing-new-tag'})} />
+            {isOpen ? (
+              <div id="list-tag-area">
+                {this.props.items
+                  .filter(i => !inputValue || i.name.toLowerCase().includes(inputValue.toLowerCase()))
+                  .map((item, index) => {
+                    let nbTags = this.props.tags.length;
+                    for (var i = 0; i < nbTags; i++) {
+                      if (this.props.tags[i].name === item.name) {
+                        return null;
+                      }
+                    }
+                    if (item.name === selectedItem || index >= 10) {
+                      return null;
+                    }
+                    return (
+                      <div
+                        {...getItemProps({item: [item.name, item.id], className: 'picture-tag matched-tag', id: 'browsing-new-tag-list'})}
+                        key={item.name}
+                        style={{
+                          backgroundColor:
+                            highlightedIndex === index ? '#cb2d3e' : '#e63946',
+                        }}
+                      >
+                        {item.name}
+                      </div>
+                    )
+                  }
+                )}
+              </div>
+            ) : null}
+          </div>
+        )}
+      />
+    )
+  }
+}
+
 class Browsing extends Component {
   constructor(props) {
     super(props);
@@ -153,9 +246,12 @@ class Browsing extends Component {
       location: '',
       lat: 0,
       lng: 0,
+      menuTagsIsOpen: false,
+      tags: [],
     };
     this.handleUserInput = this.handleUserInput.bind(this);
     this.updateState = this.updateState.bind(this);
+    this.appendTag = this.appendTag.bind(this);
   }
   handleUserInput = (e) => {
     const fieldName = e.target.name;
@@ -169,7 +265,25 @@ class Browsing extends Component {
       [fieldName]: data,
     });
   }
-
+  deleteTag = (name, id) => {
+    this.updateState('tags', this.state.tags.filter(item => item.name !== name));
+  }
+  appendTag = (name, id) => {
+    const nbTags = this.state.tags.length;
+    for (var i = 0; i < nbTags; i++) {
+      if (this.state.tags[i].name === name) {
+        return;
+      }
+    }
+    var newTags;
+    const newElem = { name, id }
+    if (this.state.tags === null) {
+      newTags = [newElem];
+    } else {
+      newTags = this.state.tags.concat(newElem);
+    }
+    this.updateState('tags', newTags);
+  }
   render() {
     const marksRating = {
       10: '',
@@ -189,7 +303,26 @@ class Browsing extends Component {
           <span id="send-location" onClick={() => GetGeocode(this.state.location, this.updateState)} title="Search for location">{this.state.location ? '↪' : null}</span>
           <div className="limit" style={{ width: "70%", margin: "2.5px" }}></div>
           <div id="browsing-tags">
-
+            <Tags tags={this.state.tags} deleteTag={this.deleteTag}/>
+            <BasicAutocomplete
+              items={
+                [
+                  {
+                    id: '1',
+                    name: 'apple',
+                  },
+                  {
+                    id: '2',
+                    name: 'orange',
+                  },
+                  {
+                    id: '3',
+                    name: 'carrot',
+                  },
+                ]}
+              appendTag={this.appendTag}
+              tags={this.state.tags}
+            />
           </div>
         </div>
       </div>
