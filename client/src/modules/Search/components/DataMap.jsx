@@ -68,7 +68,7 @@ class DataMap extends Component {
     this.updateMapHeight = this.updateMapHeight.bind(this);
   }
   updateMapHeight = () => {
-    var offsetTop = 213
+    var offsetTop = 163;
     if (this.instance) {
       offsetTop  = this.instance.getBoundingClientRect().top;
     }

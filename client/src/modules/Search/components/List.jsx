@@ -3,6 +3,10 @@ import './List.css';
 import Pin from '../../../design/icons/map-pin-64.png';
 import Star from '../../../design/icons/star-128.png';
 import FilterLogo from '../../../design/icons/filter.svg'
+import UpBlack from '../../../design/icons/caret-arrow-up-black.svg'
+import UpRed from '../../../design/icons/caret-arrow-up-red.svg'
+import DownBlack from '../../../design/icons/sort-down-black.svg'
+import DownRed from '../../../design/icons/sort-down-red.svg'
 
 const Item = (props) => {
   return (
@@ -44,28 +48,35 @@ const List = (props) => {
   return (
     <div id="list">
       <div id="sort-list">
-        {/* <div id="sort-elem"> */}
-          <a>
-            <span title="Select sort by rating">Rating</span>
-          </a>
-          <a>
-            <span title="Select sort by age">Age</span>
-          </a>
-          <a>
-            <span title="Select sort by distance">Distance</span>
-          </a>
-          <a>
-            <span title="Select sort by common tags">Tags</span>
-          </a>
-          <a>
-            <div className="update-btn" id="filter-btn-little" title="Update data with filter">
-              <img alt="Filter logo" title="Update data with filter" src={FilterLogo} className="filter-logo-little"/>
-            </div>
-          </a>
-        {/* </div> */}
-        {/* <div id="sort-input">
-
-        </div> */}
+        <a className="sort-title" onClick={() => props.updateState("sort_type", "rating")} style={props.sortType === "rating" ? { borderRadius: "2px", border: "0.5px solid #e63946"} : null }>
+          <span title="Sort by rating">Rating</span>
+        </a>
+        <a className="sort-title" onClick={() => props.updateState("sort_type", "age")} style={props.sortType === "age" ? { borderRadius: "2px", border: "0.5px solid #e63946"} : null }>
+          <span title="Sort by age">Age</span>
+        </a>
+        <a className="sort-title" onClick={() => props.updateState("sort_type", "distance")} style={props.sortType === "distance" ? { borderRadius: "2px", border: "0.5px solid #e63946"} : null }>
+          <span title="Sort by distance">Distance</span>
+        </a>
+        <a className="sort-title" onClick={() => props.updateState("sort_type", "common_tags")} style={props.sortType === "common_tags" ? { borderRadius: "2px", border: "0.5px solid #e63946"} : null }>
+          <span title="Sort by common tags">Tags</span>
+        </a>
+        <a id="up-down-area">
+          <div>
+            <img alt="Filter logo" title="Ascendant sort"
+              src={props.sortDirection === "asc" ? UpRed : UpBlack }
+              onClick={() => props.updateState("sort_direction", 'asc')}
+              className="up-down-sort"/>
+            <img alt="Filter logo" title="Descendant sort"
+              src={props.sortDirection === "desc" ? DownRed : DownBlack }
+              onClick={() => props.updateState("sort_direction", 'desc')}
+              className="up-down-sort" style={{ top: "8px" }}/>
+          </div>
+        </a>
+        <a style={{ position: "absolute", paddingLeft: "20px" }}>
+          <div className="update-btn" id="filter-btn-little" title="Update data with filter">
+            <img alt="Filter logo" title="Update data with filter" src={FilterLogo} className="filter-logo-little"/>
+          </div>
+        </a>
       </div>
       <div className="limit" style={{ width: "94.25%", margin: "0px", marginBottom: "2.5px" }}></div>
       <div id="view-list">

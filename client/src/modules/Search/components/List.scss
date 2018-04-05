@@ -13,7 +13,7 @@
 
 #view-list {
   position: relative;
-  height: 96%;
+  height: 93%;
   padding-top: 5px;
   overflow-y: scroll;
   overflow-x: hidden;
@@ -110,19 +110,20 @@
 
 #sort-list {
   position: relative;
-  border: 1px solid black;
-  height: 22.5px;
+  // border: 1px solid black;
+  height: 25px;
 }
 
-#sort-list a {
+.sort-title {
   position: relative;
-  padding-left: 2.5%;
-  padding-right: 2.5%;
+  padding-left: 5px;
+  padding-right: 5px;
   top: 2px;
   left: 2px;
   cursor: pointer;
   border: 0.5px solid white;
   font-size: 12px;
+  margin: 2.5px;
   &:hover {
     border: 0.5px solid grey;
     border-radius: 2.5px;
@@ -139,16 +140,28 @@
 }
 
 #filter-btn-little {
-  position: absolute;
+  // position: absolute;
   width: 11px;
   height: 10px;
-  right: 18px;
-  top: -1px;
 }
 
 .filter-logo-little {
   position: absolute;
   width: 12px;
+}
+
+#up-down-area {
+  position: absolute;
+  padding-left: 5px;
+  width: 15px;
+  height: 18px;
+  top: 5px;
+}
+
+.up-down-sort {
+  position: absolute;
+  width: 10px;
+  cursor: pointer;
 }
 
 @media (min-width: 925px) {

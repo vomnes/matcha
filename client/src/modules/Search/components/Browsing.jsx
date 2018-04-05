@@ -8,7 +8,7 @@ import DistanceLogo from '../../../design/icons/distance.svg'
 import Downshift from 'downshift'
 import FilterLogo from '../../../design/icons/filter.svg'
 
-const GetGeocode = (location, updateState) => {
+const GetGeocode = (location, updateState, globalUpdateState) => {
     fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=AIzaSyCPhgHvPYOdkj1t5RLcvlRP_sTt6hgK71o`)
     .then(response => {
       return response.json();
@@ -18,8 +18,8 @@ const GetGeocode = (location, updateState) => {
         return;
       }
       const location = data.results[0].geometry.location;
-      updateState('lat', location.lat);
-      updateState('lng', location.lng);
+      globalUpdateState('lat', location.lat);
+      globalUpdateState('lng', location.lng);
       updateState('location', '');
       updateState('newLocation', data.results[0].formatted_address)
     })
@@ -41,7 +41,11 @@ class SliderDynamicBounds extends Component {
     })
   }
   onAfterChange = (value) => {
-    console.log(this.props.title, value);
+    var div = 1
+    if (this.props.div !== undefined && this.props.div > 0) {
+      div = this.props.div
+    }
+    this.props.globalUpdateState(this.props.title, {min: value[0] / div, max: value[1] / div});
   }
   render() {
     const trackStyle = { backgroundColor: "#e63946", borderRadius: 0 };
@@ -111,7 +115,7 @@ class SimpleSlider extends Component {
     });
   }
   onAfterChange = (value) => {
-    console.log(this.props.title, value);
+    this.props.globalUpdateState(this.props.title, {max: value});
   }
   render() {
     const trackStyle = { backgroundColor: "#e63946", borderRadius: 0 };
@@ -243,12 +247,10 @@ class Browsing extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      newLocation: 'Enter a new location',
       location: '',
-      lat: 0,
-      lng: 0,
+      newLocation: 'Enter a new location',
       menuTagsIsOpen: false,
-      tags: [],
+      tags: []
     };
     this.handleUserInput = this.handleUserInput.bind(this);
     this.updateState = this.updateState.bind(this);
@@ -267,7 +269,9 @@ class Browsing extends Component {
     });
   }
   deleteTag = (name, id) => {
-    this.updateState('tags', this.state.tags.filter(item => item.name !== name));
+    const tags = this.state.tags.filter(item => item.name !== name)
+    this.updateState('tags', tags);
+    this.props.updateState('tagsIds', tags.map((item) => item.id));
   }
   appendTag = (name, id) => {
     const nbTags = this.state.tags.length;
@@ -284,7 +288,9 @@ class Browsing extends Component {
       newTags = this.state.tags.concat(newElem);
     }
     this.updateState('tags', newTags);
+    this.props.updateState('tagsIds', this.state.tags.map((item) => item.id).concat(id));
   }
+
   render() {
     const marksRating = {
       10: '',
@@ -293,15 +299,23 @@ class Browsing extends Component {
       40: '',
       50: '',
     };
+    if (!this.props.age) {
+      return (
+        <div id="browsing">
+          <div id="parameters">
+          </div>
+        </div>
+      )
+    }
     return (
       <div id="browsing">
         <div id="parameters">
-          <SliderDynamicBounds id="range-age" min={16} max={100} defaultValue={[22, 28]} logo={AgeLogo} title="Age" unit="year old"/>
-          <SliderDynamicBounds id="range-rating" min={1} max={50} defaultValue={[25, 50]} logo={StarLogo} title="Rating" unit="star(s)" div={10} marks={marksRating}/>
-          <SimpleSlider id="range-distance" min={0} max={150} defaultValue={50} logo={DistanceLogo} title="Distance" unit="km"/>
+          <SliderDynamicBounds id="range-age" min={16} max={100} globalUpdateState={this.props.updateState} defaultValue={[this.props.age - 3, this.props.age + 3]} logo={AgeLogo} title="age" unit="year old"/>
+          <SliderDynamicBounds id="range-rating" min={1} max={50} globalUpdateState={this.props.updateState} defaultValue={[25, 50]} logo={StarLogo} title="rating" unit="star(s)" div={10} marks={marksRating}/>
+          <SimpleSlider id="range-distance" min={0} max={150} globalUpdateState={this.props.updateState} defaultValue={50} logo={DistanceLogo} title="distance" unit="km"/>
           <input id="location" type="text" name="location"
             placeholder={this.state.newLocation} value={this.state.location} onChange={this.handleUserInput}/>
-          <span id="send-location" onClick={() => GetGeocode(this.state.location, this.updateState)} title="Search for location">{this.state.location ? '↪' : null}</span>
+          <span id="send-location" onClick={() => GetGeocode(this.state.location, this.updateState, this.props.updateState)} title="Search for location">{this.state.location ? '↪' : null}</span>
           <div className="limit" style={{ width: "70%", margin: "2.5px" }}></div>
           <div id="browsing-tags">
             <Tags tags={this.state.tags} deleteTag={this.deleteTag}/>

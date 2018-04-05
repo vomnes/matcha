@@ -41,6 +41,22 @@ class Search extends Component {
     super(props);
     this.state = {
       me: {},
+      age: {
+       min: 0,
+       max: 0
+      },
+      rating: {
+       min: 0.0,
+       max: 0.0
+      },
+      distance: {
+       max: 0
+      },
+      tagsIds: [],
+      lat: 0.0,
+      lng: 0.0,
+      sort_type: "rating",   // age, rating, distance, common_tags
+      sort_direction: "asc", // desc or asc
     }
     this.updateState = this.updateState.bind(this);
   }
@@ -54,12 +70,15 @@ class Search extends Component {
     GetMatch(this.updateState);
   }
   render() {
+    console.log(this.state);
     return (
       <div>
-        <Browsing />
+        <Browsing age={this.state.me.age} updateState={this.updateState}/>
         <div id="result-area">
           <DataMap lat={this.state.me.lat} lng={this.state.me.lng} profiles={this.state.profiles}/>
-          <List profiles={this.state.profiles}/>
+          <List profiles={this.state.profiles}
+            sortType={this.state.sort_type} sortDirection={this.state.sort_direction}
+            updateState={this.updateState}/>
         </div>
       </div>
     )
