@@ -53,16 +53,21 @@
   height: 27.5px;
   overflow: hidden;
   padding-bottom: 12.5px;
+  width: 74.75%;
 }
 
 #list-tags {
   position: relative;
   height: 27.5px;
-  width: 74%;
+  width: 102.5%;
   padding-top: 10px;
   padding-bottom: 20px;
   overflow-y: scroll;
   margin-left: 5px;
+}
+
+#list-tags::-webkit-scrollbar {
+    display: none;
 }
 
 #new-tag-area {
@@ -81,12 +86,25 @@
   width: 90px;
 }
 
+input#browsing-new-tag {
+  color: white;
+  &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+    color: white;
+    opacity: 0.5;
+  }
+  &::-moz-placeholder { /* Firefox 19+ */
+    color: white;
+    opacity: 0.5;
+  }
+}
+
 #browsing-new-tag-list {
   left: 0px;
   top: 0px;
   width: 90px;
   z-index: 999;
   background-color: $design-red;
+  overflow: hidden;
 }
 
 /* Range */
@@ -144,14 +162,14 @@
 
 #filter-btn-big {
   width: 7.5%;
-  height: 46.5%;
+  height: 45.5%;
   right: 22px;
   top: 4px;
 }
 
 .filter-logo {
   position: absolute;
-  width: 15px;
+  width: 18px;
   top: 7.5px;
   left: 7.5px;
 }

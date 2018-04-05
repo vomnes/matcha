@@ -3,7 +3,7 @@
 
 #list {
   position: absolute;
-  height: 99.5%;
+  height: 100%;
   width: 38.5%;
   top: 0px;
   right: 0px;
@@ -13,18 +13,12 @@
 
 #view-list {
   position: relative;
-  height: 100%;
+  height: 96%;
   padding-top: 5px;
-  overflow-x: scroll;
+  overflow-y: scroll;
+  overflow-x: hidden;
   max-width: 375px;
-  padding-right: 15px;
-  width: 100%;
-}
-
-#hide-scroll-list {
-  position: relative;
-  height: 92%;
-  overflow: hidden;
+  width: 98%;
 }
 
 .picture-list {
@@ -101,6 +95,8 @@
 .list-icon {
   position: relative;
   width: 20px;
+  margin-left: 2.5px;
+  margin-right: 2.5px;
 }
 
 .list-value {
@@ -114,23 +110,16 @@
 
 #sort-list {
   position: relative;
-  // border: 1px solid black;
+  border: 1px solid black;
   height: 22.5px;
 }
 
-#sort-elem {
-  position: absolute;
-  padding: 2.5px;
-  font-size: 11px;
-  font-family: $font-sub;
-  // border: 1px solid blue;
-  width: 70%;
-  left: 2.5%;
-}
-
-#sort-elem span {
-  padding-left: 3%;
-  padding-right: 3%;
+#sort-list a {
+  position: relative;
+  padding-left: 2.5%;
+  padding-right: 2.5%;
+  top: 2px;
+  left: 2px;
   cursor: pointer;
   border: 0.5px solid white;
   font-size: 12px;
@@ -141,12 +130,25 @@
 }
 
 #sort-input {
-  // border: 1px solid red;
+  border: 1px solid red;
   position: absolute;
   height: 100%;
   top: 0px;
   right: 0px;
   width: 25%;
+}
+
+#filter-btn-little {
+  position: absolute;
+  width: 11px;
+  height: 10px;
+  right: 18px;
+  top: -1px;
+}
+
+.filter-logo-little {
+  position: absolute;
+  width: 12px;
 }
 
 @media (min-width: 925px) {
@@ -158,7 +160,7 @@
   }
 }
 
-@media (max-width: 850px) {
+@media (max-width: 975px) {
   .distance-list {
     top: 7.5px;
     right: 0px;
@@ -178,14 +180,11 @@
     margin-top: 10px;
   }
   #view-list {
-    @include position-center(50%);
     padding-left: 10px;
     padding-right: 10px;
-  }
-  #hide-scroll-list {
-    position: relative;
-    width: 92%;
-    overflow: hidden;
+    max-width: 100%;
+    width: 95%;
+    height: 92%;
   }
   .distance-list {
     top: 17px;
@@ -200,5 +199,16 @@
   }
   .age-list {
     font-size: 12.5px;
+  }
+}
+
+@media (max-width: 400px) {
+  .distance-list {
+    top: 7.5px;
+    right: 0px;
+  }
+  .rating-list {
+    top: 30px;
+    right: 0px;
   }
 }

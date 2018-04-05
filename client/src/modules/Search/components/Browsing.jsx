@@ -320,6 +320,30 @@ class Browsing extends Component {
                     id: '3',
                     name: 'carrot',
                   },
+                  {
+                    id: '1',
+                    name: 'apple1',
+                  },
+                  {
+                    id: '2',
+                    name: 'orange2',
+                  },
+                  {
+                    id: '3',
+                    name: 'carrot3',
+                  },
+                  {
+                    id: '1',
+                    name: 'apple4',
+                  },
+                  {
+                    id: '2',
+                    name: 'orange5',
+                  },
+                  {
+                    id: '6',
+                    name: 'carrotaaaaaaaaaaaaaaaaaaaaaaaa6',
+                  },
                 ]}
               appendTag={this.appendTag}
               tags={this.state.tags}

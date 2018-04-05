@@ -5,6 +5,9 @@ export GOPATH
 
 default: build
 
+fake:
+	go run ../fakeData.go
+
 build:
 	go build -v -o ./bin/api ./src/*.go
 

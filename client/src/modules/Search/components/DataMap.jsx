@@ -25,7 +25,6 @@ const PositionMark = (props) => {
 
 const Map = (props) => {
   if (props.lat && props.lng) {
-    console.log(props.profiles);
     const lat = props.lat;
     const lng = props.lng;
     var marks = [];

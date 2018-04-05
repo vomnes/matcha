@@ -104,9 +104,9 @@ func insertUser(db *sqlx.DB, picture1, lastname, firstname, genre, interesting_i
 }
 
 func main() {
-	girlPictures := getPicturesURL("./girlURL.txt")
-	manPictures := getPicturesURL("./manURL.txt")
-	pos := getLatLng("./listGPS.csv")
+	girlPictures := getPicturesURL("../girlURL.txt")
+	manPictures := getPicturesURL("../manURL.txt")
+	pos := getLatLng("../listGPS.csv")
 	db := lib.PostgreSQLConn("db_matcha")
 	for i, picture := range girlPictures {
 		insertUser(db, picture, fake.FemaleLastName(), fake.FemaleFirstName(), "female", "male", pos[i].Latitude, pos[i].Longitude)
