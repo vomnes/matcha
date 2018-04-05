@@ -20,8 +20,8 @@ JSON Body :
     "tags": []string,
     "lat": float,
     "lng": float,
-    "sort_type": string,
-    "sort_direction": string,
+    "sort_type": string,      // age, rating, distance, common_tags
+    "sort_direction": string, // desc or asc
   }
 ```
 
