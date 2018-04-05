@@ -1,6 +1,8 @@
 package user
 
 import (
+	"encoding/base64"
+	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
@@ -29,9 +31,8 @@ type bodyData struct {
 	Age            limitsInt     `json:"age"`
 	Rating         limitsFloat64 `json:"rating"`
 	Distance       limitsInt     `json:"distance"`
-	Tags           []int         `json:"tags"`
-	TagsStr        []string
-	Latitude       float64 `json:"lat"`
+	Tags           []string      `json:"tags"`
+	Latitude       float64       `json:"lat"`
 	LatStr         string
 	Longitude      float64 `json:"lng"`
 	LngStr         string
@@ -105,10 +106,6 @@ func checkInput(data *bodyData) {
 		// Default distance is 50 km
 		data.Distance.MaxStr = "50"
 	}
-	// Manage tags
-	for _, tag := range data.Tags {
-		data.TagsStr = append(data.TagsStr, "'"+strconv.Itoa(tag)+"'")
-	}
 	if len(data.Tags) > 0 && data.SortType == "common_tags" {
 		// No possible to sort by common_tags when tags are selected, default rating
 		data.SortType = "rating"
@@ -170,7 +167,7 @@ func getUsers(db *sqlx.DB, userID string, optionData bodyData) ([]match, int, st
 	    ` + blockedRequest("$3")
 	// Handle tags
 	if len(optionData.Tags) > 0 {
-		request += ` AND (Select COUNT(*) from users_tags Where userid = u.id AND tagid IN (` + strings.Join(optionData.TagsStr, ", ") + `)) = ` + strconv.Itoa(len(optionData.TagsStr))
+		request += ` AND (Select COUNT(*) from users_tags Where userid = u.id AND tagid IN (` + strings.Join(optionData.Tags, ", ") + `)) = ` + strconv.Itoa(len(optionData.Tags))
 	}
 	// Handle rating
 	if optionData.Rating.MinStr != "" && optionData.Rating.MaxStr != "" {
@@ -243,12 +240,26 @@ func Match(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
+	var strSearchParameters string
+	searchParameters, right := r.Header["Search-Parameters"]
+	if !right {
+		strSearchParameters = "e30="
+	} else {
+		strSearchParameters = searchParameters[0]
+	}
+	byteSearchParameters, err := base64.StdEncoding.DecodeString(strSearchParameters)
+	if err != nil {
+		log.Println(lib.PrettyError("[Base64] Failed to decode search parameters in header " + err.Error()))
+		lib.RespondWithErrorHTTP(w, http.StatusBadRequest, "Failed to decode search parameters in header")
+		return
+	}
 	var inputData bodyData
-	// errCode, errContent, err := lib.GetDataBody(r, &inputData)
-	// if err != nil {
-	// 	lib.RespondWithErrorHTTP(w, errCode, errContent)
-	// 	return
-	// }
+	err = json.Unmarshal(byteSearchParameters, &inputData)
+	if err != nil {
+		log.Println(lib.PrettyError("[Unmarshal] Failed to unmarshal search parameters in header " + err.Error()))
+		lib.RespondWithErrorHTTP(w, http.StatusBadRequest, "Failed to unmarshal search parameters in header")
+		return
+	}
 	checkInput(&inputData)
 	users, errCode, errContent := getUsers(db, userID, inputData)
 	if errCode != 0 || errContent != "" {

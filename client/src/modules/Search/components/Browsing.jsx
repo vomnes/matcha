@@ -364,7 +364,7 @@ class Browsing extends Component {
             />
             <div className="update-btn" id="filter-btn-big" title="Update data with filter">
               <img alt="Filter logo" title="Update data with filter" src={FilterLogo} className="filter-logo"/>
-              <span className="filter-text">Update</span>
+              <span className="filter-text" onClick={this.props.searchProfiles}>Update</span>
             </div>
           </div>
         </div>

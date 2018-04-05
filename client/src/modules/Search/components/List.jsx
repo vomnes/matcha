@@ -73,7 +73,7 @@ const List = (props) => {
           </div>
         </a>
         <a style={{ position: "absolute", paddingLeft: "20px" }}>
-          <div className="update-btn" id="filter-btn-little" title="Update data with filter">
+          <div className="update-btn" id="filter-btn-little" title="Update data with filter" onClick={props.searchProfiles}>
             <img alt="Filter logo" title="Update data with filter" src={FilterLogo} className="filter-logo-little"/>
           </div>
         </a>

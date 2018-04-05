@@ -1,6 +1,7 @@
 package user
 
 import (
+	"encoding/base64"
 	"net/http/httptest"
 	"strings"
 	"testing"
@@ -15,9 +16,10 @@ func TestMatchFailedToDecodeBody(t *testing.T) {
 	context := tests.ContextData{
 		DB: tests.DB,
 	}
-	body := []byte(`{5}`)
-	r := tests.CreateRequest("GET", "/v1/users", body, context)
+	searchParameters := []byte(`{5}`)
+	r := tests.CreateRequest("GET", "/v1/users", nil, context)
 	r.Header.Add("Content-Type", "application/json")
+	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
 		Match(w, r)
@@ -64,8 +66,9 @@ func TestMatchUserDoesntExists(t *testing.T) {
 		Username: username,
 		UserID:   "2",
 	}
-	body := []byte(`{}`)
-	r := tests.CreateRequest("GET", "/v1/users", body, context)
+	searchParameters := []byte(`{}`)
+	r := tests.CreateRequest("GET", "/v1/users", nil, context)
+	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
@@ -441,9 +444,10 @@ func TestMatchMaleToFemale23YO(t *testing.T) {
 		Username: data[0].Username,
 		UserID:   data[0].ID,
 	}
-	body := []byte(`{}`)
-	r := tests.CreateRequest("GET", "/v1/users", body, context)
+	searchParameters := []byte(`{}`)
+	r := tests.CreateRequest("GET", "/v1/users", nil, context)
 	r.Header.Add("Content-Type", "application/json")
+	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
 		Match(w, r)
@@ -526,9 +530,10 @@ func TestMatchFemaleToMale23YO(t *testing.T) {
 		Username: data[0].Username,
 		UserID:   data[0].ID,
 	}
-	body := []byte(`{}`)
-	r := tests.CreateRequest("GET", "/v1/users", body, context)
+	searchParameters := []byte(`{}`)
+	r := tests.CreateRequest("GET", "/v1/users", nil, context)
 	r.Header.Add("Content-Type", "application/json")
+	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
 		Match(w, r)
@@ -589,9 +594,10 @@ func TestMatchMaleBisexual23YO(t *testing.T) {
 		Username: data[0].Username,
 		UserID:   data[0].ID,
 	}
-	body := []byte(`{}`)
-	r := tests.CreateRequest("GET", "/v1/users", body, context)
+	searchParameters := []byte(`{}`)
+	r := tests.CreateRequest("GET", "/v1/users", nil, context)
 	r.Header.Add("Content-Type", "application/json")
+	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
 		Match(w, r)
@@ -685,9 +691,10 @@ func TestMatchFemaleToFemale23YO(t *testing.T) {
 		Username: data[0].Username,
 		UserID:   data[0].ID,
 	}
-	body := []byte(`{}`)
-	r := tests.CreateRequest("GET", "/v1/users", body, context)
+	searchParameters := []byte(`{}`)
+	r := tests.CreateRequest("GET", "/v1/users", nil, context)
 	r.Header.Add("Content-Type", "application/json")
+	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
 		Match(w, r)
@@ -737,7 +744,7 @@ func TestMatchMaleToFemaleAge21_100Distance100SortDistanceReverse(t *testing.T) 
 		Username: data[0].Username,
 		UserID:   data[0].ID,
 	}
-	body := []byte(`{
+	searchParameters := []byte(`{
 		"age": {
 		 "min": 100,
 		 "max": 21
@@ -748,8 +755,9 @@ func TestMatchMaleToFemaleAge21_100Distance100SortDistanceReverse(t *testing.T) 
 	 	"sort_type": "distance",
 		"sort_direction": "reverse"
 	}`)
-	r := tests.CreateRequest("GET", "/v1/users", body, context)
+	r := tests.CreateRequest("GET", "/v1/users", nil, context)
 	r.Header.Add("Content-Type", "application/json")
+	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
 		Match(w, r)
@@ -898,7 +906,7 @@ func TestMatchMaleToFemaleRating4_6CustomLatLngSortAge(t *testing.T) {
 		Username: data[0].Username,
 		UserID:   data[0].ID,
 	}
-	body := []byte(`{
+	searchParameters := []byte(`{
 		"rating": {
 		 "min": 6,
 		 "max": 4
@@ -907,8 +915,9 @@ func TestMatchMaleToFemaleRating4_6CustomLatLngSortAge(t *testing.T) {
 		"lng": 2.05977873,
 	 	"sort_type": "age"
 	}`)
-	r := tests.CreateRequest("GET", "/v1/users", body, context)
+	r := tests.CreateRequest("GET", "/v1/users", nil, context)
 	r.Header.Add("Content-Type", "application/json")
+	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
 		Match(w, r)
@@ -969,11 +978,12 @@ func TestMatchSortTags(t *testing.T) {
 		Username: data[0].Username,
 		UserID:   data[0].ID,
 	}
-	body := []byte(`{
+	searchParameters := []byte(`{
 			"sort_type": "common_tags"
 		}`)
-	r := tests.CreateRequest("GET", "/v1/users", body, context)
+	r := tests.CreateRequest("GET", "/v1/users", nil, context)
 	r.Header.Add("Content-Type", "application/json")
+	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
 		Match(w, r)
@@ -1056,7 +1066,7 @@ func TestMatchSelectedTags(t *testing.T) {
 		Username: data[0].Username,
 		UserID:   data[0].ID,
 	}
-	body := []byte(`{
+	searchParameters := []byte(`{
 			"age":  {
 			 "min": 1,
 			 "max": 100
@@ -1065,13 +1075,14 @@ func TestMatchSelectedTags(t *testing.T) {
 			 "max": 100
 			},
 			"tags": [
-				6,
-				7
+				"6",
+				"7"
 			],
 			"sort_type": "common_tags"
 		}`)
-	r := tests.CreateRequest("GET", "/v1/users", body, context)
+	r := tests.CreateRequest("GET", "/v1/users", nil, context)
 	r.Header.Add("Content-Type", "application/json")
+	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
 		Match(w, r)
@@ -1132,13 +1143,14 @@ func TestMatchNoUsers(t *testing.T) {
 		Username: data[0].Username,
 		UserID:   data[0].ID,
 	}
-	body := []byte(`{
+	searchParameters := []byte(`{
 			"tags": [
-				42
+				"42"
 			]
 		}`)
-	r := tests.CreateRequest("GET", "/v1/users", body, context)
+	r := tests.CreateRequest("GET", "/v1/users", nil, context)
 	r.Header.Add("Content-Type", "application/json")
+	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
 		Match(w, r)

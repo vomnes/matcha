@@ -59,26 +59,41 @@ class Search extends Component {
       sort_direction: "asc", // desc or asc
     }
     this.updateState = this.updateState.bind(this);
+    this.searchProfiles = this.searchProfiles.bind(this);
   }
   updateState(key, content) {
     this.setState({
       [key]: content,
     });
   }
+  searchProfiles() {
+    const options = {
+      age: this.state.age,
+      rating: this.state.rating,
+      distance: this.state.distance,
+      tags: this.state.tagsIds,
+      lat: this.state.lat,
+      lng: this.state.lng,
+      sort_type: this.state.sort_type,
+      sort_direction: this.state.sort_direction,
+    }
+    // console.log(options);
+    const objJSONBase64 = Buffer.from(JSON.stringify(options)).toString("base64");
+    console.log(objJSONBase64);
+  }
   componentDidMount() {
     GetMe(this.updateState);
     GetMatch(this.updateState);
   }
   render() {
-    console.log(this.state);
     return (
       <div>
-        <Browsing age={this.state.me.age} updateState={this.updateState}/>
+        <Browsing age={this.state.me.age} updateState={this.updateState} searchProfiles={this.searchProfiles}/>
         <div id="result-area">
           <DataMap lat={this.state.me.lat} lng={this.state.me.lng} profiles={this.state.profiles}/>
           <List profiles={this.state.profiles}
             sortType={this.state.sort_type} sortDirection={this.state.sort_direction}
-            updateState={this.updateState}/>
+            updateState={this.updateState} searchProfiles={this.searchProfiles}/>
         </div>
       </div>
     )
