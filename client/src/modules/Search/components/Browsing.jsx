@@ -6,6 +6,7 @@ import AgeLogo from '../../../design/icons/avatar.svg'
 import StarLogo from '../../../design/icons/star-128.png'
 import DistanceLogo from '../../../design/icons/distance.svg'
 import Downshift from 'downshift'
+import FilterLogo from '../../../design/icons/filter.svg'
 
 const GetGeocode = (location, updateState) => {
     fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=AIzaSyCPhgHvPYOdkj1t5RLcvlRP_sTt6hgK71o`)
@@ -323,6 +324,10 @@ class Browsing extends Component {
               appendTag={this.appendTag}
               tags={this.state.tags}
             />
+            <div className="update-btn" id="filter-btn-big" title="Update data with filter">
+              <img alt="Filter logo" title="Update data with filter" src={FilterLogo} className="filter-logo"/>
+              <span className="filter-text">Update</span>
+            </div>
           </div>
         </div>
       </div>

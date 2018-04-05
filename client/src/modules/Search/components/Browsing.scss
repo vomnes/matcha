@@ -128,3 +128,39 @@
   bottom: 5px;
   right: 2.5px;
 }
+
+/* btn */
+
+.update-btn {
+  position: absolute;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  border-radius: 2px;
+  background: $design-red;
+  margin: 2px;
+  padding: 5px;
+  color: white;
+  cursor: pointer;
+}
+
+#filter-btn-big {
+  width: 7.5%;
+  height: 46.5%;
+  right: 22px;
+  top: 4px;
+}
+
+.filter-logo {
+  position: absolute;
+  width: 15px;
+  top: 7.5px;
+  left: 7.5px;
+}
+
+.filter-text {
+  position: absolute;
+  right: 7.5px;
+  font-family: $font;
+  font-size: 14.5px;
+  top: 7.5px;
+  font-weight: lighter;
+}

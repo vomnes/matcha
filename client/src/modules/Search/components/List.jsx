@@ -42,8 +42,22 @@ const List = (props) => {
   }
   return (
     <div id="list">
-      <div id="view-list">
-        {listProfiles}
+      <div id="sort-list">
+        <span id="sort-elem">
+          <span title="Select sort by rating">Rating</span>
+          <span title="Select sort by age">Age</span>
+          <span title="Select sort by distance">Distance</span>
+          <span title="Select sort by common tags">Tags</span>
+        </span>
+        <div id="sort-input">
+          {/* <img alt="Rating icon" src={Star} className="list-icon"/> */}
+        </div>
+      </div>
+      <div className="limit" style={{ width: "94.25%", margin: "0px" }}></div>
+      <div id="hide-scroll-list">
+        <div id="view-list">
+          {listProfiles}
+        </div>
       </div>
     </div>
   )
