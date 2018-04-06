@@ -11,7 +11,7 @@ import (
 	"../../../../tests"
 )
 
-func TestMatchFailedToDecodeBody(t *testing.T) {
+func TestMatchFailedToUnmarshalSearchParameters(t *testing.T) {
 	tests.DbClean()
 	context := tests.ContextData{
 		DB: tests.DB,
@@ -25,12 +25,12 @@ func TestMatchFailedToDecodeBody(t *testing.T) {
 		Match(w, r)
 	})
 	// Check : Content stardard output
-	expectedError := "Failed to decode body invalid character '5'"
+	expectedError := "[Unmarshal] Failed to unmarshal search parameters in header"
 	if !strings.Contains(output, expectedError) {
 		t.Errorf("Must write an error on the standard output that contains '%s'\nNot: %s\n", expectedError, output)
 	}
 	strError := tests.CompareResponseJSONCode(w, 406, map[string]interface{}{
-		"error": "Failed to decode body",
+		"error": "Failed to unmarshal search parameters in header",
 	})
 	if strError != nil {
 		t.Errorf("%v", strError)
@@ -444,10 +444,8 @@ func TestMatchMaleToFemale23YO(t *testing.T) {
 		Username: data[0].Username,
 		UserID:   data[0].ID,
 	}
-	searchParameters := []byte(`{}`)
 	r := tests.CreateRequest("GET", "/v1/users", nil, context)
 	r.Header.Add("Content-Type", "application/json")
-	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
 		Match(w, r)
@@ -1161,6 +1159,103 @@ func TestMatchNoUsers(t *testing.T) {
 	}
 	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{
 		"data": "No (more) users",
+	})
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+}
+
+func TestMatchNoTagsNoBirthdate(t *testing.T) {
+	tests.DbClean()
+	username := "test_" + lib.GetRandomString(43)
+	myLat := 48.856614
+	myLng := 2.3522219000000177
+	userData := tests.InsertUser(lib.User{
+		Username:      username,
+		Lastname:      "MyLastname",
+		Firstname:     "MyFirstname",
+		PictureURL_1:  "MyURL1",
+		Genre:         "male",
+		InterestingIn: "female",
+		Latitude:      &myLat,
+		Longitude:     &myLng,
+	}, tests.DB)
+	data := setData(userData)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: userData.Username,
+		UserID:   userData.ID,
+	}
+	/* Delete userData tags */
+	stmt, err := tests.DB.Preparex(`DELETE FROM Users_Tags WHERE userId = $1`)
+	defer stmt.Close()
+	if err != nil {
+		t.Error("[DB REQUEST - INSERT] Failed to prepare request delete link user and tag " + err.Error())
+	}
+	rows, err := stmt.Queryx(userData.ID)
+	rows.Close()
+	if err != nil {
+		t.Error("[DB REQUEST - INSERT] Failed to prepare request delete link user and tag " + err.Error())
+	}
+	searchParameters := []byte(`{
+			"sort_type": "common_tags"
+		}`)
+	r := tests.CreateRequest("GET", "/v1/users", nil, context)
+	r.Header.Add("Content-Type", "application/json")
+	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		Match(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	strError := tests.CompareResponseJSONCode(w, 200, []interface{}{
+		map[string]interface{}{
+			"age":         20,
+			"distance":    20.9,
+			"rating":      3.8,
+			"latitude":    48.855862,
+			"longitude":   2.638384,
+			"firstname":   data[8].Firstname,
+			"lastname":    data[8].Lastname,
+			"picture_url": data[8].PictureURL_1,
+			"username":    data[8].Username,
+		},
+		map[string]interface{}{
+			"age":         22,
+			"distance":    34.7,
+			"rating":      3.6,
+			"latitude":    48.661458,
+			"longitude":   1.98219,
+			"firstname":   data[6].Firstname,
+			"lastname":    data[6].Lastname,
+			"picture_url": data[6].PictureURL_1,
+			"username":    data[6].Username,
+		},
+		map[string]interface{}{
+			"age":         23,
+			"distance":    9.5,
+			"rating":      3.5,
+			"latitude":    48.883388,
+			"longitude":   2.228642,
+			"firstname":   data[5].Firstname,
+			"lastname":    data[5].Lastname,
+			"picture_url": data[5].PictureURL_1,
+			"username":    data[5].Username,
+		},
+		map[string]interface{}{
+			"age":         25,
+			"distance":    13.5,
+			"rating":      4.8,
+			"latitude":    48.948511,
+			"longitude":   2.232546,
+			"firstname":   data[3].Firstname,
+			"lastname":    data[3].Lastname,
+			"picture_url": data[3].PictureURL_1,
+			"username":    data[3].Username,
+		},
 	})
 	if strError != nil {
 		t.Errorf("%v", strError)

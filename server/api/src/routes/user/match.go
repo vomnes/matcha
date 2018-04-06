@@ -149,14 +149,17 @@ func getUsers(db *sqlx.DB, userID string, optionData bodyData) ([]match, int, st
 	if errCode != 0 && errContent != "" {
 		return []match{}, errCode, errContent
 	}
+	var commonTags string
 	if loggedInUserTags == nil {
-		loggedInUserTags = []string{"'a'"}
+		commonTags = "0"
+	} else {
+		commonTags = `(Select COUNT(*) from users_tags Where userid = u.id AND tagid IN (` + strings.Join(loggedInUserTags, ", ") + `))`
 	}
 	matchGenre, matchInterestingIn := handleGenre(loggedInUser)
 	var users []match
-	// (Select COUNT(*) from users_tags Where userid = u.id AND tagid IN (` + strings.Join(loggedInUserTags, ", ") + `)) as common_tags,
 	request := `SELECT u.id, u.username, u.firstname, u.lastname, u.picture_url_1, u.latitude, u.longitude,
 	  geodistance(u.latitude, u.longitude, $1, $2) as distance,
+		` + commonTags + ` as common_tags,
 	  date_part('year',age(now(), u.birthday)) as age,
 		u.rating
 	  FROM Users u
@@ -250,14 +253,14 @@ func Match(w http.ResponseWriter, r *http.Request) {
 	byteSearchParameters, err := base64.StdEncoding.DecodeString(strSearchParameters)
 	if err != nil {
 		log.Println(lib.PrettyError("[Base64] Failed to decode search parameters in header " + err.Error()))
-		lib.RespondWithErrorHTTP(w, http.StatusBadRequest, "Failed to decode search parameters in header")
+		lib.RespondWithErrorHTTP(w, http.StatusNotAcceptable, "Failed to decode search parameters in header")
 		return
 	}
 	var inputData bodyData
 	err = json.Unmarshal(byteSearchParameters, &inputData)
 	if err != nil {
 		log.Println(lib.PrettyError("[Unmarshal] Failed to unmarshal search parameters in header " + err.Error()))
-		lib.RespondWithErrorHTTP(w, http.StatusBadRequest, "Failed to unmarshal search parameters in header")
+		lib.RespondWithErrorHTTP(w, http.StatusNotAcceptable, "Failed to unmarshal search parameters in header")
 		return
 	}
 	checkInput(&inputData)
