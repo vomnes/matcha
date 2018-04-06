@@ -16,6 +16,7 @@ func testApplicantServer() http.Handler {
 	r.HandleFunc("/v1/users/{username}", GetUser)
 	r.HandleFunc("/v1/users/{username}/like", Like)
 	r.HandleFunc("/v1/users/{username}/fake", HandleReportFake)
+	r.HandleFunc("/v1/users/data/match/{username}", TargetedMatch)
 	return r
 }
 

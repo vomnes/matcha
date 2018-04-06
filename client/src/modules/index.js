@@ -23,7 +23,8 @@ const Main = () => (
       <Route exact path='/resetpassword/:token' component={ResetPassword}/>
       <Route exact path='/logout' component={Logout}/>
       <PrivateRoute exact path='/home' component={Search}/>
-      <PrivateRoute exact path='/profile/:userId' component={SeeProfile}/>
+      <PrivateRoute exact path='/profile/:username' component={SeeProfile}/>
+      <PrivateRoute exact path='/profile/:username/:searchparameters' component={SeeProfile}/>
       <PrivateRoute path='/profile' component={MyProfile}/>
       <Route path='/' component={Register}/>
     </Switch>

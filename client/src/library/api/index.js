@@ -15,6 +15,7 @@ import fake from './fake';
 import me from './me';
 import match from './match';
 import existingTags from './existingtags';
+import targetedmatch from './targetedmatch';
 
 const apiConf = {
   BACK_URL: `http://localhost:8080`,
@@ -37,5 +38,6 @@ export default {
   fake: (method, username) => fake(method, username, apiConf),
   me: () => me(apiConf),
   match: (options) => match(options, apiConf),
+  targetedmatch: (options, username) => targetedmatch(options, username, apiConf),
   existingTags: () => existingTags(apiConf),
 }

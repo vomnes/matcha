@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"../../../../lib"
+	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -116,14 +117,14 @@ func checkInput(data *bodyData) {
 	}
 	// Set sort direction for SQL
 	if data.SortDirection == "reverse" {
-		data.SortDirection = "desc"
-		if data.SortType == "distance" {
-			data.SortDirection = "asc"
-		}
-	} else {
 		data.SortDirection = "asc"
 		if data.SortType == "distance" {
 			data.SortDirection = "desc"
+		}
+	} else {
+		data.SortDirection = "desc"
+		if data.SortType == "distance" {
+			data.SortDirection = "asc"
 		}
 	}
 	// Default number users => 20
@@ -224,7 +225,38 @@ type elementUser struct {
 	Distance   *float32 `db:"distance"`
 }
 
-// Match is the route '/v1/users/match' with the method GET.
+func matchUsers(w http.ResponseWriter, r *http.Request) (bodyData, []match, int, string) {
+	db, _, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"GET"})
+	if !ok {
+		return bodyData{}, []match{}, errCode, errContent
+	}
+	var strSearchParameters string
+	searchParameters, right := r.Header["Search-Parameters"]
+	if !right {
+		strSearchParameters = "e30="
+	} else {
+		strSearchParameters = searchParameters[0]
+	}
+	byteSearchParameters, err := base64.StdEncoding.DecodeString(strSearchParameters)
+	if err != nil {
+		log.Println(lib.PrettyError("[Base64] Failed to decode search parameters in header " + err.Error()))
+		return bodyData{}, []match{}, http.StatusNotAcceptable, "Failed to decode search parameters in header"
+	}
+	var inputData bodyData
+	err = json.Unmarshal(byteSearchParameters, &inputData)
+	if err != nil {
+		log.Println(lib.PrettyError("[Unmarshal] Failed to unmarshal search parameters in header " + err.Error()))
+		return bodyData{}, []match{}, http.StatusNotAcceptable, "Failed to unmarshal search parameters in header"
+	}
+	checkInput(&inputData)
+	users, errCode, errContent := getUsers(db, userID, inputData)
+	if errCode != 0 || errContent != "" {
+		return bodyData{}, []match{}, errCode, errContent
+	}
+	return inputData, users, 0, ""
+}
+
+// GlobalMatch is the route '/v1/users/data/match' with the method GET.
 // The body may contains the age (min-max), rating (min-max), distance (max),
 // tags, lat, lng, sort_type, sort_direction, start_position and finish_position
 // Check input :
@@ -243,34 +275,8 @@ type elementUser struct {
 // Return HTTP Code 200 Status OK
 // If the array is empty return JSON Content "data": "No (more) users",
 // Else JSON Content Array
-func Match(w http.ResponseWriter, r *http.Request) {
-	db, _, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"GET"})
-	if !ok {
-		lib.RespondWithErrorHTTP(w, errCode, errContent)
-		return
-	}
-	var strSearchParameters string
-	searchParameters, right := r.Header["Search-Parameters"]
-	if !right {
-		strSearchParameters = "e30="
-	} else {
-		strSearchParameters = searchParameters[0]
-	}
-	byteSearchParameters, err := base64.StdEncoding.DecodeString(strSearchParameters)
-	if err != nil {
-		log.Println(lib.PrettyError("[Base64] Failed to decode search parameters in header " + err.Error()))
-		lib.RespondWithErrorHTTP(w, http.StatusNotAcceptable, "Failed to decode search parameters in header")
-		return
-	}
-	var inputData bodyData
-	err = json.Unmarshal(byteSearchParameters, &inputData)
-	if err != nil {
-		log.Println(lib.PrettyError("[Unmarshal] Failed to unmarshal search parameters in header " + err.Error()))
-		lib.RespondWithErrorHTTP(w, http.StatusNotAcceptable, "Failed to unmarshal search parameters in header")
-		return
-	}
-	checkInput(&inputData)
-	users, errCode, errContent := getUsers(db, userID, inputData)
+func GlobalMatch(w http.ResponseWriter, r *http.Request) {
+	inputData, users, errCode, errContent := matchUsers(w, r)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
@@ -300,4 +306,63 @@ func Match(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	lib.RespondWithJSON(w, http.StatusOK, listUsers)
+}
+
+// TargetedMatch is the route '/v1/users/data/match/{username}' with the method GET.
+// The body may contains the age (min-max), rating (min-max), distance (max),
+// tags, lat, lng, sort_type, sort_direction, start_position and finish_position
+// Check input :
+// - Age must be a float greater than 1
+// - Rating must be a float between 0.1 and 5.0
+// - If min > max, automatic swap
+// - Distance is an integer with default value 50 (km)
+// - Sort type available are age, common_tags (when there are no selected tags) distance, rating (default)
+// - Sort direction available are reverse and normal
+// - Finish position is an unsigned integer, default value 20
+// Collect the logged in user data (users, tags)
+// Handle genre by creating an array with the possible matchs
+// Create the request according the logged in user data and options from the body that will the matching users
+// - Default range age is between -3 and +3 the age of the logged in user
+// Generate an map[string]interface{} array with the profiles next to (+1 && -1) the target username from url parameter
+// Return HTTP Code 200 Status OK - JSON Content
+func TargetedMatch(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	targetUsername := vars["username"]
+	if right := lib.IsValidUsername(targetUsername); !right {
+		lib.RespondWithErrorHTTP(w, 406, "Username parameter is invalid")
+		return
+	}
+	_, users, errCode, errContent := matchUsers(w, r)
+	if errCode != 0 || errContent != "" {
+		lib.RespondWithErrorHTTP(w, errCode, errContent)
+		return
+	}
+	index := -1
+	nbUser := len(users)
+	for i, profile := range users {
+		if profile.Username == targetUsername {
+			index = i
+			break
+		}
+	}
+	var output = map[string]interface{}{}
+	if index >= 0 {
+		if (index-1) >= 0 && (index-1) < nbUser {
+			output["previous"] = map[string]interface{}{
+				"username":    users[index-1].Username,
+				"firstname":   users[index-1].Firstname,
+				"lastname":    users[index-1].Lastname,
+				"picture_url": users[index-1].PictureURL1,
+			}
+		}
+		if (index+1) >= 0 && (index+1) < nbUser {
+			output["next"] = map[string]interface{}{
+				"username":    users[index+1].Username,
+				"firstname":   users[index+1].Firstname,
+				"lastname":    users[index+1].Lastname,
+				"picture_url": users[index+1].PictureURL1,
+			}
+		}
+	}
+	lib.RespondWithJSON(w, http.StatusOK, output)
 }

@@ -11,21 +11,23 @@ import DownRed from '../../../design/icons/sort-down-red.svg'
 const Item = (props) => {
   return (
     <div>
-      <div className="profile-element" id={props.username} style={ props.isSelectedOnMap ? { backgroundColor: "#EAEAEA" } : null }>
-        <div className="picture-list">
-          <div className="picture-list-background" style={{ backgroundImage: "url(" + props.picture + ")" }}></div>
+      <a href={`/profile/${props.username}` + (props.optionsBase64 ? '/' + props.optionsBase64 : '')} title={`Click to see ${props.firstname}'s profile`}>
+        <div className="profile-element" id={props.username} style={ props.isSelectedOnMap ? { backgroundColor: "#EAEAEA" } : null }>
+          <div className="picture-list">
+            <div className="picture-list-background" style={{ backgroundImage: "url(" + props.picture + ")" }}></div>
+          </div>
+          <span className="name-list">{props.name}</span>
+          <span className="age-list">{props.age} year old</span>
+          <div className="distance-list">
+            <span className="list-value"> {props.distance} km</span>
+            <img alt="Distance icon" src={Pin} className="list-icon"/>
+          </div>
+          <div className="rating-list">
+            <span className="list-value"> {Math.round(props.rating * 10) / 10} / 5</span>
+            <img alt="Rating icon" src={Star} className="list-icon"/>
+          </div>
         </div>
-        <a href={`/profile/${props.username}`}><span className="name-list" title={`See ${props.firstname}'s profile`}>{props.name}</span></a>
-        <span className="age-list">{props.age} year old</span>
-        <div className="distance-list">
-          <span className="list-value"> {props.distance} km</span>
-          <img alt="Distance icon" src={Pin} className="list-icon"/>
-        </div>
-        <div className="rating-list">
-          <span className="list-value"> {Math.round(props.rating * 10) / 10} / 5</span>
-          <img alt="Rating icon" src={Star} className="list-icon"/>
-        </div>
-      </div>
+      </a>
       <div className="limit" style={{ width: "94.25%", margin: "2.5px 0px 2.5px" }}></div>
     </div>
   )
@@ -47,6 +49,7 @@ const List = (props) => {
         rating={profile.rating}
         username={profile.username}
         isSelectedOnMap={props.selectProfile === profile.username}
+        optionsBase64={props.optionsBase64}
       />
     );
       index++;
@@ -54,7 +57,7 @@ const List = (props) => {
     showData = (
       <div id="view-list">
         {listProfiles}
-        {!props.allDataCollected ? (<span id="more-data" onClick={props.loadMoreData}>Load more data</span>) : (<span id="no-more-data">&#8226;&#8226;&#8226;</span>)}
+        {!props.allDataCollected ? (<span id="more-data" title="Click to load more data" onClick={props.loadMoreData}>Load more profiles</span>) : (<span id="no-more-data">&#8226;&#8226;&#8226;</span>)}
       </div>)
   } else {
     showData = (<span id="no-data">&#8226;&#8226;&#8226;</span>)

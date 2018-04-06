@@ -154,6 +154,7 @@ class Search extends Component {
             loadMoreData={this.loadMoreData}
             allDataCollected={this.state.allDataCollected}
             selectProfile={this.state.selectProfile}
+            optionsBase64={this.state.optionsBase64}
           />
         </div>
       </div>

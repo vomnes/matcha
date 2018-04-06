@@ -11,7 +11,7 @@ import (
 	"../../../../tests"
 )
 
-func TestMatchFailedToUnmarshalSearchParameters(t *testing.T) {
+func TestGlobalMatchFailedToUnmarshalSearchParameters(t *testing.T) {
 	tests.DbClean()
 	context := tests.ContextData{
 		DB: tests.DB,
@@ -22,7 +22,7 @@ func TestMatchFailedToUnmarshalSearchParameters(t *testing.T) {
 	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
-		Match(w, r)
+		GlobalMatch(w, r)
 	})
 	// Check : Content stardard output
 	expectedError := "[Unmarshal] Failed to unmarshal search parameters in header"
@@ -37,14 +37,14 @@ func TestMatchFailedToUnmarshalSearchParameters(t *testing.T) {
 	}
 }
 
-func TestMatchWrongMethod(t *testing.T) {
+func TestGlobalMatchWrongMethod(t *testing.T) {
 	tests.DbClean()
 	context := tests.ContextData{}
 	r := tests.CreateRequest("POST", "/v1/users", nil, context)
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
-		Match(w, r)
+		GlobalMatch(w, r)
 	})
 	// Check : Content stardard output
 	if output != "" {
@@ -58,7 +58,7 @@ func TestMatchWrongMethod(t *testing.T) {
 	}
 }
 
-func TestMatchUserDoesntExists(t *testing.T) {
+func TestGlobalMatchUserDoesntExists(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)
 	context := tests.ContextData{
@@ -72,7 +72,7 @@ func TestMatchUserDoesntExists(t *testing.T) {
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
-		Match(w, r)
+		GlobalMatch(w, r)
 	})
 	// Check : Content stardard output
 	expectedError := "Failed to collect user data in database sql: no rows in result set"
@@ -421,7 +421,7 @@ func setData(userData lib.User) []lib.User {
 	return []lib.User{userData, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13, u14, u15, u16}
 }
 
-func TestMatchMaleToFemale23YO(t *testing.T) {
+func TestGlobalMatchMaleToFemale23YO(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)
 	birthdayTime := time.Date(1995, 0, 0, 0, 0, 0, 0, time.UTC) // Age 23 year old
@@ -448,7 +448,7 @@ func TestMatchMaleToFemale23YO(t *testing.T) {
 	r.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
-		Match(w, r)
+		GlobalMatch(w, r)
 	})
 	// Check : Content stardard output
 	if output != "" {
@@ -456,26 +456,15 @@ func TestMatchMaleToFemale23YO(t *testing.T) {
 	}
 	strError := tests.CompareResponseJSONCode(w, 200, []interface{}{
 		map[string]interface{}{
-			"age":         25,
-			"distance":    13.5,
-			"rating":      4.8,
-			"latitude":    48.948511,
-			"longitude":   2.232546,
-			"firstname":   data[3].Firstname,
-			"lastname":    data[3].Lastname,
-			"picture_url": data[3].PictureURL_1,
-			"username":    data[3].Username,
-		},
-		map[string]interface{}{
-			"age":         20,
-			"distance":    20.9,
-			"rating":      3.8,
-			"latitude":    48.855862,
-			"longitude":   2.638384,
-			"firstname":   data[8].Firstname,
-			"lastname":    data[8].Lastname,
-			"picture_url": data[8].PictureURL_1,
-			"username":    data[8].Username,
+			"age":         23,
+			"distance":    9.5,
+			"rating":      3.5,
+			"latitude":    48.883388,
+			"longitude":   2.228642,
+			"firstname":   data[5].Firstname,
+			"lastname":    data[5].Lastname,
+			"picture_url": data[5].PictureURL_1,
+			"username":    data[5].Username,
 		},
 		map[string]interface{}{
 			"age":         22,
@@ -489,15 +478,26 @@ func TestMatchMaleToFemale23YO(t *testing.T) {
 			"username":    data[6].Username,
 		},
 		map[string]interface{}{
-			"age":         23,
-			"distance":    9.5,
-			"rating":      3.5,
-			"latitude":    48.883388,
-			"longitude":   2.228642,
-			"firstname":   data[5].Firstname,
-			"lastname":    data[5].Lastname,
-			"picture_url": data[5].PictureURL_1,
-			"username":    data[5].Username,
+			"age":         20,
+			"distance":    20.9,
+			"rating":      3.8,
+			"latitude":    48.855862,
+			"longitude":   2.638384,
+			"firstname":   data[8].Firstname,
+			"lastname":    data[8].Lastname,
+			"picture_url": data[8].PictureURL_1,
+			"username":    data[8].Username,
+		},
+		map[string]interface{}{
+			"age":         25,
+			"distance":    13.5,
+			"rating":      4.8,
+			"latitude":    48.948511,
+			"longitude":   2.232546,
+			"firstname":   data[3].Firstname,
+			"lastname":    data[3].Lastname,
+			"picture_url": data[3].PictureURL_1,
+			"username":    data[3].Username,
 		},
 	})
 	if strError != nil {
@@ -505,7 +505,7 @@ func TestMatchMaleToFemale23YO(t *testing.T) {
 	}
 }
 
-func TestMatchFemaleToMale23YO(t *testing.T) {
+func TestGlobalMatchFemaleToMale23YO(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)
 	birthdayTime := time.Date(1995, 0, 0, 0, 0, 0, 0, time.UTC) // Age 23 year old
@@ -534,24 +534,13 @@ func TestMatchFemaleToMale23YO(t *testing.T) {
 	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
-		Match(w, r)
+		GlobalMatch(w, r)
 	})
 	// Check : Content stardard output
 	if output != "" {
 		t.Error(output)
 	}
 	strError := tests.CompareResponseJSONCode(w, 200, []interface{}{
-		map[string]interface{}{
-			"age":         25,
-			"distance":    29.1,
-			"rating":      4.1,
-			"latitude":    48.631342,
-			"longitude":   2.149279,
-			"firstname":   data[13].Firstname,
-			"lastname":    data[13].Lastname,
-			"picture_url": data[13].PictureURL_1,
-			"username":    data[13].Username,
-		},
 		map[string]interface{}{
 			"age":         25,
 			"distance":    27.8,
@@ -563,13 +552,24 @@ func TestMatchFemaleToMale23YO(t *testing.T) {
 			"picture_url": data[12].PictureURL_1,
 			"username":    data[12].Username,
 		},
+		map[string]interface{}{
+			"age":         25,
+			"distance":    29.1,
+			"rating":      4.1,
+			"latitude":    48.631342,
+			"longitude":   2.149279,
+			"firstname":   data[13].Firstname,
+			"lastname":    data[13].Lastname,
+			"picture_url": data[13].PictureURL_1,
+			"username":    data[13].Username,
+		},
 	})
 	if strError != nil {
 		t.Errorf("%v", strError)
 	}
 }
 
-func TestMatchMaleBisexual23YO(t *testing.T) {
+func TestGlobalMatchMaleBisexual23YO(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)
 	birthdayTime := time.Date(1995, 0, 0, 0, 0, 0, 0, time.UTC) // Age 23 year old
@@ -598,7 +598,7 @@ func TestMatchMaleBisexual23YO(t *testing.T) {
 	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
-		Match(w, r)
+		GlobalMatch(w, r)
 	})
 	// Check : Content stardard output
 	if output != "" {
@@ -606,37 +606,15 @@ func TestMatchMaleBisexual23YO(t *testing.T) {
 	}
 	strError := tests.CompareResponseJSONCode(w, 200, []interface{}{
 		map[string]interface{}{
-			"age":         25,
-			"distance":    13.5,
-			"rating":      4.8,
-			"latitude":    48.948511,
-			"longitude":   2.232546,
-			"firstname":   data[3].Firstname,
-			"lastname":    data[3].Lastname,
-			"picture_url": data[3].PictureURL_1,
-			"username":    data[3].Username,
-		},
-		map[string]interface{}{
-			"age":         25,
-			"distance":    29.1,
-			"rating":      4.1,
-			"latitude":    48.631342,
-			"longitude":   2.149279,
-			"firstname":   data[13].Firstname,
-			"lastname":    data[13].Lastname,
-			"picture_url": data[13].PictureURL_1,
-			"username":    data[13].Username,
-		},
-		map[string]interface{}{
-			"age":         20,
-			"distance":    20.9,
-			"rating":      3.8,
-			"latitude":    48.855862,
-			"longitude":   2.638384,
-			"firstname":   data[8].Firstname,
-			"lastname":    data[8].Lastname,
-			"picture_url": data[8].PictureURL_1,
-			"username":    data[8].Username,
+			"age":         23,
+			"distance":    9.5,
+			"rating":      3.5,
+			"latitude":    48.883388,
+			"longitude":   2.228642,
+			"firstname":   data[5].Firstname,
+			"lastname":    data[5].Lastname,
+			"picture_url": data[5].PictureURL_1,
+			"username":    data[5].Username,
 		},
 		map[string]interface{}{
 			"age":         22,
@@ -650,15 +628,37 @@ func TestMatchMaleBisexual23YO(t *testing.T) {
 			"username":    data[6].Username,
 		},
 		map[string]interface{}{
-			"age":         23,
-			"distance":    9.5,
-			"rating":      3.5,
-			"latitude":    48.883388,
-			"longitude":   2.228642,
-			"firstname":   data[5].Firstname,
-			"lastname":    data[5].Lastname,
-			"picture_url": data[5].PictureURL_1,
-			"username":    data[5].Username,
+			"age":         20,
+			"distance":    20.9,
+			"rating":      3.8,
+			"latitude":    48.855862,
+			"longitude":   2.638384,
+			"firstname":   data[8].Firstname,
+			"lastname":    data[8].Lastname,
+			"picture_url": data[8].PictureURL_1,
+			"username":    data[8].Username,
+		},
+		map[string]interface{}{
+			"age":         25,
+			"distance":    29.1,
+			"rating":      4.1,
+			"latitude":    48.631342,
+			"longitude":   2.149279,
+			"firstname":   data[13].Firstname,
+			"lastname":    data[13].Lastname,
+			"picture_url": data[13].PictureURL_1,
+			"username":    data[13].Username,
+		},
+		map[string]interface{}{
+			"age":         25,
+			"distance":    13.5,
+			"rating":      4.8,
+			"latitude":    48.948511,
+			"longitude":   2.232546,
+			"firstname":   data[3].Firstname,
+			"lastname":    data[3].Lastname,
+			"picture_url": data[3].PictureURL_1,
+			"username":    data[3].Username,
 		},
 	})
 	if strError != nil {
@@ -666,7 +666,7 @@ func TestMatchMaleBisexual23YO(t *testing.T) {
 	}
 }
 
-func TestMatchFemaleToFemale23YO(t *testing.T) {
+func TestGlobalMatchFemaleToFemale23YO(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)
 	birthdayTime := time.Date(1995, 0, 0, 0, 0, 0, 0, time.UTC) // Age 23 year old
@@ -695,7 +695,7 @@ func TestMatchFemaleToFemale23YO(t *testing.T) {
 	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
-		Match(w, r)
+		GlobalMatch(w, r)
 	})
 	// Check : Content stardard output
 	if output != "" {
@@ -719,7 +719,7 @@ func TestMatchFemaleToFemale23YO(t *testing.T) {
 	}
 }
 
-func TestMatchMaleToFemaleAge21_100Distance100SortDistanceReverse(t *testing.T) {
+func TestGlobalMatchMaleToFemaleAge21_100Distance100SortDistanceReverse(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)
 	birthdayTime := time.Date(1995, 0, 0, 0, 0, 0, 0, time.UTC) // Age 23 year old
@@ -758,7 +758,7 @@ func TestMatchMaleToFemaleAge21_100Distance100SortDistanceReverse(t *testing.T) 
 	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
-		Match(w, r)
+		GlobalMatch(w, r)
 	})
 	// Check : Content stardard output
 	if output != "" {
@@ -766,92 +766,15 @@ func TestMatchMaleToFemaleAge21_100Distance100SortDistanceReverse(t *testing.T) 
 	}
 	strError := tests.CompareResponseJSONCode(w, 200, []interface{}{
 		map[string]interface{}{
-			"age":         24,
-			"distance":    86,
-			"rating":      4,
-			"latitude":    48.128453,
-			"longitude":   1.959779,
-			"firstname":   data[16].Firstname,
-			"lastname":    data[16].Lastname,
-			"picture_url": data[16].PictureURL_1,
-			"username":    data[16].Username,
-		},
-		map[string]interface{}{
-			"age":         26,
-			"distance":    80.6,
-			"rating":      2.8,
-			"latitude":    48.158353,
-			"longitude":   2.059779,
-			"firstname":   data[11].Firstname,
-			"lastname":    data[11].Lastname,
-			"picture_url": data[11].PictureURL_1,
-			"username":    data[11].Username,
-		},
-		map[string]interface{}{
-			"age":         26,
-			"distance":    80.6,
-			"rating":      5,
-			"latitude":    48.158453,
-			"longitude":   2.059779,
-			"firstname":   data[15].Firstname,
-			"lastname":    data[15].Lastname,
-			"picture_url": data[15].PictureURL_1,
-			"username":    data[15].Username,
-		},
-		map[string]interface{}{
-			"age":         24,
-			"distance":    66.9,
-			"rating":      4.7,
-			"latitude":    48.486674,
-			"longitude":   3.070142,
-			"firstname":   data[4].Firstname,
-			"lastname":    data[4].Lastname,
-			"picture_url": data[4].PictureURL_1,
-			"username":    data[4].Username,
-		},
-		map[string]interface{}{
-			"age":         21,
-			"distance":    52.9,
-			"rating":      3.7,
-			"latitude":    48.408183,
-			"longitude":   2.593919,
-			"firstname":   data[7].Firstname,
-			"lastname":    data[7].Lastname,
-			"picture_url": data[7].PictureURL_1,
-			"username":    data[7].Username,
-		},
-		map[string]interface{}{
-			"age":         22,
-			"distance":    34.7,
-			"rating":      3.6,
-			"latitude":    48.661458,
-			"longitude":   1.98219,
-			"firstname":   data[6].Firstname,
-			"lastname":    data[6].Lastname,
-			"picture_url": data[6].PictureURL_1,
-			"username":    data[6].Username,
-		},
-		map[string]interface{}{
-			"age":         28,
-			"distance":    29.1,
-			"rating":      4,
-			"latitude":    48.631342,
-			"longitude":   2.149279,
-			"firstname":   data[10].Firstname,
-			"lastname":    data[10].Lastname,
-			"picture_url": data[10].PictureURL_1,
-			"username":    data[10].Username,
-		},
-		map[string]interface{}{
-			"age":         27,
-			"distance":    28.5,
-			"rating":      5,
-			"latitude":    48.815419,
-			"longitude":   2.736927,
-			"firstname":   data[1].Firstname,
-			"lastname":    data[1].Lastname,
-			"picture_url": data[1].PictureURL_1,
-			"username":    data[1].Username,
+			"age":         23,
+			"distance":    9.5,
+			"rating":      3.5,
+			"latitude":    48.883388,
+			"longitude":   2.228642,
+			"firstname":   data[5].Firstname,
+			"lastname":    data[5].Lastname,
+			"picture_url": data[5].PictureURL_1,
+			"username":    data[5].Username,
 		},
 		map[string]interface{}{
 			"age":         25,
@@ -865,15 +788,92 @@ func TestMatchMaleToFemaleAge21_100Distance100SortDistanceReverse(t *testing.T) 
 			"username":    data[3].Username,
 		},
 		map[string]interface{}{
-			"age":         23,
-			"distance":    9.5,
-			"rating":      3.5,
-			"latitude":    48.883388,
-			"longitude":   2.228642,
-			"firstname":   data[5].Firstname,
-			"lastname":    data[5].Lastname,
-			"picture_url": data[5].PictureURL_1,
-			"username":    data[5].Username,
+			"age":         27,
+			"distance":    28.5,
+			"rating":      5,
+			"latitude":    48.815419,
+			"longitude":   2.736927,
+			"firstname":   data[1].Firstname,
+			"lastname":    data[1].Lastname,
+			"picture_url": data[1].PictureURL_1,
+			"username":    data[1].Username,
+		},
+		map[string]interface{}{
+			"age":         28,
+			"distance":    29.1,
+			"rating":      4,
+			"latitude":    48.631342,
+			"longitude":   2.149279,
+			"firstname":   data[10].Firstname,
+			"lastname":    data[10].Lastname,
+			"picture_url": data[10].PictureURL_1,
+			"username":    data[10].Username,
+		},
+		map[string]interface{}{
+			"age":         22,
+			"distance":    34.7,
+			"rating":      3.6,
+			"latitude":    48.661458,
+			"longitude":   1.98219,
+			"firstname":   data[6].Firstname,
+			"lastname":    data[6].Lastname,
+			"picture_url": data[6].PictureURL_1,
+			"username":    data[6].Username,
+		},
+		map[string]interface{}{
+			"age":         21,
+			"distance":    52.9,
+			"rating":      3.7,
+			"latitude":    48.408183,
+			"longitude":   2.593919,
+			"firstname":   data[7].Firstname,
+			"lastname":    data[7].Lastname,
+			"picture_url": data[7].PictureURL_1,
+			"username":    data[7].Username,
+		},
+		map[string]interface{}{
+			"age":         24,
+			"distance":    66.9,
+			"rating":      4.7,
+			"latitude":    48.486674,
+			"longitude":   3.070142,
+			"firstname":   data[4].Firstname,
+			"lastname":    data[4].Lastname,
+			"picture_url": data[4].PictureURL_1,
+			"username":    data[4].Username,
+		},
+		map[string]interface{}{
+			"age":         26,
+			"distance":    80.6,
+			"rating":      5,
+			"latitude":    48.158453,
+			"longitude":   2.059779,
+			"firstname":   data[15].Firstname,
+			"lastname":    data[15].Lastname,
+			"picture_url": data[15].PictureURL_1,
+			"username":    data[15].Username,
+		},
+		map[string]interface{}{
+			"age":         26,
+			"distance":    80.6,
+			"rating":      2.8,
+			"latitude":    48.158353,
+			"longitude":   2.059779,
+			"firstname":   data[11].Firstname,
+			"lastname":    data[11].Lastname,
+			"picture_url": data[11].PictureURL_1,
+			"username":    data[11].Username,
+		},
+		map[string]interface{}{
+			"age":         24,
+			"distance":    86,
+			"rating":      4,
+			"latitude":    48.128453,
+			"longitude":   1.959779,
+			"firstname":   data[16].Firstname,
+			"lastname":    data[16].Lastname,
+			"picture_url": data[16].PictureURL_1,
+			"username":    data[16].Username,
 		},
 	})
 	if strError != nil {
@@ -881,7 +881,7 @@ func TestMatchMaleToFemaleAge21_100Distance100SortDistanceReverse(t *testing.T) 
 	}
 }
 
-func TestMatchMaleToFemaleRating4_6CustomLatLngSortAge(t *testing.T) {
+func TestGlobalMatchMaleToFemaleRating4_6CustomLatLngSortAge(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)
 	birthdayTime := time.Date(1995, 0, 0, 0, 0, 0, 0, time.UTC) // Age 23 year old
@@ -918,24 +918,13 @@ func TestMatchMaleToFemaleRating4_6CustomLatLngSortAge(t *testing.T) {
 	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
-		Match(w, r)
+		GlobalMatch(w, r)
 	})
 	// Check : Content stardard output
 	if output != "" {
 		t.Error(output)
 	}
 	strError := tests.CompareResponseJSONCode(w, 200, []interface{}{
-		map[string]interface{}{
-			"age":         26,
-			"distance":    0,
-			"rating":      5,
-			"latitude":    48.158453,
-			"longitude":   2.059779,
-			"firstname":   data[15].Firstname,
-			"lastname":    data[15].Lastname,
-			"picture_url": data[15].PictureURL_1,
-			"username":    data[15].Username,
-		},
 		map[string]interface{}{
 			"age":         24,
 			"distance":    8.1,
@@ -947,13 +936,24 @@ func TestMatchMaleToFemaleRating4_6CustomLatLngSortAge(t *testing.T) {
 			"picture_url": data[16].PictureURL_1,
 			"username":    data[16].Username,
 		},
+		map[string]interface{}{
+			"age":         26,
+			"distance":    0,
+			"rating":      5,
+			"latitude":    48.158453,
+			"longitude":   2.059779,
+			"firstname":   data[15].Firstname,
+			"lastname":    data[15].Lastname,
+			"picture_url": data[15].PictureURL_1,
+			"username":    data[15].Username,
+		},
 	})
 	if strError != nil {
 		t.Errorf("%v", strError)
 	}
 }
 
-func TestMatchSortTags(t *testing.T) {
+func TestGlobalMatchSortTags(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)
 	birthdayTime := time.Date(1995, 0, 0, 0, 0, 0, 0, time.UTC) // Age 23 year old
@@ -984,24 +984,13 @@ func TestMatchSortTags(t *testing.T) {
 	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
-		Match(w, r)
+		GlobalMatch(w, r)
 	})
 	// Check : Content stardard output
 	if output != "" {
 		t.Error(output)
 	}
 	strError := tests.CompareResponseJSONCode(w, 200, []interface{}{
-		map[string]interface{}{
-			"age":         23,
-			"distance":    9.5,
-			"rating":      3.5,
-			"latitude":    48.883388,
-			"longitude":   2.228642,
-			"firstname":   data[5].Firstname,
-			"lastname":    data[5].Lastname,
-			"picture_url": data[5].PictureURL_1,
-			"username":    data[5].Username,
-		},
 		map[string]interface{}{
 			"age":         20,
 			"distance":    20.9,
@@ -1035,13 +1024,24 @@ func TestMatchSortTags(t *testing.T) {
 			"picture_url": data[3].PictureURL_1,
 			"username":    data[3].Username,
 		},
+		map[string]interface{}{
+			"age":         23,
+			"distance":    9.5,
+			"rating":      3.5,
+			"latitude":    48.883388,
+			"longitude":   2.228642,
+			"firstname":   data[5].Firstname,
+			"lastname":    data[5].Lastname,
+			"picture_url": data[5].PictureURL_1,
+			"username":    data[5].Username,
+		},
 	})
 	if strError != nil {
 		t.Errorf("%v", strError)
 	}
 }
 
-func TestMatchSelectedTags(t *testing.T) {
+func TestGlobalMatchSelectedTags(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)
 	birthdayTime := time.Date(1995, 0, 0, 0, 0, 0, 0, time.UTC) // Age 23 year old
@@ -1083,24 +1083,13 @@ func TestMatchSelectedTags(t *testing.T) {
 	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
-		Match(w, r)
+		GlobalMatch(w, r)
 	})
 	// Check : Content stardard output
 	if output != "" {
 		t.Error(output)
 	}
 	strError := tests.CompareResponseJSONCode(w, 200, []interface{}{
-		map[string]interface{}{
-			"age":         28,
-			"distance":    29.1,
-			"rating":      4,
-			"latitude":    48.631342,
-			"longitude":   2.149279,
-			"firstname":   data[10].Firstname,
-			"lastname":    data[10].Lastname,
-			"picture_url": data[10].PictureURL_1,
-			"username":    data[10].Username,
-		},
 		map[string]interface{}{
 			"age":         26,
 			"distance":    80.6,
@@ -1112,13 +1101,24 @@ func TestMatchSelectedTags(t *testing.T) {
 			"picture_url": data[11].PictureURL_1,
 			"username":    data[11].Username,
 		},
+		map[string]interface{}{
+			"age":         28,
+			"distance":    29.1,
+			"rating":      4,
+			"latitude":    48.631342,
+			"longitude":   2.149279,
+			"firstname":   data[10].Firstname,
+			"lastname":    data[10].Lastname,
+			"picture_url": data[10].PictureURL_1,
+			"username":    data[10].Username,
+		},
 	})
 	if strError != nil {
 		t.Errorf("%v", strError)
 	}
 }
 
-func TestMatchNoUsers(t *testing.T) {
+func TestGlobalMatchNoUsers(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)
 	birthdayTime := time.Date(1995, 0, 0, 0, 0, 0, 0, time.UTC) // Age 23 year old
@@ -1151,7 +1151,7 @@ func TestMatchNoUsers(t *testing.T) {
 	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
-		Match(w, r)
+		GlobalMatch(w, r)
 	})
 	// Check : Content stardard output
 	if output != "" {
@@ -1165,7 +1165,7 @@ func TestMatchNoUsers(t *testing.T) {
 	}
 }
 
-func TestMatchNoTagsNoBirthdate(t *testing.T) {
+func TestGlobalMatchNoTagsNoBirthdate(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)
 	myLat := 48.856614
@@ -1205,7 +1205,7 @@ func TestMatchNoTagsNoBirthdate(t *testing.T) {
 	r.Header.Add("Search-Parameters", base64.StdEncoding.EncodeToString(searchParameters))
 	w := httptest.NewRecorder()
 	output := tests.CaptureOutput(func() {
-		Match(w, r)
+		GlobalMatch(w, r)
 	})
 	// Check : Content stardard output
 	if output != "" {
@@ -1257,6 +1257,234 @@ func TestMatchNoTagsNoBirthdate(t *testing.T) {
 			"username":    data[3].Username,
 		},
 	})
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+}
+
+/* ======================================== */
+/* =============TargetedMatch============== */
+/* ======================================== */
+
+func TestTargetedMatchMaleToFemale23YO(t *testing.T) {
+	tests.DbClean()
+	username := "test_" + lib.GetRandomString(43)
+	birthdayTime := time.Date(1995, 0, 0, 0, 0, 0, 0, time.UTC) // Age 23 year old
+	myLat := 48.856614
+	myLng := 2.3522219000000177
+	userData := tests.InsertUser(lib.User{
+		Username:      username,
+		Lastname:      "MyLastname",
+		Firstname:     "MyFirstname",
+		PictureURL_1:  "MyURL1",
+		Birthday:      &birthdayTime,
+		Genre:         "male",
+		InterestingIn: "female",
+		Latitude:      &myLat,
+		Longitude:     &myLng,
+	}, tests.DB)
+	data := setData(userData)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: data[0].Username,
+		UserID:   data[0].ID,
+	}
+	r := tests.CreateRequest("GET", "/v1/users/data/match/"+data[8].Username, nil, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		testApplicantServer().ServeHTTP(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{
+		"previous": map[string]interface{}{
+			"firstname":   data[3].Firstname,
+			"lastname":    data[3].Lastname,
+			"picture_url": data[3].PictureURL_1,
+			"username":    data[3].Username,
+		},
+		"next": map[string]interface{}{
+			"firstname":   data[6].Firstname,
+			"lastname":    data[6].Lastname,
+			"picture_url": data[6].PictureURL_1,
+			"username":    data[6].Username,
+		},
+	})
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+}
+
+func TestTargetedMatchInvalidUsername(t *testing.T) {
+	tests.DbClean()
+	username := "test_" + lib.GetRandomString(43)
+	birthdayTime := time.Date(1995, 0, 0, 0, 0, 0, 0, time.UTC) // Age 23 year old
+	myLat := 48.856614
+	myLng := 2.3522219000000177
+	userData := tests.InsertUser(lib.User{
+		Username:      username,
+		Lastname:      "MyLastname",
+		Firstname:     "MyFirstname",
+		PictureURL_1:  "MyURL1",
+		Birthday:      &birthdayTime,
+		Genre:         "male",
+		InterestingIn: "female",
+		Latitude:      &myLat,
+		Longitude:     &myLng,
+	}, tests.DB)
+	data := setData(userData)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: data[0].Username,
+		UserID:   data[0].ID,
+	}
+	r := tests.CreateRequest("GET", "/v1/users/data/match/"+"w", nil, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		testApplicantServer().ServeHTTP(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	strError := tests.CompareResponseJSONCode(w, 406, map[string]interface{}{
+		"error": "Username parameter is invalid",
+	})
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+}
+
+func TestTargetedMatchEmptyNext(t *testing.T) {
+	tests.DbClean()
+	username := "test_" + lib.GetRandomString(43)
+	birthdayTime := time.Date(1995, 0, 0, 0, 0, 0, 0, time.UTC) // Age 23 year old
+	myLat := 48.856614
+	myLng := 2.3522219000000177
+	userData := tests.InsertUser(lib.User{
+		Username:      username,
+		Lastname:      "MyLastname",
+		Firstname:     "MyFirstname",
+		PictureURL_1:  "MyURL1",
+		Birthday:      &birthdayTime,
+		Genre:         "male",
+		InterestingIn: "female",
+		Latitude:      &myLat,
+		Longitude:     &myLng,
+	}, tests.DB)
+	data := setData(userData)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: data[0].Username,
+		UserID:   data[0].ID,
+	}
+	r := tests.CreateRequest("GET", "/v1/users/data/match/"+data[5].Username, nil, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		testApplicantServer().ServeHTTP(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{
+		"previous": map[string]interface{}{
+			"firstname":   data[6].Firstname,
+			"lastname":    data[6].Lastname,
+			"picture_url": data[6].PictureURL_1,
+			"username":    data[6].Username,
+		},
+	})
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+}
+
+func TestTargetedMatchEmptyPrevious(t *testing.T) {
+	tests.DbClean()
+	username := "test_" + lib.GetRandomString(43)
+	birthdayTime := time.Date(1995, 0, 0, 0, 0, 0, 0, time.UTC) // Age 23 year old
+	myLat := 48.856614
+	myLng := 2.3522219000000177
+	userData := tests.InsertUser(lib.User{
+		Username:      username,
+		Lastname:      "MyLastname",
+		Firstname:     "MyFirstname",
+		PictureURL_1:  "MyURL1",
+		Birthday:      &birthdayTime,
+		Genre:         "male",
+		InterestingIn: "female",
+		Latitude:      &myLat,
+		Longitude:     &myLng,
+	}, tests.DB)
+	data := setData(userData)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: data[0].Username,
+		UserID:   data[0].ID,
+	}
+	r := tests.CreateRequest("GET", "/v1/users/data/match/"+data[3].Username, nil, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		testApplicantServer().ServeHTTP(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{
+		"next": map[string]interface{}{
+			"firstname":   data[8].Firstname,
+			"lastname":    data[8].Lastname,
+			"picture_url": data[8].PictureURL_1,
+			"username":    data[8].Username,
+		},
+	})
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+}
+
+func TestTargetedMatchEmpty(t *testing.T) {
+	tests.DbClean()
+	username := "test_" + lib.GetRandomString(43)
+	birthdayTime := time.Date(1995, 0, 0, 0, 0, 0, 0, time.UTC) // Age 23 year old
+	myLat := 48.856614
+	myLng := 2.3522219000000177
+	userData := tests.InsertUser(lib.User{
+		Username:      username,
+		Lastname:      "MyLastname",
+		Firstname:     "MyFirstname",
+		PictureURL_1:  "MyURL1",
+		Birthday:      &birthdayTime,
+		Genre:         "male",
+		InterestingIn: "female",
+		Latitude:      &myLat,
+		Longitude:     &myLng,
+	}, tests.DB)
+	data := setData(userData)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: data[0].Username,
+		UserID:   data[0].ID,
+	}
+	r := tests.CreateRequest("GET", "/v1/users/data/match/"+data[1].Username, nil, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		testApplicantServer().ServeHTTP(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{})
 	if strError != nil {
 		t.Errorf("%v", strError)
 	}

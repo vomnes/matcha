@@ -124,12 +124,17 @@
 
 .btn-like {
   @extend %bottom-btn;
-  font-size: 50px;
+  font-size: 35px;
+}
+
+@-moz-document url-prefix() {
+  .btn-like {
+    font-size: 45px;
+  }
 }
 
 .btn-like span {
   position: relative;
-  top: -5px;
   &:hover {
     text-shadow: 0 3px 6px rgba(0,0,0,0.33);
   }

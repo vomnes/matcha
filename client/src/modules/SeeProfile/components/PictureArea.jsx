@@ -87,24 +87,22 @@ class PictureArea extends Component {
     });
   }
   componentWillReceiveProps(nextProps) {
-    this.updateState('pictureArrayLength', nextProps.pictureArrayLength);
-    this.updateState('index', nextProps.index);
-    this.updateState('picture', nextProps.picture);
-    if (this.state.liked == null) {
+    if (this.state.username !== nextProps.username) {
+      this.updateState('pictureArrayLength', nextProps.pictureArrayLength);
+      this.updateState('index', nextProps.index);
+      this.updateState('picture', nextProps.picture);
       this.updateState('liked', nextProps.liked);
-    }
-    if (this.state.reportedAsFakeAccount == null) {
       this.updateState('reportedAsFakeAccount', nextProps.reportedAsFakeAccount);
+      this.updateState('usersAreConnected', nextProps.usersAreConnected);
+      this.updateState('firstname', nextProps.firstname);
+      this.updateState('username', nextProps.username);
+      this.updateState('isMe', nextProps.isMe);
     }
-    this.updateState('usersAreConnected', nextProps.usersAreConnected);
-    this.updateState('firstname', nextProps.firstname);
-    this.updateState('username', nextProps.username);
-    this.updateState('isMe', nextProps.isMe);
   }
   render() {
     const index =  this.state.index;
     var pictureURL = '';
-    if (this.state.picture.includes('images.unsplash.com/photo-')) {
+    if (this.state.picture && this.state.picture.includes('images.unsplash.com/photo-')) {
       pictureURL = this.state.picture
     } else if (this.state.picture) {
       pictureURL = "http://localhost:8080" + this.state.picture

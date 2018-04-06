@@ -62,6 +62,10 @@
   height: 55px;
   margin-left: 10px;
   margin-right: 10px;
+  &:hover {
+    background-color: #F9F9F9;
+    cursor: pointer;
+  }
 }
 
 .picture-list{
@@ -92,10 +96,6 @@
   left: 60px;
   font-family: $font-sub;
   font-size: 1.8vw;
-  &:hover {
-    font-weight: bold;
-    cursor: pointer;
-  }
 }
 
 .age-list {

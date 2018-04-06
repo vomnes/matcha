@@ -92,7 +92,7 @@ func insertUser(db *sqlx.DB, picture1, lastname, firstname, genre, interesting_i
 	if err != nil {
 		log.Fatal(lib.PrettyError("Failed to prepare request User data" + err.Error()))
 	}
-	rows, err := stmt.Queryx(fake.UserName(), fake.EmailAddress(), lastname, firstname, "$2a$10$pgek6WtdhtKmGXPWOOtEf.gsgtNXOkqr3pBjaCCa9il6XhRS7LAua",
+	rows, err := stmt.Queryx(fake.UserName()+lib.GetRandomString(5), fake.EmailAddress(), lastname, firstname, "$2a$10$pgek6WtdhtKmGXPWOOtEf.gsgtNXOkqr3pBjaCCa9il6XhRS7LAua",
 		picture1, "",
 		fake.Sentences(), time.Date(fake.Year(1985, 2000), time.Month(fake.MonthNum()), fake.Day(), 0, 0, 0, 0, time.UTC), genre, interesting_in,
 		fake.City(), fake.Zip(), fake.Country(), latitude, longitude,
