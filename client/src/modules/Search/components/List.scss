@@ -30,6 +30,28 @@
   top: 30px;
 }
 
+#more-data {
+  position: relative;
+  color: #DBDBDB;
+  width: 100%;
+  top: 10px;
+  @include position-center(35%);
+  padding: 2.5px;
+  cursor: pointer;
+  &:hover {
+    color: #C8C8C8;
+  }
+}
+
+#no-more-data {
+  position: relative;
+  font-size: 25px;
+  color: #C8C8C8;
+  width: 100%;
+  top: 5px;
+  @include position-center(47%);
+}
+
 .picture-list {
   position: relative;
   width: 50px;

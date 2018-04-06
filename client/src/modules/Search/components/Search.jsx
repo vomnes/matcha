@@ -14,15 +14,14 @@ const GetMe = async (updateState) => {
     } else if (res.status >= 400) {
       console.log(response.error);
     } else {
-      console.log(response);
       updateState("me", response);
       return;
     }
   }
 }
 
-const GetMatch = async (updateState, options) => {
-  let res = await api.match(options);
+const GetMatch = async (updateState, optionsBase64, profiles) => {
+  let res = await api.match(optionsBase64);
   if (res) {
     const response = await res.json();
     if (res.status >= 500) {
@@ -30,8 +29,21 @@ const GetMatch = async (updateState, options) => {
     } else if (res.status >= 400) {
       console.log(response.error);
     } else {
-      console.log(response);
-      updateState("profiles", response);
+      if (response.data === "No (more) users") {
+        if (!profiles) {
+          updateState("profiles", []);
+        }
+        updateState("allDataCollected", true);
+      } else {
+        if (profiles) {
+          updateState("profiles", response.concat(profiles));
+          if (response.length < 20) {
+            updateState("allDataCollected", true);
+          }
+        } else {
+          updateState("profiles", response);
+        }
+      }
       return;
     }
   }
@@ -57,6 +69,7 @@ class Search extends Component {
     super(props);
     this.state = {
       me: {},
+      profiles: {},
       age: {
        min: 0,
        max: 0
@@ -74,6 +87,10 @@ class Search extends Component {
       lng: 0.0,
       sort_type: "rating",   // age, rating, distance, common_tags
       sort_direction: "normal", // normal or reverse
+      start_position: 0,
+      finish_position: 20,
+      optionsBase64: '',
+      allDataCollected: false,
     }
     this.updateState = this.updateState.bind(this);
     this.searchProfiles = this.searchProfiles.bind(this);
@@ -83,7 +100,7 @@ class Search extends Component {
       [key]: content,
     });
   }
-  searchProfiles() {
+  optionsToBase64 = (start_position, finish_position) => {
     const options = {
       age: this.state.age,
       rating: this.state.rating,
@@ -93,8 +110,16 @@ class Search extends Component {
       lng: this.state.lng,
       sort_type: this.state.sort_type,
       sort_direction: this.state.sort_direction,
+      start_position,
+      finish_position,
     }
-    const objJSONBase64 = Buffer.from(JSON.stringify(options)).toString("base64");
+    return Buffer.from(JSON.stringify(options)).toString("base64");
+  }
+  searchProfiles = (type) => {
+    this.updateState('start_position', 0);
+    this.updateState('finish_position', 20);
+    const objJSONBase64 = this.optionsToBase64(0, 20);
+    this.updateState('optionsBase64', objJSONBase64);
     GetMatch(this.updateState, objJSONBase64);
     if (this.state.lat && this.state.lng) {
       var me = this.state.me;
@@ -103,6 +128,14 @@ class Search extends Component {
       this.updateState('me', me);
     }
   }
+  loadMoreData = () => {
+    this.updateState('start_position', this.state.start_position + 20);
+    this.updateState('finish_position', this.state.finish_position + 20);
+    const objJSONBase64 = this.optionsToBase64(this.state.start_position + 20, this.state.finish_position + 20);
+    this.updateState('optionsBase64', objJSONBase64);
+    GetMatch(this.updateState, objJSONBase64, this.state.profiles);
+  }
+
   componentDidMount() {
     GetMe(this.updateState);
     GetMatch(this.updateState);
@@ -116,7 +149,10 @@ class Search extends Component {
           <DataMap lat={this.state.me.lat} lng={this.state.me.lng} profiles={this.state.profiles}/>
           <List profiles={this.state.profiles}
             sortType={this.state.sort_type} sortDirection={this.state.sort_direction}
-            updateState={this.updateState} searchProfiles={this.searchProfiles}/>
+            updateState={this.updateState} searchProfiles={this.searchProfiles}
+            loadMoreData={this.loadMoreData}
+            allDataCollected={this.state.allDataCollected}
+          />
         </div>
       </div>
     )

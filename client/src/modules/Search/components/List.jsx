@@ -34,7 +34,7 @@ const List = (props) => {
   if (props.profiles && props.profiles.length > 0) {
     var index = 0;
     props.profiles.forEach((profile) => {
-      listProfiles.push(<Item
+      listProfiles.unshift(<Item
         key={index}
         picture={profile.picture_url}
         firstname={profile.firstname}
@@ -45,7 +45,11 @@ const List = (props) => {
         username={profile.username}/>);
       index++;
     });
-    showData = (<div id="view-list">{listProfiles}</div>)
+    showData = (
+      <div id="view-list">
+        {listProfiles}
+        {!props.allDataCollected ? (<span id="more-data" onClick={props.loadMoreData}>Load more data</span>) : (<span id="no-more-data">&#8226;&#8226;&#8226;</span>)}
+      </div>)
   } else {
     showData = (<span id="no-data">&#8226;&#8226;&#8226;</span>)
   }

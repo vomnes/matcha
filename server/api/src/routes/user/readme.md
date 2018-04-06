@@ -21,7 +21,9 @@ JSON Body :
     "lat": float,
     "lng": float,
     "sort_type": string,      // age, rating, distance, common_tags
-    "sort_direction": string, // desc or asc
+    "sort_direction": string, // normal or reverse
+    "start_position": uint,   // default = 0
+    "finish_position": uint,  // default = 20
   }
 ```
 

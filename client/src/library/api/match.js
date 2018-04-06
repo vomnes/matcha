@@ -8,7 +8,6 @@ const match = (options, conf) => {
   if (options) {
     headers['Search-Parameters'] = options;
   }
-  console.log(headers['Search-Parameters']);
   return fetch (
     `${conf.BACK_URL}/v1/users/data/match`,
     {
