@@ -30,5 +30,9 @@ func GetExistingTags(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	lib.RespondWithJSON(w, http.StatusOK, tags)
+	if len(tags) > 0 {
+		lib.RespondWithJSON(w, http.StatusOK, tags)
+	} else {
+		lib.RespondWithJSON(w, http.StatusOK, []interface{}{})
+	}
 }

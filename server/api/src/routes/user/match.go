@@ -28,18 +28,18 @@ type limitsFloat64 struct {
 }
 
 type bodyData struct {
-	Age            limitsInt     `json:"age"`
-	Rating         limitsFloat64 `json:"rating"`
-	Distance       limitsInt     `json:"distance"`
-	Tags           []string      `json:"tags"`
-	Latitude       float64       `json:"lat"`
-	LatStr         string
-	Longitude      float64 `json:"lng"`
-	LngStr         string
-	SortType       string `json:"sort_type"`
-	SortDirection  string `json:"sort_direction"`
-	StartPosition  uint   `json:"start_position"`
-	FinishPosition uint   `json:"finish_position"`
+	Age           limitsInt     `json:"age"`
+	Rating        limitsFloat64 `json:"rating"`
+	Distance      limitsInt     `json:"distance"`
+	Tags          []string      `json:"tags"`
+	Latitude      float64       `json:"lat"`
+	LatStr        string
+	Longitude     float64 `json:"lng"`
+	LngStr        string
+	SortType      string `json:"sort_type"`
+	SortDirection string `json:"sort_direction"`
+	StartPosition uint   `json:"start_position"`
+	EndPosition   uint   `json:"finish_position"`
 }
 
 type match struct {
@@ -127,8 +127,8 @@ func checkInput(data *bodyData) {
 		}
 	}
 	// Default number users => 20
-	if data.FinishPosition == 0 {
-		data.FinishPosition = 20
+	if data.EndPosition == 0 {
+		data.EndPosition = 20
 	}
 }
 
@@ -239,7 +239,7 @@ type elementUser struct {
 // Handle genre by creating an array with the possible matchs
 // Create the request according the logged in user data and options from the body that will the matching users
 // - Default range age is between -3 and +3 the age of the logged in user
-// Generate an map[string]interface{} array with the users from the SQL request output between StartPosition and FinishPosition
+// Generate an map[string]interface{} array with the users from the SQL request output between StartPosition and EndPosition
 // Return HTTP Code 200 Status OK
 // If the array is empty return JSON Content "data": "No (more) users",
 // Else JSON Content Array
@@ -277,8 +277,7 @@ func Match(w http.ResponseWriter, r *http.Request) {
 	}
 	var listUsers []map[string]interface{}
 	nbUser := uint(len(users))
-	// pretty.Print("all ->", users)
-	for i := inputData.StartPosition; i < nbUser; i++ {
+	for i := inputData.StartPosition; i < inputData.EndPosition && i < nbUser; i++ {
 		listUsers = append([]map[string]interface{}{
 			map[string]interface{}{
 				"username":    users[i].Username,

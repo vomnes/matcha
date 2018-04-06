@@ -28,7 +28,7 @@ const Map = (props) => {
     const lat = props.lat;
     const lng = props.lng;
     var marks = [];
-    if (props.profiles) {
+    if (props.profiles && props.profiles.length > 0) {
       var index = 0;
       props.profiles.forEach((profile) => {
         marks.push(

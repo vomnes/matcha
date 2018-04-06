@@ -30,7 +30,8 @@ const Item = (props) => {
 
 const List = (props) => {
   var listProfiles = [];
-  if (props.profiles) {
+  var showData;
+  if (props.profiles && props.profiles.length > 0) {
     var index = 0;
     props.profiles.forEach((profile) => {
       listProfiles.push(<Item
@@ -44,6 +45,9 @@ const List = (props) => {
         username={profile.username}/>);
       index++;
     });
+    showData = (<div id="view-list">{listProfiles}</div>)
+  } else {
+    showData = (<span id="no-data">&#8226;&#8226;&#8226;</span>)
   }
   return (
     <div id="list">
@@ -79,9 +83,7 @@ const List = (props) => {
         </a>
       </div>
       <div className="limit" style={{ width: "94.25%", margin: "0px", marginBottom: "2.5px" }}></div>
-      <div id="view-list">
-        {listProfiles}
-      </div>
+      {showData}
     </div>
   )
 }

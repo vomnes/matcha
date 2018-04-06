@@ -41,6 +41,7 @@ func handleAPIRoutes() *mux.Router {
 	api.HandleFunc("/v1/users/{username}/fake", user.HandleReportFake)
 	api.HandleFunc("/v1/users/data/match", user.Match)
 	api.HandleFunc("/v1/users/data/me", user.GetMe)
+	api.HandleFunc("/v1/users/data/tags", user.GetExistingTags)
 	api.HandleFunc("/storage/pictures/profiles/{username}/{item}", user.GetPicture)
 	return api
 }

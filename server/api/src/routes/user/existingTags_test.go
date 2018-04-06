@@ -68,3 +68,27 @@ func TestGetExistingTagsNoTags(t *testing.T) {
 		t.Errorf("%v", strError)
 	}
 }
+
+func TestGetExistingTagsWrongMethod(t *testing.T) {
+	tests.DbClean()
+	context := tests.ContextData{
+		DB: tests.DB,
+	}
+	r := tests.CreateRequest("POST", "/v1/users/data/tags", nil, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		GetExistingTags(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	expectedJSONResponse := map[string]interface{}{
+		"error": "Page not found",
+	}
+	strError := tests.CompareResponseJSONCode(w, 404, expectedJSONResponse)
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+}
