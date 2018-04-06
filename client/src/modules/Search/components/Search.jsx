@@ -91,6 +91,7 @@ class Search extends Component {
       finish_position: 20,
       optionsBase64: '',
       allDataCollected: false,
+      selectProfile: '',
     }
     this.updateState = this.updateState.bind(this);
     this.searchProfiles = this.searchProfiles.bind(this);
@@ -146,12 +147,13 @@ class Search extends Component {
       <div>
         <Browsing existingTags={this.state.existingTags}age={this.state.me.age} updateState={this.updateState} searchProfiles={this.searchProfiles}/>
         <div id="result-area">
-          <DataMap lat={this.state.me.lat} lng={this.state.me.lng} profiles={this.state.profiles}/>
+          <DataMap lat={this.state.me.lat} lng={this.state.me.lng} profiles={this.state.profiles} updateState={this.updateState}/>
           <List profiles={this.state.profiles}
             sortType={this.state.sort_type} sortDirection={this.state.sort_direction}
             updateState={this.updateState} searchProfiles={this.searchProfiles}
             loadMoreData={this.loadMoreData}
             allDataCollected={this.state.allDataCollected}
+            selectProfile={this.state.selectProfile}
           />
         </div>
       </div>

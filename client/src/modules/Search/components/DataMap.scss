@@ -1,3 +1,5 @@
+@import '../../../design/style/variables.scss';
+
 #data-map {
   position: relative;
   height: 490px;
@@ -15,6 +17,9 @@
   background: white;
   top: -36px;
   left: -5px;
+  &:hover {
+    box-shadow: 0 3px 6px rgba(230,57,70,1);
+  }
 }
 
 .picture-pin-background {
@@ -26,6 +31,10 @@
   right: 0;
   left: 0;
   top: 0;
+}
+
+#map-mark {
+  cursor: pointer;
 }
 
 @media (max-width: 650px) {

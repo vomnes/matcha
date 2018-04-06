@@ -10,20 +10,23 @@ import DownRed from '../../../design/icons/sort-down-red.svg'
 
 const Item = (props) => {
   return (
-    <div className="profile-element">
-      <div className="picture-list">
-        <div className="picture-list-background" style={{ backgroundImage: "url(" + props.picture + ")" }}></div>
+    <div>
+      <div className="profile-element" style={ props.isSelectedOnMap ? { backgroundColor: "#EAEAEA" } : null }>
+        <div className="picture-list">
+          <div className="picture-list-background" style={{ backgroundImage: "url(" + props.picture + ")" }}></div>
+        </div>
+        <a href={`/profile/${props.username}`}><span className="name-list" title={`See ${props.firstname}'s profile`}>{props.name}</span></a>
+        <span className="age-list">{props.age} year old</span>
+        <div className="distance-list">
+          <span className="list-value"> {props.distance} km</span>
+          <img alt="Distance icon" src={Pin} className="list-icon"/>
+        </div>
+        <div className="rating-list">
+          <span className="list-value"> {Math.round(props.rating * 10) / 10} / 5</span>
+          <img alt="Rating icon" src={Star} className="list-icon"/>
+        </div>
       </div>
-      <a href={`/profile/${props.username}`}><span className="name-list" title={`See ${props.firstname}'s profile`}>{props.name}</span></a>
-      <span className="age-list">{props.age} year old</span>
-      <div className="distance-list">
-        <span className="list-value"> {props.distance} km</span>
-        <img alt="Distance icon" src={Pin} className="list-icon"/>
-      </div>
-      <div className="rating-list">
-        <span className="list-value"> {Math.round(props.rating * 10) / 10} / 5</span>
-        <img alt="Rating icon" src={Star} className="list-icon"/>
-      </div>
+      <div className="limit" style={{ width: "94.25%", margin: "2.5px 0px 2.5px" }}></div>
     </div>
   )
 }
@@ -42,7 +45,10 @@ const List = (props) => {
         age={profile.age}
         distance={profile.distance}
         rating={profile.rating}
-        username={profile.username}/>);
+        username={profile.username}
+        isSelectedOnMap={props.selectProfile === profile.username}
+      />
+    );
       index++;
     });
     showData = (

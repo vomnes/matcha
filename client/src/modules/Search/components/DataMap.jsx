@@ -5,22 +5,25 @@ import Pin from '../../../design/icons/maps-and-flags-red.svg';
 import MyPin from '../../../design/icons/maps-and-flags-blue.svg';
 
 const PositionMark = (props) => {
-    if (props.picture !== undefined) {
-      return (
-        <div>
-          <img alt="Location pin" src={Pin} className="map-pin"/>
-          <div className="picture-pin">
-            <div className="picture-pin-background" style={{ backgroundImage: "url(" + props.picture.replace("h=1000&q=10", "h=40&q=100") + ")" }}></div>
-          </div>
+  const _onClick = () => {
+    props.updateState('selectProfile', props.username);
+  }
+  if (props.picture !== undefined) {
+    return (
+      <div title={`${props.firstname} ${props.lastname}'s location`} id="map-mark" onClick={_onClick}>
+        <img alt="Location pin" src={Pin} className="map-pin"/>
+        <div className="picture-pin">
+          <div className="picture-pin-background" style={{ backgroundImage: "url(" + props.picture.replace("h=1000&q=10", "h=40&q=100") + ")" }}></div>
         </div>
-      )
-    } else {
-      return (
-        <div>
-          <img alt="Location pin" src={MyPin} className="map-pin"/>
-        </div>
-      )
-    }
+      </div>
+    )
+  } else {
+    return (
+      <div title="Your location" style={{ cursor: "default" }}>
+        <img alt="Location pin" src={MyPin} className="map-pin"/>
+      </div>
+    )
+  }
 }
 
 const Map = (props) => {
@@ -36,8 +39,11 @@ const Map = (props) => {
             lat={profile.latitude}
             lng={profile.longitude}
             picture={profile.picture_url}
-            text={profile.username}
+            username={profile.username}
+            firstname={profile.firstname}
+            lastname={profile.lastname}
             key={index}
+            updateState={props.updateState}
           />);
         index++;
       });
@@ -85,7 +91,7 @@ class DataMap extends Component {
   render() {
     return (
       <div id="data-map" style={{ height: window.innerWidth > 650 ? this.state.mapHeight : 200 }}>
-        <Map lat={this.props.lat} lng={this.props.lng} profiles={this.props.profiles}/>
+        <Map lat={this.props.lat} lng={this.props.lng} profiles={this.props.profiles} updateState={this.props.updateState}/>
       </div>
     )
   }
