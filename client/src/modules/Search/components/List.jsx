@@ -11,7 +11,7 @@ import DownRed from '../../../design/icons/sort-down-red.svg'
 const Item = (props) => {
   return (
     <div>
-      <div className="profile-element" style={ props.isSelectedOnMap ? { backgroundColor: "#EAEAEA" } : null }>
+      <div className="profile-element" id={props.username} style={ props.isSelectedOnMap ? { backgroundColor: "#EAEAEA" } : null }>
         <div className="picture-list">
           <div className="picture-list-background" style={{ backgroundImage: "url(" + props.picture + ")" }}></div>
         </div>

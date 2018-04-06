@@ -5,12 +5,13 @@ import Pin from '../../../design/icons/maps-and-flags-red.svg';
 import MyPin from '../../../design/icons/maps-and-flags-blue.svg';
 
 const PositionMark = (props) => {
-  const _onClick = () => {
+  const selectProfile = () => {
     props.updateState('selectProfile', props.username);
+    document.getElementById(props.username).scrollIntoView({ behavior: "smooth", inline: "center" });
   }
   if (props.picture !== undefined) {
     return (
-      <div title={`${props.firstname} ${props.lastname}'s location`} id="map-mark" onClick={_onClick}>
+      <div title={`See ${props.firstname} ${props.lastname}`} id="map-mark" onClick={selectProfile}>
         <img alt="Location pin" src={Pin} className="map-pin"/>
         <div className="picture-pin">
           <div className="picture-pin-background" style={{ backgroundImage: "url(" + props.picture.replace("h=1000&q=10", "h=40&q=100") + ")" }}></div>
