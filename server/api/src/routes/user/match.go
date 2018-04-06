@@ -117,8 +117,14 @@ func checkInput(data *bodyData) {
 	// Set sort direction for SQL
 	if data.SortDirection == "reverse" {
 		data.SortDirection = "desc"
+		if data.SortType == "distance" {
+			data.SortDirection = "asc"
+		}
 	} else {
 		data.SortDirection = "asc"
+		if data.SortType == "distance" {
+			data.SortDirection = "desc"
+		}
 	}
 	// Default number users => 20
 	if data.FinishPosition == 0 {
@@ -271,7 +277,8 @@ func Match(w http.ResponseWriter, r *http.Request) {
 	}
 	var listUsers []map[string]interface{}
 	nbUser := uint(len(users))
-	for i := inputData.StartPosition; i < inputData.FinishPosition && i < nbUser; i++ {
+	// pretty.Print("all ->", users)
+	for i := inputData.StartPosition; i < nbUser; i++ {
 		listUsers = append([]map[string]interface{}{
 			map[string]interface{}{
 				"username":    users[i].Username,

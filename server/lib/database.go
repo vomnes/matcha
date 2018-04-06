@@ -35,8 +35,8 @@ type User struct {
 
 // Tag is the data structure of the table Tag from PostgreSQL
 type Tag struct {
-	ID   string `db:"id"`
-	Name string `db:"name"`
+	ID   string `db:"id" json:"id"`
+	Name string `db:"name" json:"name"`
 }
 
 // UserTag is the data structure of the table User_Tag from PostgreSQL

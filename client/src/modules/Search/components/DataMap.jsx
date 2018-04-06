@@ -10,7 +10,7 @@ const PositionMark = (props) => {
         <div>
           <img alt="Location pin" src={Pin} className="map-pin"/>
           <div className="picture-pin">
-            <div className="picture-pin-background" style={{ backgroundImage: "url(" + props.picture + ")" }}></div>
+            <div className="picture-pin-background" style={{ backgroundImage: "url(" + props.picture.replace("h=1000&q=10", "h=40&q=100") + ")" }}></div>
           </div>
         </div>
       )

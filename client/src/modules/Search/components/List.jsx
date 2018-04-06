@@ -63,12 +63,12 @@ const List = (props) => {
         <a id="up-down-area">
           <div>
             <img alt="Filter logo" title="Ascendant sort"
-              src={props.sortDirection === "asc" ? UpRed : UpBlack }
-              onClick={() => props.updateState("sort_direction", 'asc')}
+              src={props.sortDirection === "normal" ? UpRed : UpBlack }
+              onClick={() => props.updateState("sort_direction", 'normal')}
               className="up-down-sort"/>
             <img alt="Filter logo" title="Descendant sort"
-              src={props.sortDirection === "desc" ? DownRed : DownBlack }
-              onClick={() => props.updateState("sort_direction", 'desc')}
+              src={props.sortDirection === "reverse" ? DownRed : DownBlack }
+              onClick={() => props.updateState("sort_direction", 'reverse')}
               className="up-down-sort" style={{ top: "8px" }}/>
           </div>
         </a>

@@ -311,8 +311,8 @@ class Browsing extends Component {
       <div id="browsing">
         <div id="parameters">
           <SliderDynamicBounds id="range-age" min={16} max={100} globalUpdateState={this.props.updateState} defaultValue={[this.props.age - 3, this.props.age + 3]} logo={AgeLogo} title="age" unit="year old"/>
-          <SliderDynamicBounds id="range-rating" min={1} max={50} globalUpdateState={this.props.updateState} defaultValue={[25, 50]} logo={StarLogo} title="rating" unit="star(s)" div={10} marks={marksRating}/>
-          <SimpleSlider id="range-distance" min={0} max={150} globalUpdateState={this.props.updateState} defaultValue={50} logo={DistanceLogo} title="distance" unit="km"/>
+          <SliderDynamicBounds id="range-rating" min={1} max={50} globalUpdateState={this.props.updateState} defaultValue={[0, 50]} logo={StarLogo} title="rating" unit="star(s)" div={10} marks={marksRating}/>
+          <SimpleSlider id="range-distance" min={1} max={150} globalUpdateState={this.props.updateState} defaultValue={50} logo={DistanceLogo} title="distance" unit="km"/>
           <input id="location" type="text" name="location"
             placeholder={this.state.newLocation} value={this.state.location} onChange={this.handleUserInput}/>
           <span id="send-location" onClick={() => GetGeocode(this.state.location, this.updateState, this.props.updateState)} title="Search for location">{this.state.location ? '↪' : null}</span>
@@ -320,45 +320,7 @@ class Browsing extends Component {
           <div id="browsing-tags">
             <Tags tags={this.state.tags} deleteTag={this.deleteTag}/>
             <BasicAutocomplete
-              items={
-                [
-                  {
-                    id: '1',
-                    name: 'apple',
-                  },
-                  {
-                    id: '2',
-                    name: 'orange',
-                  },
-                  {
-                    id: '3',
-                    name: 'carrot',
-                  },
-                  {
-                    id: '1',
-                    name: 'apple1',
-                  },
-                  {
-                    id: '2',
-                    name: 'orange2',
-                  },
-                  {
-                    id: '3',
-                    name: 'carrot3',
-                  },
-                  {
-                    id: '1',
-                    name: 'apple4',
-                  },
-                  {
-                    id: '2',
-                    name: 'orange5',
-                  },
-                  {
-                    id: '6',
-                    name: 'carrotaaaaaaaaaaaaaaaaaaaaaaaa6',
-                  },
-                ]}
+              items={this.props.existingTags}
               appendTag={this.appendTag}
               tags={this.state.tags}
             />

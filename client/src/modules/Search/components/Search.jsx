@@ -21,8 +21,8 @@ const GetMe = async (updateState) => {
   }
 }
 
-const GetMatch = async (updateState) => {
-  let res = await api.match();
+const GetMatch = async (updateState, options) => {
+  let res = await api.match(options);
   if (res) {
     const response = await res.json();
     if (res.status >= 500) {
@@ -56,7 +56,7 @@ class Search extends Component {
       lat: 0.0,
       lng: 0.0,
       sort_type: "rating",   // age, rating, distance, common_tags
-      sort_direction: "asc", // desc or asc
+      sort_direction: "normal", // normal or reverse
     }
     this.updateState = this.updateState.bind(this);
     this.searchProfiles = this.searchProfiles.bind(this);
@@ -77,9 +77,14 @@ class Search extends Component {
       sort_type: this.state.sort_type,
       sort_direction: this.state.sort_direction,
     }
-    // console.log(options);
     const objJSONBase64 = Buffer.from(JSON.stringify(options)).toString("base64");
-    console.log(objJSONBase64);
+    GetMatch(this.updateState, objJSONBase64);
+    if (this.state.lat && this.state.lng) {
+      var me = this.state.me;
+      me['lat'] = this.state.lat;
+      me['lng'] = this.state.lng;
+      this.updateState('me', me);
+    }
   }
   componentDidMount() {
     GetMe(this.updateState);
@@ -88,7 +93,7 @@ class Search extends Component {
   render() {
     return (
       <div>
-        <Browsing age={this.state.me.age} updateState={this.updateState} searchProfiles={this.searchProfiles}/>
+        <Browsing existingTags={[{ id: "1", name: "here" }]}age={this.state.me.age} updateState={this.updateState} searchProfiles={this.searchProfiles}/>
         <div id="result-area">
           <DataMap lat={this.state.me.lat} lng={this.state.me.lng} profiles={this.state.profiles}/>
           <List profiles={this.state.profiles}
