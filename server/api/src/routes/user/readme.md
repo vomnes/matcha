@@ -1,10 +1,10 @@
 Go back to [Table of Contents](../../../)
 
 ### Users
-#### GET - /v1/users/match
+#### GET - /v1/users/data/match
 
 ```
-JSON Body :
+JSON Encoded Base64 - Search-Parameters Header :
   {
     "age": {
      "min": int,
@@ -27,7 +27,7 @@ JSON Body :
   }
 ```
 
-The route match will return an array with the possible match of the connected user according his data and parameters in the body.  
+The route match will return an array with the possible match of the connected user according his data and parameters from the header (base64).  
 Check input :  
 - Age must be a float greater than 1  
 - Rating must be a float between 0.1 and 5.0  
@@ -70,6 +70,90 @@ JSON Content Response :
       "distance":    float64 /* Round about 0.1 */
     },
   ]
+```
+
+---
+
+#### GET - /v1/users/data/match/{username}
+
+```
+JSON Encoded Base64 - Search-Parameters Header :
+  {
+    "age": {
+     "min": int,
+     "max": int
+    },
+    "rating": {
+     "min": float,
+     "max": float
+    },
+    "distance": {
+     "max": int
+    },
+    "tags": []string,
+    "lat": float,
+    "lng": float,
+    "sort_type": string,      // age, rating, distance, common_tags
+    "sort_direction": string, // normal or reverse
+  }
+```
+
+The route match will return an object with next and previous profile, related to username (url).  
+Check input :  
+- Age must be a float greater than 1  
+- Rating must be a float between 0.1 and 5.0  
+- If min > max, automatic swap  
+- Distance is an integer with default value 50 (km)  
+- Sort type available are age, common_tags (when there are no selected tags) distance, rating (default)  
+- Sort direction available are reverse and normal  
+- Finish position is an unsigned integer, default value 20  
+
+Collect the logged in user data (users, tags)  
+Handle genre by creating an array with the possible match  
+Create the request according the logged in user data and options from the body that will the matching users  
+- Default range age is between -3 and +3 the age of the logged in user  
+
+Generate an map[string]interface{} array with the profiles next to (+1 && -1) the target username from url parameter, add only if exists  
+Return HTTP Code 200 Status OK - JSON Content  
+
+```
+JSON Content Response :
+  {
+    "previous": {
+      "username":    string,
+      "firstname":   string,
+      "lastname":    string,
+      "picture_url": string,
+    },
+    "next": {
+      "username":    string,
+      "firstname":   string,
+      "lastname":    string,
+      "picture_url": string,
+    },
+  },
+```
+
+___
+
+#### GET - /v1/users/data/me
+
+Collect the data concerning the user in the table Users of the database  
+If the user doesn't exists  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: User[<username>] doesn't exists"  
+Return HTTP Code 200 Status OK - JSON Content User data  
+
+```
+JSON Content Response :
+  {
+    "username":         string,
+    "firstname":        string,
+    "lastname":         string,
+    "age":              int,
+    "profile_picture":  string,
+    "lat":              float64,
+    "lng":              float64,
+  }
 ```
 
 ___
@@ -117,7 +201,6 @@ JSON Content Response :
     "isMe": bool,
   }
 ```
-
 ___
 
 #### POST - /v1/users/{username}/like

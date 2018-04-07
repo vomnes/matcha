@@ -201,7 +201,7 @@ func getUsers(db *sqlx.DB, userID string, optionData bodyData) ([]match, int, st
 	}
 	// Handle order
 	request += ` ORDER BY ` + optionData.SortType + ` ` + optionData.SortDirection
-	if optionData.Latitude > 0 && optionData.Longitude > 0 {
+	if optionData.Latitude != 0 && optionData.Longitude != 0 {
 		loggedInUser.Latitude = &optionData.Latitude
 		loggedInUser.Longitude = &optionData.Longitude
 	}
@@ -257,8 +257,9 @@ func matchUsers(w http.ResponseWriter, r *http.Request) (bodyData, []match, int,
 }
 
 // GlobalMatch is the route '/v1/users/data/match' with the method GET.
-// The body may contains the age (min-max), rating (min-max), distance (max),
-// tags, lat, lng, sort_type, sort_direction, start_position and finish_position
+// Search-Parameters in the header may contains encoded in base64
+// the age (min-max), rating (min-max), distance (max), tags, lat, lng,
+// sort_type, sort_direction, start_position and finish_position.
 // Check input :
 // - Age must be a float greater than 1
 // - Rating must be a float between 0.1 and 5.0
@@ -309,8 +310,9 @@ func GlobalMatch(w http.ResponseWriter, r *http.Request) {
 }
 
 // TargetedMatch is the route '/v1/users/data/match/{username}' with the method GET.
-// The body may contains the age (min-max), rating (min-max), distance (max),
-// tags, lat, lng, sort_type, sort_direction, start_position and finish_position
+// Search-Parameters in the header may contains encoded in base64
+// the age (min-max), rating (min-max), distance (max), tags, lat, lng,
+// sort_type, sort_direction.
 // Check input :
 // - Age must be a float greater than 1
 // - Rating must be a float between 0.1 and 5.0

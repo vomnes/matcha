@@ -25,7 +25,7 @@ func getMeData(db *sqlx.DB, userID, username string) (lib.User, int, string) {
 // GetMe is the route '/v1/users/data/me' with the method GET.
 // Collect the data concerning the user in the table Users of the database
 // If the user doesn't exists
-// 		-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: User<username> doesn't exists"
+// 		-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: User[<username>] doesn't exists"
 // Return HTTP Code 200 Status OK - JSON Content User
 func GetMe(w http.ResponseWriter, r *http.Request) {
 	db, username, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"GET"})
