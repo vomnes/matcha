@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import Browsing from './Browsing.jsx'
 import DataMap from './DataMap.jsx'
 import List from './List.jsx'
-import './Search.css';
 import api from '../../../library/api'
 
 const GetMe = async (updateState) => {
@@ -148,7 +147,7 @@ class Search extends Component {
     return (
       <div>
         <Browsing existingTags={this.state.existingTags}age={this.state.me.age} updateState={this.updateState} searchProfiles={this.searchProfiles}/>
-        <div id="result-area">
+        <div id="result-area" style={{ position: "relative", marginTop: "10px" }}>
           <DataMap lat={this.state.me.lat} lng={this.state.me.lng} profiles={this.state.profiles} updateState={this.updateState}/>
           <List profiles={this.state.profiles}
             sortType={this.state.sort_type} sortDirection={this.state.sort_direction}

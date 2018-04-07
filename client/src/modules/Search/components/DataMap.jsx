@@ -57,7 +57,7 @@ const Map = (props) => {
       <GoogleMap
         bootstrapURLKeys={{ key: 'AIzaSyCPhgHvPYOdkj1t5RLcvlRP_sTt6hgK71o' }}
         center={{ lat: lat, lng: lng }}
-        defaultZoom={13}
+        defaultZoom={12}
         options={mapOptions}
       >
       {marks}

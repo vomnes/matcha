@@ -6,23 +6,6 @@
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 
-#parameters {
-  position: relative;
-  height: 100px;
-}
-
-#range-rating {
-  position: absolute;
-  left: 25%;
-  top: 0px;
-}
-
-#range-distance {
-  position: absolute;
-  right: 25%;
-  top: 0px;
-}
-
 /* Location */
 
 #location {
@@ -43,7 +26,24 @@
   cursor: pointer;
 }
 
-/* Browsing */
+/* Tags */
+
+#parameters {
+  position: relative;
+  height: 100px;
+}
+
+#range-rating {
+  position: absolute;
+  left: 25%;
+  top: 0px;
+}
+
+#range-distance {
+  position: absolute;
+  right: 25%;
+  top: 0px;
+}
 
 #browsing-tags {
   position: relative;
@@ -109,13 +109,12 @@ input#browsing-new-tag {
   overflow: hidden;
 }
 
-/* Range */
+/* Slider Range */
 
 .range-area {
   position: relative;
   height: 50px;
   width: 24.8%;
-  // border: 1px solid;
 }
 
 .range-logo {
@@ -149,7 +148,7 @@ input#browsing-new-tag {
   right: 2.5px;
 }
 
-/* btn */
+/* Update Button */
 
 .update-btn {
   position: absolute;
@@ -194,9 +193,9 @@ input#browsing-new-tag {
     visibility: hidden;
   }
   .range-values {
-    top: 12.5px;
+    top: 25%;
     right: 7%;
-    font-size: 7.5px;
+    font-size: 1.8vw;
   }
   .range-slider {
     width: 90%;

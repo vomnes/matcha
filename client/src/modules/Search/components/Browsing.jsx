@@ -137,7 +137,7 @@ class SimpleSlider extends Component {
       <div className="range-area" id={this.props.id}>
         <img alt="Range logo" title={this.props.title} src={this.props.logo} className="range-logo"/>
         <label className="range-title">{this.props.title}</label>
-        <label className="range-values">Maximum {this.state.value / divider} {this.props.unit}</label>
+        <label className="range-values">{`${window.innerWidth > 865 ? "Maximum" : "Max."} ${this.state.value / divider} ${this.props.unit}`}</label>
         <div className="range-slider">
           <Slider value={this.state.value} min={this.state.min} max={this.state.max}
             onChange={this.onSliderChange} onAfterChange={this.onAfterChange}
