@@ -18,7 +18,6 @@ const getUserData = async (username, updateState) => {
       updateState("userExist", false);
       console.log(response.error);
     } else {
-      console.log(response);
       updateState("data", response);
       return;
     }
@@ -46,10 +45,9 @@ const targetedMatch = async (optionsBase64, username, updateState) => {
 
 const SideProfile = (props) => {
   return (
-    <div className={`${props.order}-profile`}>
+    <div className={`${props.order}-profile`} title={`See ${props.firstname} ${props.lastname}'s profile`} onClick={() => props.getSideProfile(props.username)}>
       <div className="picture-user-background" style={{ backgroundImage: "url(" + props.picture_url + ")" }}>
-        <span className="side-username">{`${props.firstname} ${props.lastname}`}</span>
-        <span className="side-see-profile" style={{ [props.side]: "25px" }} onClick={() => props.getSideProfile(props.username)}>{props.sign}</span>
+        <span className="side-fullname">{`${props.firstname} ${props.lastname}`}</span>
       </div>
     </div>
   );
@@ -124,12 +122,12 @@ class SeeProfile extends Component {
     var left;
     var right;
     if (this.state.previousProfile.picture_url) {
-      left = <SideProfile getSideProfile={this.getSideProfile} side="left" order="previous" username={this.state.previousProfile.username} picture_url={this.state.previousProfile.picture_url} firstname={this.state.previousProfile.firstname} lastname={this.state.previousProfile.lastname} sign="&larr;"/>;
+      left = <SideProfile getSideProfile={this.getSideProfile} order="previous" username={this.state.previousProfile.username} picture_url={this.state.previousProfile.picture_url} firstname={this.state.previousProfile.firstname} lastname={this.state.previousProfile.lastname}/>;
     } else {
       left = null;
     }
     if (this.state.nextProfile.picture_url) {
-      right = <SideProfile getSideProfile={this.getSideProfile} side="right" order="next" username={this.state.nextProfile.username} picture_url={this.state.nextProfile.picture_url} firstname={this.state.nextProfile.firstname} lastname={this.state.nextProfile.lastname} sign="&rarr;"/>;
+      right = <SideProfile getSideProfile={this.getSideProfile} order="next" username={this.state.nextProfile.username} picture_url={this.state.nextProfile.picture_url} firstname={this.state.nextProfile.firstname} lastname={this.state.nextProfile.lastname}/>;
     } else {
       right = null;
     }

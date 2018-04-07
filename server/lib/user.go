@@ -10,7 +10,7 @@ import (
 
 const (
 	// UsernameMinLength corresponds to the minimum character length of the username
-	UsernameMinLength = 2
+	UsernameMinLength = 6
 	// UsernameMaxLength corresponds to the maximum character length of the username
 	UsernameMaxLength = 64
 	// EmailAddressMaxLength corresponds to the maximum character length of the email address

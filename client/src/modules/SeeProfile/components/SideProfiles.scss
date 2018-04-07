@@ -1,11 +1,5 @@
 @import './SeeProfile.scss';
 
-@mixin side-effect ($rY, $tX, $sY) {
-  -webkit-transform: rotateY($rY) translateX($tX) skewY($sY) scale(0.3, 0.5);
-  -moz-transform: rotateY($rY) translateX($tX) skewY($sY) scale(0.3, 0.5);
-  -o-transform: rotateY($rY) translateX($tX) skewY($sY) scale(0.3, 0.5);
-}
-
 %side-profile {
   position: absolute;
   width: 95%;
@@ -16,7 +10,7 @@
   border-radius: 10px;
   background: white;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16);
-  cursor: default;
+  cursor: pointer;
   &:hover {
     opacity: 0.9;
     box-shadow: 0 3px 6px rgba(0,0,0,0.16),
@@ -58,16 +52,19 @@
   @extend %side-profile-div;
 }
 
-.side-username {
+.side-fullname {
   position: absolute;
-  top: 35%;
   @include position-center(50%);
-  font-size: 150%;
-  font-family: $font-picture;
-  color: #EEF2F3;
+  border-radius: 30px;
+  bottom: 20%;
+  font-size: 20px;
+  font-family: $font;
+  color: #EAEAEA;
   text-align: center;
-  padding: 10px;
-  border-radius: 35px;
+  padding: 5px;
+  width: 45%;
+  border: 0.5px solid white;
+  background: #eaeaea4d;
 }
 
 .side-see-profile {
@@ -83,7 +80,7 @@
 }
 
 @media (max-width: 560px) {
-  .side-username {
+  .side-fullname {
     @include hide;
   }
 }
