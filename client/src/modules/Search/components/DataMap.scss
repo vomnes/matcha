@@ -12,13 +12,12 @@
   position: absolute;
   width: 26px;
   height: 26px;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16);
   border-radius: 25px;
   background: white;
   top: -36px;
   left: -5px;
   &:hover {
-    box-shadow: 0 3px 6px rgba(230,57,70,1);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16);
   }
 }
 

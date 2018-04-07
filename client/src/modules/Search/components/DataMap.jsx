@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import GoogleMapReact from 'google-map-react';
+import GoogleMap from 'google-map-react';
 import './DataMap.css';
 import Pin from '../../../design/icons/maps-and-flags-red.svg';
 import MyPin from '../../../design/icons/maps-and-flags-blue.svg';
+import mapStyle from './styleMap.js';
 
 const PositionMark = (props) => {
   const selectProfile = () => {
@@ -31,6 +32,9 @@ const Map = (props) => {
   if (props.lat && props.lng) {
     const lat = props.lat;
     const lng = props.lng;
+    const mapOptions = {
+      styles: mapStyle,
+    };
     var marks = [];
     if (props.profiles && props.profiles.length > 0) {
       var index = 0;
@@ -50,10 +54,11 @@ const Map = (props) => {
       });
     }
     return (
-      <GoogleMapReact
+      <GoogleMap
         bootstrapURLKeys={{ key: 'AIzaSyCPhgHvPYOdkj1t5RLcvlRP_sTt6hgK71o' }}
         center={{ lat: lat, lng: lng }}
-        defaultZoom={12}
+        defaultZoom={13}
+        options={mapOptions}
       >
       {marks}
       <PositionMark
@@ -61,7 +66,7 @@ const Map = (props) => {
         lng={lng}
         text={'Your location'}
       />
-      </GoogleMapReact>
+      </GoogleMap>
     )
   }
   return null;
