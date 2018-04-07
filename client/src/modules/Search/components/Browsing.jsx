@@ -248,7 +248,7 @@ class Browsing extends Component {
     super(props);
     this.state = {
       location: '',
-      newLocation: 'Enter a new location',
+      newLocation: (window.innerWidth > 650) ? 'Enter a new location' : 'Set location',
       menuTagsIsOpen: false,
       tags: []
     };

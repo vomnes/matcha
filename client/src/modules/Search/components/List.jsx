@@ -57,13 +57,20 @@ const List = (props) => {
     showData = (
       <div id="view-list">
         {listProfiles}
-        {!props.allDataCollected ? (<span id="more-data" title="Click to load more data" onClick={props.loadMoreData}>Load more profiles</span>) : (<span id="no-more-data">&#8226;&#8226;&#8226;</span>)}
+        {!props.allDataCollected ? (<span id="more-data" title="Click to load more data" onClick={props.loadMoreData}>Load more profiles</span>) : (<span id="no-more-data" title="No more profiles">&#8226;&#8226;&#8226;</span>)}
       </div>)
   } else {
-    showData = (<span id="no-data">&#8226;&#8226;&#8226;</span>)
+    showData = (<span id="no-data" title="No profiles with the search">&#8226;&#8226;&#8226;</span>)
+  }
+  var listResponsiveStyle;
+  if (window.innerWidth <= 650) {
+    listResponsiveStyle = {height: "100px"}
+    if (window.innerHeight >  500) {
+      listResponsiveStyle = {height: (window.innerHeight - 393) + "px"}
+    }
   }
   return (
-    <div id="list">
+    <div id="list" style={listResponsiveStyle}>
       <div id="sort-list">
         <a className="sort-title" onClick={() => props.updateState("sort_type", "rating")} style={props.sortType === "rating" ? { borderRadius: "2px", border: "0.5px solid #e63946"} : null }>
           <span title="Sort by rating">Rating</span>

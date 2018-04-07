@@ -22,7 +22,7 @@ const PositionMark = (props) => {
   } else {
     return (
       <div title="Your location" style={{ cursor: "default" }}>
-        <img alt="Location pin" src={MyPin} className="map-pin"/>
+        <img alt="Pin" src={MyPin} className="map-pin"/>
       </div>
     )
   }

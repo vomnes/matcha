@@ -27,11 +27,13 @@
 
 #location {
   position: absolute;
-  right: 25px;
+  right: 24px;
   top: 15px;
   font-size: 13.5px;
   border: 1.5px solid $design-red;
   padding: 2.5px;
+  width: 19vw;
+  max-width: 180px;
 }
 
 #send-location {
@@ -181,4 +183,51 @@ input#browsing-new-tag {
   font-size: 14.5px;
   top: 7.5px;
   font-weight: lighter;
+}
+
+@media (max-width: 650px) {
+  /* UP */
+  .range-logo {
+    height: 15px;
+  }
+  .range-title {
+    visibility: hidden;
+  }
+  .range-values {
+    top: 12.5px;
+    right: 7%;
+    font-size: 7.5px;
+  }
+  .range-slider {
+    width: 90%;
+    bottom: 7.5px;
+    right: 3.5px;
+    left: 3.5px;
+  }
+  #location {
+      right: 10px;
+      top: 13px;
+  }
+
+  /* DOWN */
+  #hide-scroll {
+    width: 66%;
+  }
+  #new-tag-area {
+    right: 12.25%;
+    top: 4px;
+    width: 15vw;
+    padding-right: 15px;
+  }
+  #browsing-new-tag {
+    width: 100%;
+  }
+  #filter-btn-big {
+    width: 22.5px;
+    height: 44.5%;
+    right: 3%;
+  }
+  .filter-text {
+    visibility: hidden;
+  }
 }

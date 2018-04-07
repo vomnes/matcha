@@ -37,11 +37,13 @@ const GetMatch = async (updateState, optionsBase64, profiles) => {
       } else {
         if (profiles) {
           updateState("profiles", response.concat(profiles));
-          if (response.length < 20) {
-            updateState("allDataCollected", true);
-          }
         } else {
           updateState("profiles", response);
+        }
+        if (response.length < 20) {
+          updateState("allDataCollected", true);
+        } else {
+          updateState("allDataCollected", false);
         }
       }
       return;

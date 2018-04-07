@@ -35,7 +35,7 @@
   color: #DBDBDB;
   width: 100%;
   top: 10px;
-  @include position-center(35%);
+  @include position-center(29%);
   padding: 2.5px;
   cursor: pointer;
   &:hover {
@@ -50,6 +50,7 @@
   width: 100%;
   top: 5px;
   @include position-center(47%);
+  cursor: default;
 }
 
 .picture-list {
@@ -212,6 +213,10 @@
     top: 30px;
     right: 0px;
   }
+  .filter-text {
+    font-size: 1.2vw;
+    top: 35%;
+  }
 }
 
 @media (max-width: 650px) {
@@ -219,7 +224,6 @@
     position: relative;
     top: 0px;
     width: 100%;
-    height: 390px;
     margin-top: 10px;
   }
   #view-list {
@@ -227,7 +231,7 @@
     padding-right: 10px;
     max-width: 100%;
     width: 95%;
-    height: 92%;
+    height: 85%;
   }
   .distance-list {
     top: 17px;
