@@ -2,12 +2,10 @@ package main
 
 import (
 	"context"
-	"errors"
 	"net/http"
 	"strings"
 
 	"../../lib"
-	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/go-redis/redis"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
@@ -65,9 +63,9 @@ func withRights() adapter {
 			}
 			var tokenString string
 			// Get token from the Authorization header format: Authorization: Bearer <jwt>
-			tokens, right := r.Header["Authorization"]
-			if right && len(tokens) >= 1 {
-				tokenString = tokens[0]
+			tokens := r.Header.Get("Authorization")
+			if tokens != "" {
+				tokenString = tokens
 				if !strings.HasPrefix(tokenString, "Bearer ") {
 					lib.RespondWithErrorHTTP(w, 403, "Access denied - Authorization wrong standard")
 					return
@@ -79,25 +77,9 @@ func withRights() adapter {
 			}
 			// Check JWT validity on every request
 			// Parse takes the token string and a function for looking up the key
-			token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-					return nil, errors.New("Unexpected signing method")
-				}
-				return lib.JWTSecret, nil
-			})
+			claims, err := lib.AnalyseJWT(tokenString)
 			if err != nil {
-				if ve, yes := err.(*jwt.ValidationError); yes {
-					if ve.Errors&(jwt.ValidationErrorExpired) != 0 {
-						lib.RespondWithErrorHTTP(w, 403, "Access denied - Token expired")
-						return
-					}
-				}
-				lib.RespondWithErrorHTTP(w, 403, "Access denied - Not a valid JSON Web Token")
-				return
-			}
-			claims, ok := token.Claims.(jwt.MapClaims)
-			if !ok || !token.Valid {
-				lib.RespondWithErrorHTTP(w, 403, "Access denied - Not a valid token")
+				lib.RespondWithErrorHTTP(w, 403, "Access denied - "+err.Error())
 				return
 			}
 			// Check token in Redis storage

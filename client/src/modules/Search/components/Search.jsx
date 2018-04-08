@@ -3,6 +3,7 @@ import Browsing from './Browsing.jsx'
 import DataMap from './DataMap.jsx'
 import List from './List.jsx'
 import api from '../../../library/api'
+import encode from '../../../library/utils/encode.js'
 
 const GetMe = async (updateState) => {
   let res = await api.me();
@@ -115,7 +116,7 @@ class Search extends Component {
       start_position,
       finish_position,
     }
-    return Buffer.from(JSON.stringify(options)).toString("base64");
+    return encode.objectToBase64(options);
   }
   searchProfiles = (type) => {
     this.updateState('start_position', 0);

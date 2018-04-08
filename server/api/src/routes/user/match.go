@@ -1,8 +1,6 @@
 package user
 
 import (
-	"encoding/base64"
-	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
@@ -237,16 +235,10 @@ func matchUsers(w http.ResponseWriter, r *http.Request) (bodyData, []match, int,
 	} else {
 		strSearchParameters = searchParameters[0]
 	}
-	byteSearchParameters, err := base64.StdEncoding.DecodeString(strSearchParameters)
-	if err != nil {
-		log.Println(lib.PrettyError("[Base64] Failed to decode search parameters in header " + err.Error()))
-		return bodyData{}, []match{}, http.StatusNotAcceptable, "Failed to decode search parameters in header"
-	}
 	var inputData bodyData
-	err = json.Unmarshal(byteSearchParameters, &inputData)
+	err := lib.ExtractBase64Struct(strSearchParameters, &inputData)
 	if err != nil {
-		log.Println(lib.PrettyError("[Unmarshal] Failed to unmarshal search parameters in header " + err.Error()))
-		return bodyData{}, []match{}, http.StatusNotAcceptable, "Failed to unmarshal search parameters in header"
+		return bodyData{}, []match{}, http.StatusNotAcceptable, "Failed to extract base64 search parameters in header"
 	}
 	checkInput(&inputData)
 	users, errCode, errContent := getUsers(db, userID, inputData)

@@ -159,6 +159,9 @@ input#browsing-new-tag {
   padding: 5px;
   color: white;
   cursor: pointer;
+  &:hover {
+    background: #d43541;
+  }
 }
 
 #filter-btn-big {

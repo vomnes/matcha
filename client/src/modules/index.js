@@ -13,6 +13,7 @@ import Logout from './Logout'
 import SeeProfile from './SeeProfile'
 import MyProfile from './MyProfile'
 import Search from './Search'
+import Chat from './Chat'
 
 const Main = () => (
   <Router>
@@ -23,6 +24,8 @@ const Main = () => (
       <Route exact path='/resetpassword/:token' component={ResetPassword}/>
       <Route exact path='/logout' component={Logout}/>
       <PrivateRoute exact path='/home' component={Search}/>
+      <PrivateRoute exact path='/browsing' component={Search}/>
+      <PrivateRoute exact path='/matches' component={Chat}/>
       <PrivateRoute exact path='/profile/:username' component={SeeProfile}/>
       <PrivateRoute exact path='/profile/:username/:searchparameters' component={SeeProfile}/>
       <PrivateRoute path='/profile' component={MyProfile}/>

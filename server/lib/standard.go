@@ -2,6 +2,8 @@ package lib
 
 import (
 	"encoding/base64"
+	"encoding/json"
+	"log"
 	"math/rand"
 	"os"
 	"time"
@@ -91,4 +93,22 @@ func UniqueTimeToken(key string) string {
 
 func SWAPStrings(str1, str2 *string) {
 	*str1, *str2 = *str2, *str1
+}
+
+func Base64Decode(str string) ([]byte, error) {
+	return base64.StdEncoding.DecodeString(str)
+}
+
+func ExtractBase64Struct(base64 string, data interface{}) error {
+	byteData, err := Base64Decode(base64)
+	if err != nil {
+		log.Println(PrettyError("[Base64] Failed to decode search parameters in header " + err.Error()))
+		return err
+	}
+	err = json.Unmarshal(byteData, &data)
+	if err != nil {
+		log.Println(PrettyError("[Unmarshal] Failed to unmarshal search parameters in header " + err.Error()))
+		return err
+	}
+	return nil
 }

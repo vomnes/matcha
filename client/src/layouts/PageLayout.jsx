@@ -13,8 +13,8 @@ class PageLayout extends Component {
           <div className="nav-top">
             <a href='/home' className="logo"><span>Matcha</span></a>
             <div className="header-left-side">
-              <a href='/' className="logout"><span>Browsing</span></a>
-              <a href='/' className="logout"><span>Matches</span></a>
+              <a href='/browsing' className="logout"><span>Browsing</span></a>
+              <a href='/matches' className="logout"><span>Matches</span></a>
               <a href='/profile' className="logout"><span>My Profile</span></a>
               <a href='/logout' className="logout"><span>Logout</span></a>
             </div>

@@ -2,7 +2,6 @@ package profile
 
 import (
 	"bytes"
-	"encoding/base64"
 	"errors"
 	"image/jpeg"
 	"image/png"
@@ -37,10 +36,6 @@ func trimStringFromString(s, sub string) string {
 		return s[:idx]
 	}
 	return s
-}
-
-func base64Decode(str string) ([]byte, error) {
-	return base64.StdEncoding.DecodeString(str)
 }
 
 func generatePng(path string, res io.Reader) (string, error) {
@@ -82,7 +77,7 @@ func base64ToImageFile(path, base64, pictureNumber, username string) (string, in
 	preBase64 := trimStringFromString(base64, ";base64")
 	typeImage := string(preBase64)[5:]
 	imageBase64 := string(base64)[len(preBase64)+8:]
-	unbased, _ := base64Decode(imageBase64) // No need to check the error here, this will be handled just after
+	unbased, _ := lib.Base64Decode(imageBase64) // No need to check the error here, this will be handled just after
 	res := bytes.NewReader(unbased)
 	var imagePath string
 	var err error

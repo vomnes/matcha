@@ -118,7 +118,7 @@ var wrongTokenTests = []struct {
 	{
 		"",
 		403,
-		"Access denied - Authorization wrong standard",
+		"Access denied",
 		"Authorization is empty",
 	},
 	{

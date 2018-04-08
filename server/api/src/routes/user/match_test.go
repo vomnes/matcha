@@ -30,7 +30,7 @@ func TestGlobalMatchFailedToUnmarshalSearchParameters(t *testing.T) {
 		t.Errorf("Must write an error on the standard output that contains '%s'\nNot: %s\n", expectedError, output)
 	}
 	strError := tests.CompareResponseJSONCode(w, 406, map[string]interface{}{
-		"error": "Failed to unmarshal search parameters in header",
+		"error": "Failed to extract base64 search parameters in header",
 	})
 	if strError != nil {
 		t.Errorf("%v", strError)
