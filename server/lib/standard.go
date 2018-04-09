@@ -99,6 +99,10 @@ func Base64Decode(str string) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(str)
 }
 
+func Base64Encode(d []byte) string {
+	return base64.StdEncoding.EncodeToString(d)
+}
+
 func ExtractBase64Struct(base64 string, data interface{}) error {
 	byteData, err := Base64Decode(base64)
 	if err != nil {
@@ -111,4 +115,8 @@ func ExtractBase64Struct(base64 string, data interface{}) error {
 		return err
 	}
 	return nil
+}
+
+func InterfaceToByte(data interface{}) ([]byte, error) {
+	return json.Marshal(data)
 }
