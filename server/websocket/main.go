@@ -36,15 +36,16 @@ func handleWSRoutes() *mux.Router {
 
 var addr = flag.String("addr", ":8081", "http service address")
 
-var hub = Hub{
-	broadcast:  make(chan message),
-	register:   make(chan subscription),
-	unregister: make(chan subscription),
-	rooms:      make(map[string]map[*connection]bool),
-}
+var hub Hub
 
 func main() {
 	flag.Parse()
+	hub = Hub{
+		broadcast:  make(chan message),
+		register:   make(chan subscription),
+		unregister: make(chan subscription),
+		rooms:      make(map[string]map[*connection]bool),
+	}
 	go hub.run()
 	db := lib.PostgreSQLConn(lib.PostgreSQLName)
 	router := handleWSRoutes()

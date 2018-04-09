@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -56,21 +57,17 @@ func TestExample(t *testing.T) {
 
 	// Send message to server, read response and check to see if it's what we expect.
 	ws2.SetWriteDeadline(time.Now().Add(10 * time.Second))
-	err = ws2.WriteMessage(websocket.TextMessage, []byte("hello"))
+	err = ws2.WriteMessage(websocket.TextMessage, []byte("Womething awesome"))
 	if err != nil {
 		return
 	}
-	websocket.WriteJSON(ws2, map[string]string{
-		"error": "some message",
-	})
-	ws1.SetReadDeadline(time.Now().Add(50 * time.Millisecond)) // Set deadline
-	ws2.SetReadDeadline(time.Now().Add(50 * time.Millisecond)) // Set deadline
 	_, p, err := ws2.ReadMessage()
 	if err != nil {
 		t.Error("No message to read - ", err)
 	} else {
-		if string(p) != "hello" {
-			t.Error("Bad message" + string(p))
+		if string(p) != "Womething awesome" {
+			t.Error("Bad message: " + string(p))
 		}
 	}
+	fmt.Println(hub)
 }
