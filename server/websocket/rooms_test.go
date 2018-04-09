@@ -56,8 +56,8 @@ func TestExample(t *testing.T) {
 	}
 
 	// Send message to server, read response and check to see if it's what we expect.
-	ws2.SetWriteDeadline(time.Now().Add(10 * time.Second))
-	err = ws2.WriteMessage(websocket.TextMessage, []byte("Womething awesome"))
+	ws1.SetWriteDeadline(time.Now().Add(10 * time.Second))
+	err = ws1.WriteMessage(websocket.TextMessage, []byte("Womething awesome"))
 	if err != nil {
 		return
 	}

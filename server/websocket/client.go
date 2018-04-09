@@ -136,13 +136,13 @@ func serveWsChat(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	/* ======== Get data ======== */
-	vars := mux.Vars(r)
 	username, ok := r.Context().Value(lib.Username).(string)
 	if !ok {
 		ErrorWS(ws, "Failed to collect user username")
 		return
 	}
 	var room roomData
+	vars := mux.Vars(r)
 	err = lib.ExtractBase64Struct(vars["room"], &room)
 	if err != nil {
 		ErrorWS(ws, "Failed to extract room identity")

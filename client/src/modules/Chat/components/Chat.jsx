@@ -22,7 +22,7 @@ class Chat extends Component {
         return false;
     };
     if (window["WebSocket"]) {
-        var room = encode.objectToBase64({username1: "GloriaFaareemanv6heZ", username2: "Elsa"});
+        var room = encode.objectToBase64({username1: "voluptas_atque_etpawSY", username2: "Elsa"});
         conn = new WebSocket(`ws://localhost:8081/ws/chat/${room}`, localStorage.getItem('matcha_token'));
         conn.onclose = function (evt) {
             var item = document.createElement("div");

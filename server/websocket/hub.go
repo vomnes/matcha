@@ -1,5 +1,10 @@
 package main
 
+import (
+	"fmt"
+	"time"
+)
+
 type message struct {
 	data []byte
 	room string
@@ -27,6 +32,7 @@ type Hub struct {
 }
 
 func (h *Hub) run() {
+	var previousTime time.Time
 	for {
 		select {
 		case s := <-h.register:
@@ -34,6 +40,7 @@ func (h *Hub) run() {
 			if connections == nil {        // No connection
 				connections = make(map[*connection]bool)
 				h.rooms[s.room] = connections
+				fmt.Println("user is loggued") // Login
 			}
 			h.rooms[s.room][s.conn] = true
 		case s := <-h.unregister:
@@ -45,6 +52,14 @@ func (h *Hub) run() {
 					if len(connections) == 0 {
 						delete(h.rooms, s.room)
 					}
+					go func() { // Logout
+						time.Sleep(500 * time.Millisecond)
+						if h.rooms[s.room] == nil && time.Now().Sub(previousTime) > (500*time.Millisecond) {
+							previousTime = time.Now()
+							fmt.Println("user loggued out")
+						}
+						fmt.Println(h.rooms[s.room])
+					}()
 				}
 			}
 		case m := <-h.broadcast:
@@ -52,7 +67,7 @@ func (h *Hub) run() {
 			if connections != nil {        // Connection exists
 				for c := range connections {
 					select {
-					case c.send <- m.data:
+					case c.send <- m.data: // Send data to this connection - Userid != current user
 					default:
 						close(c.send)
 						delete(connections, c)
