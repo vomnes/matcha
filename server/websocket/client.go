@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -97,8 +98,10 @@ func (s *subscription) writePump() {
 		c.ws.Close()
 	}()
 	for {
+		fmt.Println("writePump")
 		select {
 		case message, ok := <-c.send:
+			fmt.Println(message)
 			c.ws.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok { // The hub closed the channel.
 				c.ws.WriteMessage(websocket.CloseMessage, []byte{})
@@ -109,6 +112,7 @@ func (s *subscription) writePump() {
 				return
 			}
 		case <-ticker.C:
+			fmt.Println("ticker")
 			c.ws.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := c.ws.WriteMessage(websocket.PingMessage, nil); err != nil {
 				return
@@ -153,10 +157,10 @@ func serveWsChat(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	/* ========================== */
-
 	c := &connection{ws: ws, send: make(chan []byte, 256)}
 	s := subscription{conn: c, room: vars["room"]}
 	hub.register <- s
 	go s.writePump()
+	fmt.Println("After writePump!")
 	s.readPump()
 }

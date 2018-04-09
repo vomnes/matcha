@@ -13,7 +13,7 @@ type subscription struct {
 // hub maintains the set of active clients and broadcasts messages to the
 // clients.
 type Hub struct {
-	// Registered connections.
+	// Rooms and their registered connections.
 	rooms map[string]map[*connection]bool
 
 	// Inbound messages from the clients.
@@ -30,15 +30,15 @@ func (h *Hub) run() {
 	for {
 		select {
 		case s := <-h.register:
-			connections := h.rooms[s.room]
-			if connections == nil {
+			connections := h.rooms[s.room] // Get connections linked to this room
+			if connections == nil {        // No connection
 				connections = make(map[*connection]bool)
 				h.rooms[s.room] = connections
 			}
 			h.rooms[s.room][s.conn] = true
 		case s := <-h.unregister:
-			connections := h.rooms[s.room]
-			if connections != nil {
+			connections := h.rooms[s.room] // Get connections linked to this room
+			if connections != nil {        // Connection exists
 				if _, ok := connections[s.conn]; ok {
 					delete(connections, s.conn)
 					close(s.conn.send)
@@ -48,8 +48,8 @@ func (h *Hub) run() {
 				}
 			}
 		case m := <-h.broadcast:
-			connections := h.rooms[m.room]
-			if connections != nil {
+			connections := h.rooms[m.room] // Get connections linked to this room
+			if connections != nil {        // Connection exists
 				for c := range connections {
 					select {
 					case c.send <- m.data:
