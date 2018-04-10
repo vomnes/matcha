@@ -72,14 +72,11 @@ class Chat extends Component {
       selectedProfile: '',
     }
     this.updateState = this.updateState.bind(this);
-    console.log("create Chat");
   }
   updateState(key, content) {
     this.setState({
       [key]: content,
     });
-  }
-  componentDidMount() {
   }
   render () {
     return (
@@ -116,10 +113,108 @@ class Chat extends Component {
         </div>
         <div id="chat-area">
           <div id="header-msg-area">
-
+            <span id="main-title">Pamela Ross</span>
           </div>
+          {/* <div className="picture-msg-list" style={{ right: "-22px" }}>
+            <div className="picture-list-background" style={{ backgroundImage: "url(" + "https://images.unsplash.com/photo-1471943068829-26c1a4ac5bfa?h=1000&q=10" + ")" }}></div>
+          </div> */}
           <div id="list-msg-area">
-
+            <div id="msg-array">
+              <div className="msg-element">
+                <div className="msg" style={{ marginLeft: "5%" }}>
+                  <div className="picture-msg-list" style={{ left: "-22px" }}>
+                    <div className="picture-list-background" style={{ backgroundImage: "url(" + "https://images.unsplash.com/photo-1471943068829-26c1a4ac5bfa?h=1000&q=10" + ")" }}></div>
+                  </div>
+                  <div className="msg-content" style={{ marginLeft: "3%" }}>
+                    <span>
+                      laborum explicabo est autem voluptatum esse. debitis quis natus sequi vero velit eos. sit ratione doloremque necessitatibus. et omnis et sed veritatis! laudantium sit quas enim explicabo.
+                      omnis et sed veritatis! laudantium.
+                      laborum explicabo est autem voluptatum esse. debitis quis natus sequi vero velit eos. sit ratione doloremque necessitatibus. et omnis et sed veritatis! laudantium sit quas enim explicabo.
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="msg-element">
+                <div className="msg" style={{ marginLeft: "5%" }}>
+                  <div className="picture-msg-list" style={{ left: "-22px" }}>
+                    <div className="picture-list-background" style={{ backgroundImage: "url(" + "https://images.unsplash.com/photo-1471943068829-26c1a4ac5bfa?h=1000&q=10" + ")" }}></div>
+                  </div>
+                  <div className="msg-content" style={{ marginLeft: "3%" }}>
+                    <span>
+                      laborum explicabo est autem voluptatum esse. debitis quis natus sequi vero velit eos. sit ratione doloremque necessitatibus. et omnis et sed veritatis! laudantium sit quas enim explicabo.
+                      omnis et sed veritatis! laudantium.
+                      laborum explicabo est autem voluptatum esse. debitis quis natus sequi vero velit eos. sit ratione doloremque necessitatibus. et omnis et sed veritatis! laudantium sit quas enim explicabo.
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="msg-element">
+                <div className="msg" style={{ marginLeft: "5%" }}>
+                  <div className="picture-msg-list" style={{ left: "-22px" }}>
+                    <div className="picture-list-background" style={{ backgroundImage: "url(" + "https://images.unsplash.com/photo-1471943068829-26c1a4ac5bfa?h=1000&q=10" + ")" }}></div>
+                  </div>
+                  <div className="msg-content" style={{ marginLeft: "3%" }}>
+                    <span>
+                      laborum explicabo est autem voluptatum esse. debitis quis natus sequi vero velit eos. sit ratione doloremque necessitatibus. et omnis et sed veritatis! laudantium sit quas enim explicabo.
+                      omnis et sed veritatis! laudantium.
+                      laborum explicabo est autem voluptatum esse. debitis quis natus sequi vero velit eos. sit ratione doloremque necessitatibus. et omnis et sed veritatis! laudantium sit quas enim explicabo.
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="msg-element">
+                <div className="msg" style={{ marginLeft: "5%" }}>
+                  <div className="picture-msg-list" style={{ left: "-22px" }}>
+                    <div className="picture-list-background" style={{ backgroundImage: "url(" + "https://images.unsplash.com/photo-1471943068829-26c1a4ac5bfa?h=1000&q=10" + ")" }}></div>
+                  </div>
+                  <div className="msg-content" style={{ marginLeft: "3%" }}>
+                    <span>
+                      laborum explicabo est autem voluptatum esse. debitis quis natus sequi vero velit eos. sit ratione doloremque necessitatibus. et omnis et sed veritatis! laudantium sit quas enim explicabo.
+                      omnis et sed veritatis! laudantium.
+                      laborum explicabo est autem voluptatum esse. debitis quis natus sequi vero velit eos. sit ratione doloremque necessitatibus. et omnis et sed veritatis! laudantium sit quas enim explicabo.
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="msg-element">
+                <div className="msg" style={{ marginLeft: "10%" }}>
+                  <div className="picture-msg-list" style={{ right: "-22px" }}>
+                    <div className="picture-list-background" style={{ backgroundImage: "url(" + "https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10" + ")" }}></div>
+                  </div>
+                  <div className="msg-content">
+                    <span>
+                      laborum explicabo est autem voluptatum esse. debitis quis natus sequi vero velit eos. sit ratione doloremque necessitatibus. et omnis et sed veritatis! laudantium sit quas enim explicabo.
+                      omnis et sed veritatis! laudantium.
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="msg-element">
+                <div className="msg" style={{ marginLeft: "10%" }}>
+                  <div className="picture-msg-list" style={{ right: "-22px" }}>
+                    <div className="picture-list-background" style={{ backgroundImage: "url(" + "https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10" + ")" }}></div>
+                  </div>
+                  <div className="msg-content">
+                    <span>
+                      laborum explicabo est autem voluptatum esse. debitis quis natus sequi vero velit eos. sit ratione doloremque necessitatibus. et omnis et sed veritatis! laudantium sit quas enim explicabo.
+                      omnis et sed veritatis! laudantium.
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="msg-element">
+                <div className="msg" style={{ marginLeft: "5%" }}>
+                  <div className="picture-msg-list" style={{ left: "-22px" }}>
+                    <div className="picture-list-background" style={{ backgroundImage: "url(" + "https://images.unsplash.com/photo-1471943068829-26c1a4ac5bfa?h=1000&q=10" + ")" }}></div>
+                  </div>
+                  <div className="msg-content" style={{ marginLeft: "3%" }}>
+                    <span>
+                      laborum explicabo est autem voluptatum esse. debitis quis natus sequi vero velit eos.
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           <div id="new-msg-area">
             <form id="form">
