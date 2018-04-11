@@ -57,4 +57,45 @@ body {
   display: block;
   height: auto;
   padding: 5px;
+  z-index: -1;
+}
+
+#notif {
+  position: absolute;
+  border: 0.25px solid #bdc3c7;
+  width: 250px;
+  height: 200px;
+  right: 15px;
+  top: 25px;
+  background: white;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+#notif-arrow {
+  position: absolute;
+  width: 0px;
+  height: 5px;
+  border-left: 7.5px solid transparent;
+  border-right: 7.5px solid transparent;
+  border-bottom: 7.5px solid #434343;
+  top: -12px;
+  right: 35%;
+}
+.notif-element {
+  position: relative;
+  width: 100%;
+  height: 50px;
+  border-bottom: 1px solid #434343;
+}
+.picture-notif-background {
+  background-position: center 25%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 100%;
+}
+.white-notif-background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, #FFFFFFFF, #FFFFFFAA, #FFFFFF55);
+  top: 0px;
 }
