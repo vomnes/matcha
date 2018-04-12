@@ -46,6 +46,13 @@ func TestGetMatchedProfiles(t *testing.T) {
 		PictureURL_1: "MyTargetURL4",
 		Online:       true,
 	}, tests.DB)
+	u5 := tests.InsertUser(lib.User{
+		Username:     "target_test_" + lib.GetRandomString(43),
+		Lastname:     "MyTargetLastname5",
+		Firstname:    "MyTargetFirstname5",
+		PictureURL_1: "MyTargetURL5",
+		Online:       true,
+	}, tests.DB)
 	// Likes
 	_ = tests.InsertLike(lib.Like{UserID: ME.ID, LikedUserID: "111"}, tests.DB)
 	_ = tests.InsertLike(lib.Like{UserID: ME.ID, LikedUserID: "112"}, tests.DB)
@@ -60,6 +67,8 @@ func TestGetMatchedProfiles(t *testing.T) {
 	_ = tests.InsertLike(lib.Like{UserID: u3.ID, LikedUserID: ME.ID}, tests.DB)
 	_ = tests.InsertLike(lib.Like{UserID: ME.ID, LikedUserID: u4.ID}, tests.DB)
 	_ = tests.InsertLike(lib.Like{UserID: u4.ID, LikedUserID: ME.ID}, tests.DB)
+	_ = tests.InsertLike(lib.Like{UserID: ME.ID, LikedUserID: u5.ID}, tests.DB)
+	_ = tests.InsertLike(lib.Like{UserID: u5.ID, LikedUserID: ME.ID}, tests.DB)
 	// ===
 	_ = tests.InsertLike(lib.Like{UserID: "211", LikedUserID: ME.ID}, tests.DB)
 	_ = tests.InsertLike(lib.Like{UserID: "212", LikedUserID: ME.ID}, tests.DB)
@@ -91,7 +100,6 @@ func TestGetMatchedProfiles(t *testing.T) {
 	_ = tests.InsertMessage(lib.Message{SenderID: u1.ID, ReceiverID: "123", Content: "Message8", IsRead: true}, tests.DB)
 	_ = tests.InsertMessage(lib.Message{SenderID: "123", ReceiverID: u1.ID, Content: "Message8", IsRead: true}, tests.DB)
 	_ = tests.InsertMessage(lib.Message{SenderID: "321", ReceiverID: "123", Content: "Message8", IsRead: true}, tests.DB)
-	// log.Fatal()
 	context := tests.ContextData{
 		DB:       tests.DB,
 		Username: username,
@@ -109,34 +117,24 @@ func TestGetMatchedProfiles(t *testing.T) {
 	}
 	expectedJSONResponse := []interface{}{
 		map[string]interface{}{
-			"firstname":             u1.Firstname,
-			"last_message_content":  "MessageLast1",
-			"last_message_date":     "2018-02-02T13:30:00+01:00",
-			"lastname":              u1.Lastname,
-			"online":                false,
-			"picture_url":           u1.PictureURL_1,
-			"unread_messages_total": 2,
-			"username":              u1.Username,
-		},
-		map[string]interface{}{
 			"firstname":             u2.Firstname,
 			"last_message_content":  "MessageLast2",
 			"last_message_date":     "2018-02-02T20:30:00+01:00",
 			"lastname":              u2.Lastname,
 			"online":                true,
 			"picture_url":           u2.PictureURL_1,
-			"unread_messages_total": 3,
+			"total_unread_messages": 3,
 			"username":              u2.Username,
 		},
 		map[string]interface{}{
-			"firstname":             u3.Firstname,
-			"last_message_content":  "MessageLast3",
-			"last_message_date":     "2018-02-02T16:30:00+01:00",
-			"lastname":              u3.Lastname,
+			"firstname":             u1.Firstname,
+			"last_message_content":  "MessageLast1",
+			"last_message_date":     "2018-02-02T13:30:00+01:00",
+			"lastname":              u1.Lastname,
 			"online":                false,
-			"picture_url":           u3.PictureURL_1,
-			"unread_messages_total": 0,
-			"username":              u3.Username,
+			"picture_url":           u1.PictureURL_1,
+			"total_unread_messages": 2,
+			"username":              u1.Username,
 		},
 		map[string]interface{}{
 			"firstname":             u4.Firstname,
@@ -145,11 +143,97 @@ func TestGetMatchedProfiles(t *testing.T) {
 			"lastname":              u4.Lastname,
 			"online":                true,
 			"picture_url":           u4.PictureURL_1,
-			"unread_messages_total": 1,
+			"total_unread_messages": 1,
 			"username":              u4.Username,
+		},
+		map[string]interface{}{
+			"firstname":             u3.Firstname,
+			"last_message_content":  "MessageLast3",
+			"last_message_date":     "2018-02-02T16:30:00+01:00",
+			"lastname":              u3.Lastname,
+			"online":                false,
+			"picture_url":           u3.PictureURL_1,
+			"total_unread_messages": 0,
+			"username":              u3.Username,
+		},
+		map[string]interface{}{
+			"firstname":             u5.Firstname,
+			"last_message_content":  "",
+			"last_message_date":     "0001-01-01T00:00:00Z",
+			"lastname":              u5.Lastname,
+			"online":                true,
+			"picture_url":           u5.PictureURL_1,
+			"total_unread_messages": 0,
+			"username":              u5.Username,
 		},
 	}
 	strError := tests.CompareResponseJSONCode(w, 200, expectedJSONResponse)
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+}
+
+func TestGetMatchedProfilesEmpty(t *testing.T) {
+	tests.DbClean()
+	username := "test_" + lib.GetRandomString(43)
+	ME := tests.InsertUser(lib.User{
+		Username:     username,
+		Lastname:     "MyLastname",
+		Firstname:    "MyFirstname",
+		PictureURL_1: "MyURL1",
+	}, tests.DB)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: username,
+		UserID:   ME.ID,
+	}
+	r := tests.CreateRequest("GET", "/v1/chat/matches", nil, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		GetMatchedProfiles(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	expectedJSONResponse := map[string]interface{}{
+		"data": "No matches",
+	}
+	strError := tests.CompareResponseJSONCode(w, 200, expectedJSONResponse)
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+}
+
+func TestGetMatchedProfilesWrongMethod(t *testing.T) {
+	tests.DbClean()
+	username := "test_" + lib.GetRandomString(43)
+	ME := tests.InsertUser(lib.User{
+		Username:     username,
+		Lastname:     "MyLastname",
+		Firstname:    "MyFirstname",
+		PictureURL_1: "MyURL1",
+	}, tests.DB)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: username,
+		UserID:   ME.ID,
+	}
+	r := tests.CreateRequest("POST", "/v1/chat/matches", nil, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		GetMatchedProfiles(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	expectedJSONResponse := map[string]interface{}{
+		"error": "Page not found",
+	}
+	strError := tests.CompareResponseJSONCode(w, 404, expectedJSONResponse)
 	if strError != nil {
 		t.Errorf("%v", strError)
 	}

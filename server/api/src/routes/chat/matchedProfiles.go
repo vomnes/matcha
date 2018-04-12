@@ -3,12 +3,29 @@ package chat
 import (
 	"log"
 	"net/http"
+	"sort"
 	"strings"
 	"time"
 
 	"../../../../lib"
 	"github.com/jmoiron/sqlx"
 )
+
+type DateSorter []OutputMatchedProfiles
+
+func (a DateSorter) Len() int      { return len(a) }
+func (a DateSorter) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a DateSorter) Less(i, j int) bool {
+	return a[i].LastMessageDate.After(a[j].LastMessageDate)
+}
+
+type UnreadMessageSorter []OutputMatchedProfiles
+
+func (a UnreadMessageSorter) Len() int      { return len(a) }
+func (a UnreadMessageSorter) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a UnreadMessageSorter) Less(i, j int) bool {
+	return a[i].TotalUnreadMessages > a[j].TotalUnreadMessages
+}
 
 func getMatchesIDs(db *sqlx.DB, userID string) ([]string, int, string) {
 	var matchesIDs []string
@@ -49,18 +66,27 @@ type MatchedProfiles struct {
 
 func getMessages(db *sqlx.DB, userID string, matchesIDs []string) (map[string]MatchedProfiles, int, string) {
 	var listMsg []MatchedProfiles
-	request := `Select m.content, m.created_at, m.is_read,
-	u.username, u.firstname, u.lastname, u.picture_url_1 as picture_url, u.online
-	From Messages m
-	Left Join Users u On m.senderid = u.id
-	Where senderId IN (` + strings.Join(matchesIDs, ", ") + `) and receiverid = $1
-	Order By senderid, created_at`
-	err := db.Select(&listMsg, request, userID)
+	request := `Select username, firstname, lastname, picture_url_1 as picture_url, online from Users Where id IN (` + strings.Join(matchesIDs, ", ") + `)`
+	err := db.Select(&listMsg, request)
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to collect matches messages in database " + err.Error()))
 		return map[string]MatchedProfiles{}, 500, "Failed to gather matches messages data in the database"
 	}
 	listMatches := make(map[string]MatchedProfiles)
+	for _, elem := range listMsg {
+		listMatches[elem.Username] = elem
+	}
+	listMsg = []MatchedProfiles{}
+	request = `Select m.content, m.created_at, m.is_read, u.username
+	From Messages m
+	Left Join Users u On m.senderid = u.id
+	Where senderId IN (` + strings.Join(matchesIDs, ", ") + `) and receiverid = $1
+	Order By created_at`
+	err = db.Select(&listMsg, request, userID)
+	if err != nil {
+		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to collect matches messages in database " + err.Error()))
+		return map[string]MatchedProfiles{}, 500, "Failed to gather matches messages data in the database"
+	}
 	unreadMessage := 0
 	var lastMessageContent string
 	var lastMessageDate time.Time
@@ -79,13 +105,13 @@ func getMessages(db *sqlx.DB, userID string, matchesIDs []string) (map[string]Ma
 			lastMessageDate = listMatches[elem.Username].LastMessageDate
 		}
 		listMatches[elem.Username] = MatchedProfiles{
-			Username:            elem.Username,
-			Firstname:           elem.Firstname,
-			Lastname:            elem.Lastname,
-			PictureURL:          elem.PictureURL,
+			Username:            listMatches[elem.Username].Username,
+			Firstname:           listMatches[elem.Username].Firstname,
+			Lastname:            listMatches[elem.Username].Lastname,
+			PictureURL:          listMatches[elem.Username].PictureURL,
 			LastMessageContent:  lastMessageContent,
 			LastMessageDate:     lastMessageDate,
-			Online:              elem.Online,
+			Online:              listMatches[elem.Username].Online,
 			TotalUnreadMessages: unreadMessage,
 		}
 		unreadMessage = 0
@@ -93,6 +119,17 @@ func getMessages(db *sqlx.DB, userID string, matchesIDs []string) (map[string]Ma
 		lastMessageDate = time.Time{}
 	}
 	return listMatches, 0, ""
+}
+
+type OutputMatchedProfiles struct {
+	Username            string    `db:"username" json:"username"`
+	Firstname           string    `db:"firstname" json:"firstname"`
+	Lastname            string    `db:"lastname" json:"lastname"`
+	PictureURL          string    `db:"picture_url" json:"picture_url"`
+	LastMessageContent  string    `db:"content" json:"last_message_content"`
+	LastMessageDate     time.Time `db:"created_at" json:"last_message_date"`
+	Online              bool      `db:"online" json:"online"`
+	TotalUnreadMessages int       `db:"total_unread_messages" json:"total_unread_messages"`
 }
 
 // GetMatchedProfiles ...
@@ -107,23 +144,31 @@ func GetMatchedProfiles(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
+	if matchesIDs == nil {
+		lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{
+			"data": "No matches",
+		})
+		return
+	}
 	listMatches, errCode, errContent := getMessages(db, userID, matchesIDs)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	var matches []interface{}
+	var matches []OutputMatchedProfiles
 	for _, profile := range listMatches {
-		matches = append(matches, map[string]interface{}{
-			"username":              profile.Username,
-			"firstname":             profile.Firstname,
-			"lastname":              profile.Lastname,
-			"picture_url":           profile.PictureURL,
-			"last_message_content":  profile.LastMessageContent,
-			"last_message_date":     profile.LastMessageDate,
-			"online":                profile.Online,
-			"unread_messages_total": profile.TotalUnreadMessages,
+		matches = append(matches, OutputMatchedProfiles{
+			Username:            profile.Username,
+			Firstname:           profile.Firstname,
+			Lastname:            profile.Lastname,
+			PictureURL:          profile.PictureURL,
+			LastMessageContent:  profile.LastMessageContent,
+			LastMessageDate:     profile.LastMessageDate,
+			Online:              profile.Online,
+			TotalUnreadMessages: profile.TotalUnreadMessages,
 		})
 	}
+	sort.Sort(DateSorter(matches))
+	sort.Sort(UnreadMessageSorter(matches))
 	lib.RespondWithJSON(w, http.StatusOK, matches)
 }
