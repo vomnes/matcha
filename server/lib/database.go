@@ -69,3 +69,30 @@ type FakeReport struct {
 	TargetUserID string    `db:"target_userid"`
 	CreatedAt    time.Time `db:"created_at"`
 }
+
+// Message is the data structure of the table Messages from PostgreSQL
+type Message struct {
+	ID         string    `db:"id"`
+	SenderID   string    `db:"senderid"`
+	ReceiverID string    `db:"receiverid"`
+	Content    string    `db:"content"`
+	CreatedAt  time.Time `db:"created_at"`
+	IsRead     bool      `db:"is_read"`
+}
+
+// Notification is the data structure of the table Notifications from PostgreSQL
+type Notification struct {
+	ID           string    `db:"id"`
+	TypeID       string    `db:"typeid"`
+	UserID       string    `db:"userid"`
+	TargetUserID string    `db:"target_userid"`
+	CreatedAt    time.Time `db:"created_at"`
+	IsRead       bool      `db:"is_read"`
+}
+
+// NotificationsType is the data structure of the table Notifications_Types from PostgreSQL
+type NotificationsType struct {
+	ID          string `db:"id"`
+	Name        string `db:"name"`
+	Description string `db:"description"`
+}

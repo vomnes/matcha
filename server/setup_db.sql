@@ -66,6 +66,36 @@ CREATE TABLE Fake_Reports (
   created_at timestamp with time zone DEFAULT current_timestamp
 );
 
+CREATE TABLE Messages (
+  ID SERIAL PRIMARY KEY,
+  senderID SERIAL NOT NULL,
+  receiverID SERIAL NOT NULL,
+  content VARCHAR (255) default '',
+  created_at timestamp with time zone DEFAULT current_timestamp,
+  is_read BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE Notifications (
+  ID SERIAL PRIMARY KEY,
+  typeID SERIAL NOT NULL,
+  userID SERIAL NOT NULL,
+  target_userID SERIAL NOT NULL,
+  created_at timestamp with time zone DEFAULT current_timestamp,
+  is_read BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE Notifications_Types (
+  ID SERIAL PRIMARY KEY,
+  name VARCHAR (65) NOT NULL,
+  description VARCHAR (255) default ''
+);
+
+INSERT INTO Notifications_Types (name, description) VALUES ('view', 'A user has viewed the profile of an other user');
+INSERT INTO Notifications_Types (name, description) VALUES ('like', 'A user has liked the profile of an other user');
+INSERT INTO Notifications_Types (name, description) VALUES ('match', 'A liked profile has liked your profile');
+INSERT INTO Notifications_Types (name, description) VALUES ('unmatch', 'One of the two users of a match has unliked the other profile');
+INSERT INTO Notifications_Types (name, description) VALUES ('message', 'A user has sent a message to an other user');
+
 -- SQL Functions Lib --
 
 -- geodistance return the distance in kilometers between two GPS (latitude and longitude) coordinates
@@ -154,6 +184,36 @@ CREATE TABLE Fake_Reports (
   target_userID SERIAL NOT NULL,
   created_at timestamp with time zone DEFAULT current_timestamp
 );
+
+CREATE TABLE Messages (
+  ID SERIAL PRIMARY KEY,
+  senderID SERIAL NOT NULL,
+  receiverID SERIAL NOT NULL,
+  content VARCHAR (255) default '',
+  created_at timestamp with time zone DEFAULT current_timestamp,
+  is_read BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE Notifications (
+  ID SERIAL PRIMARY KEY,
+  typeID SERIAL NOT NULL,
+  userID SERIAL NOT NULL,
+  target_userID SERIAL NOT NULL,
+  created_at timestamp with time zone DEFAULT current_timestamp,
+  is_read BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE Notifications_Types (
+  ID SERIAL PRIMARY KEY,
+  name VARCHAR (65) NOT NULL,
+  description VARCHAR (255) default ''
+);
+
+INSERT INTO Notifications_Types (name, description) VALUES ('view', 'A user has viewed the profile of an other user');
+INSERT INTO Notifications_Types (name, description) VALUES ('like', 'A user has liked the profile of an other user');
+INSERT INTO Notifications_Types (name, description) VALUES ('match', 'A liked profile has liked your profile');
+INSERT INTO Notifications_Types (name, description) VALUES ('unmatch', 'One of the two users of a match has unliked the other profile');
+INSERT INTO Notifications_Types (name, description) VALUES ('message', 'A user has sent a message to an other user');
 
 -- SQL Functions Lib --
 

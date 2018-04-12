@@ -2,6 +2,7 @@ package tests
 
 import (
 	"log"
+	"time"
 
 	"../lib"
 
@@ -106,7 +107,7 @@ func InsertVisit(data lib.Visit, db *sqlx.DB) lib.Visit {
 	return data
 }
 
-// InsertFakeReport take as parameter a FakeReports structure and the db
+// InsertFakeReport take as parameter a FakeReport structure in the db
 // Insert in the table FakeReports of the database the element in data (FakeReport)
 // The row insered is stored in the input FakeReport structure
 func InsertFakeReport(data lib.FakeReport, db *sqlx.DB) lib.FakeReport {
@@ -120,6 +121,45 @@ func InsertFakeReport(data lib.FakeReport, db *sqlx.DB) lib.FakeReport {
 	err = row.Scan(&data.ID, &data.CreatedAt)
 	if err != nil {
 		log.Fatal(lib.PrettyError("Failed to get new FakeReport data" + err.Error()))
+	}
+	return data
+}
+
+// InsertMessage take as parameter a Message structure
+// Insert in the table Messages of the database the element in data (Messages)
+// The row insered is stored in the input Message structure and returned
+func InsertMessage(data lib.Message, db *sqlx.DB) lib.Message {
+	if data.CreatedAt.IsZero() {
+		data.CreatedAt = time.Now()
+	}
+	stmt, err := db.Prepare(`INSERT INTO Messages (senderid, receiverid, content, is_read, created_at)
+	VALUES ($1, $2, $3, $4, $5)
+	RETURNING id, created_at`)
+	if err != nil {
+		log.Fatal(lib.PrettyError("Failed to prepare request Message data" + err.Error()))
+	}
+	row := stmt.QueryRow(data.SenderID, data.ReceiverID, data.Content, data.IsRead, data.CreatedAt)
+	err = row.Scan(&data.ID, &data.CreatedAt)
+	if err != nil {
+		log.Fatal(lib.PrettyError("Failed to get new message data" + err.Error()))
+	}
+	return data
+}
+
+// InsertNotification take as parameter a Notification structure
+// Insert in the table Notifications of the database the element in data (Notifications)
+// The row insered is stored in the input Notification structure and returned
+func InsertNotification(data lib.Notification, db *sqlx.DB) lib.Notification {
+	stmt, err := db.Prepare(`INSERT INTO Notifications (typeid, userid, target_userid, is_read)
+	VALUES ($1, $2, $3, $4)
+	RETURNING id, created_at`)
+	if err != nil {
+		log.Fatal(lib.PrettyError("Failed to prepare request Notification data" + err.Error()))
+	}
+	row := stmt.QueryRow(data.TypeID, data.UserID, data.TargetUserID, data.IsRead)
+	err = row.Scan(&data.ID, &data.CreatedAt)
+	if err != nil {
+		log.Fatal(lib.PrettyError("Failed to get new notification data" + err.Error()))
 	}
 	return data
 }

@@ -9,6 +9,7 @@ import (
 
 	"../../lib"
 	"./routes/account"
+	"./routes/chat"
 	"./routes/mail"
 	"./routes/profile"
 	"./routes/user"
@@ -44,6 +45,7 @@ func handleAPIRoutes() *mux.Router {
 	api.HandleFunc("/v1/users/data/me", user.GetMe)
 	api.HandleFunc("/v1/users/data/tags", user.GetExistingTags)
 	api.HandleFunc("/storage/pictures/profiles/{username}/{item}", user.GetPicture)
+	api.HandleFunc("/v1/chat/messages/{username}", chat.Messages)
 	return api
 }
 

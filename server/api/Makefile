@@ -31,6 +31,7 @@ test:
 	@go test ./src/routes/mail/.
 	@go test ./src/routes/profile/.
 	@go test ./src/routes/user/.
+	@go test ./src/routes/chat/.
 
 test-d:
 	@go test ./src/routes/$(TARGET)/.
@@ -41,6 +42,7 @@ test-verbose:
 	@go test -v ./src/routes/mail/.
 	@go test -v ./src/routes/profile/.
 	@go test -v ./src/routes/user/.
+	@go test -v ./src/routes/chat/.
 
 test-target:
 	go test -v -run '$(TARGET)' ./src/...
