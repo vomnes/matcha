@@ -150,13 +150,16 @@ func InsertMessage(data lib.Message, db *sqlx.DB) lib.Message {
 // Insert in the table Notifications of the database the element in data (Notifications)
 // The row insered is stored in the input Notification structure and returned
 func InsertNotification(data lib.Notification, db *sqlx.DB) lib.Notification {
-	stmt, err := db.Prepare(`INSERT INTO Notifications (typeid, userid, target_userid, is_read)
-	VALUES ($1, $2, $3, $4)
+	if data.CreatedAt.IsZero() {
+		data.CreatedAt = time.Now()
+	}
+	stmt, err := db.Prepare(`INSERT INTO Notifications (typeid, userid, target_userid, is_read, created_at)
+	VALUES ($1, $2, $3, $4, $5)
 	RETURNING id, created_at`)
 	if err != nil {
 		log.Fatal(lib.PrettyError("Failed to prepare request Notification data" + err.Error()))
 	}
-	row := stmt.QueryRow(data.TypeID, data.UserID, data.TargetUserID, data.IsRead)
+	row := stmt.QueryRow(data.TypeID, data.UserID, data.TargetUserID, data.IsRead, data.CreatedAt)
 	err = row.Scan(&data.ID, &data.CreatedAt)
 	if err != nil {
 		log.Fatal(lib.PrettyError("Failed to get new notification data" + err.Error()))
