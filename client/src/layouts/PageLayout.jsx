@@ -46,16 +46,18 @@ const NotifElement = (props) => {
 }
 
 const NotifList = (props) => {
-  return (
-    <div id="notif">
-      <div id="notif-arrow"></div>
-      <NotifElement type="unlike" fullname="Valentin Omnes" picture="https://images.unsplash.com/photo-1520512202623-51c5c53957df?h=1000&q=10" date={"12/12/12 - 12:42"}/>
-      <NotifElement type="message" fullname="Valentin Omnes" picture="https://images.unsplash.com/photo-1520512202623-51c5c53957df?h=1000&q=10" date={"12/12/12 - 12:42"}/>
-      <NotifElement type="match" fullname="Valentin Omnes" picture="https://images.unsplash.com/photo-1520512202623-51c5c53957df?h=1000&q=10" date={"12/12/12 - 12:42"}/>
-      <NotifElement type="like" fullname="Valentin Omnes" picture="https://images.unsplash.com/photo-1520512202623-51c5c53957df?h=1000&q=10" date={"12/12/12 - 12:42"}/>
-      <NotifElement type="view" fullname="Valentin Omnes" picture="https://images.unsplash.com/photo-1520512202623-51c5c53957df?h=1000&q=10" date={"12/12/12 - 12:42"}/>
-    </div>
-  )
+  if (props.isOpen) {
+    return (
+      <div id="notif">
+        <NotifElement type="unlike" fullname="Valentin Omnes" picture="https://images.unsplash.com/photo-1520512202623-51c5c53957df?h=1000&q=10" date={"12/12/12 - 12:42"}/>
+        <NotifElement type="message" fullname="Valentin Omnes" picture="https://images.unsplash.com/photo-1520512202623-51c5c53957df?h=1000&q=10" date={"12/12/12 - 12:42"}/>
+        <NotifElement type="match" fullname="Valentin Omnes" picture="https://images.unsplash.com/photo-1520512202623-51c5c53957df?h=1000&q=10" date={"12/12/12 - 12:42"}/>
+        <NotifElement type="like" fullname="Valentin Omnes" picture="https://images.unsplash.com/photo-1520512202623-51c5c53957df?h=1000&q=10" date={"12/12/12 - 12:42"}/>
+        <NotifElement type="view" fullname="Valentin Omnes" picture="https://images.unsplash.com/photo-1520512202623-51c5c53957df?h=1000&q=10" date={"12/12/12 - 12:42"}/>
+      </div>
+    )
+  }
+  return null;
 }
 
 // -> visit
@@ -65,11 +67,19 @@ const NotifList = (props) => {
 // -> message
 
 class PageLayout extends Component {
+  constructor() {
+    super();
+    this.state = {
+      notificationsOpen: false,
+      newNotification: true,
+    }
+  }
   render() {
     const {
       children,
     } = this.props;
-
+    var notifStyle = { cursor: "pointer" };
+    notifStyle["border"] = this.state.newNotification ? "2px solid #e63946" : "2px solid white";
     return (
       <div className="general-layout">
         <div className="header">
@@ -79,10 +89,13 @@ class PageLayout extends Component {
               <a href='/browsing' className="logout"><span>Browsing</span></a>
               <a href='/matches' className="logout"><span>Matches</span></a>
               <a href='/profile' className="logout"><span>My Profile</span></a>
-              <span className="logout" style={{ cursor: "pointer" }}>Notifications</span>
-              <NotifList />
+              <span id="notif-btn" className="logout" style={notifStyle}
+                onClick={() => this.setState({notificationsOpen: !this.state.notificationsOpen})}
+              >Notifications</span>
+              <NotifList isOpen={this.state.notificationsOpen}/>
               <a href='/logout' className="logout"><span>Logout</span></a>
             </div>
+            {this.state.notificationsOpen ? (<div id="notif-arrow"></div>) : null}
           </div>
         </div>
         <div className="content">
