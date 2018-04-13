@@ -120,3 +120,7 @@ func ExtractBase64Struct(base64 string, data interface{}) error {
 func InterfaceToByte(data interface{}) ([]byte, error) {
 	return json.Marshal(data)
 }
+
+func DecodeByte(byteData []byte, data interface{}) error {
+	return json.Unmarshal(byteData, &data)
+}
