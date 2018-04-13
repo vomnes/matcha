@@ -65,6 +65,11 @@ func addLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB,
 			err = db.Get(&like, "SELECT id FROM Likes WHERE userid = $1 AND liked_userID = $2", targetUserID, userID)
 			if err != nil {
 				if err == sql.ErrNoRows {
+					errCode, errContent = PushNotif(db, "like", userID, targetUserID)
+					if errCode != 0 || errContent != "" {
+						lib.RespondWithErrorHTTP(w, errCode, errContent)
+						return
+					}
 					lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{
 						"users_linked": false,
 					})
@@ -72,6 +77,11 @@ func addLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB,
 				}
 				log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to check if like exists in database" + err.Error()))
 				lib.RespondWithErrorHTTP(w, 500, "Failed to check if like exists in database")
+				return
+			}
+			errCode, errContent = PushNotif(db, "match", userID, targetUserID)
+			if errCode != 0 || errContent != "" {
+				lib.RespondWithErrorHTTP(w, errCode, errContent)
 				return
 			}
 			lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{
@@ -86,29 +96,55 @@ func addLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB,
 	lib.RespondWithErrorHTTP(w, 406, "Profile already liked by the user")
 }
 
+func handleUpdateNeed(db *sqlx.DB, userID, targetUserID string) (bool, int, string) {
+	var likes []string
+	err := db.Select(&likes, `Select userid From Likes Where (userid = $1 AND liked_userID = $2) OR (userid = $2 AND liked_userID = $1)`, userID, targetUserID)
+	if err != nil {
+		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to likes user data in database " + err.Error()))
+		return false, 500, "Failed to gather likes data in the database"
+	}
+	if !lib.StringInArray(userID, likes) {
+		return false, 0, ""
+	}
+	if lib.StringInArray(targetUserID, likes) {
+		errCode, errContent := PushNotif(db, "unmatch", userID, targetUserID)
+		if errCode != 0 || errContent != "" {
+			return true, errCode, errContent
+		}
+	}
+	return true, 0, ""
+}
+
 // Delete Like Method DELETE
 // Remove the like from the table Likes in the database
 // Update target user rating
 // Return HTTP Code 200 Status OK
 func deleteLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB, userID, targetUserID string) {
-	stmt, err := db.Preparex(`DELETE FROM Likes WHERE userId = $1 AND liked_userID = $2;`)
-	defer stmt.Close()
-	if err != nil {
-		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request delete like " + err.Error()))
-		lib.RespondWithErrorHTTP(w, 500, "Failed to delete like")
-		return
-	}
-	rows, err := stmt.Queryx(userID, targetUserID)
-	rows.Close()
-	if err != nil {
-		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request delete like " + err.Error()))
-		lib.RespondWithErrorHTTP(w, 500, "Failed to delete like")
-		return
-	}
-	errCode, errContent := updateRating(db, targetUserID)
+	needDeleteLike, errCode, errContent := handleUpdateNeed(db, userID, targetUserID)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
+	}
+	if needDeleteLike {
+		stmt, err := db.Preparex(`DELETE FROM Likes WHERE userId = $1 AND liked_userID = $2;`)
+		defer stmt.Close()
+		if err != nil {
+			log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request delete like " + err.Error()))
+			lib.RespondWithErrorHTTP(w, 500, "Failed to delete like")
+			return
+		}
+		rows, err := stmt.Queryx(userID, targetUserID)
+		rows.Close()
+		if err != nil {
+			log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request delete like " + err.Error()))
+			lib.RespondWithErrorHTTP(w, 500, "Failed to delete like")
+			return
+		}
+		errCode, errContent := updateRating(db, targetUserID)
+		if errCode != 0 || errContent != "" {
+			lib.RespondWithErrorHTTP(w, errCode, errContent)
+			return
+		}
 	}
 	lib.RespondEmptyHTTP(w, http.StatusOK)
 }

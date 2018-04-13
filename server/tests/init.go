@@ -28,6 +28,9 @@ var (
 func InitTimeTest() {
 	cfg := pretty.CompareConfig
 	cfg.Formatter[reflect.TypeOf(time.Time{})] = func(t time.Time) string {
+		if t.Nanosecond() == 0 {
+			return fmt.Sprint(t)
+		}
 		diff := t.Sub(TimeTest)
 		if diff.Nanoseconds() < 0 {
 			diff = -diff

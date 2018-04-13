@@ -37,6 +37,7 @@ func insertNotif(db *sqlx.DB, typeID, userID, targetUserID string) (int, string)
 	return 0, ""
 }
 
+// PushNotif is used to add a notification to a user
 func PushNotif(db *sqlx.DB, notifType, userID, targetUserID string) (int, string) {
 	hasBeenReportedAsFake, errCode, errContent := isReportedAsFake(db, userID, targetUserID)
 	if errCode != 0 || errContent != "" {

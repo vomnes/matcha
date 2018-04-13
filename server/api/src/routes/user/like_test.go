@@ -101,6 +101,26 @@ func TestLikeAdd(t *testing.T) {
 	if user.Rating != 3.7 {
 		t.Errorf("Rating not updated in the table user, expect 3.7 has \x1b[1;31m%f\033[0m", user.Rating)
 	}
+	// Check update like
+	var notifs []lib.Notification
+	err = tests.DB.Select(&notifs, "SELECT * FROM Notifications")
+	if err != nil {
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
+		return
+	}
+	expectedNotif := []lib.Notification{
+		lib.Notification{
+			ID:           "1",
+			TypeID:       "2", // like
+			UserID:       "1",
+			TargetUserID: "2",
+			CreatedAt:    time.Now(),
+			IsRead:       false,
+		},
+	}
+	if compare := pretty.Compare(&expectedNotif, notifs); compare != "" {
+		t.Error(compare)
+	}
 }
 
 func TestLikeAddNowConnected(t *testing.T) {
@@ -149,6 +169,26 @@ func TestLikeAddNowConnected(t *testing.T) {
 	if compare := pretty.Compare(&expectedDatabase, likes); compare != "" {
 		t.Error(compare)
 	}
+	// Check update match
+	var notifs []lib.Notification
+	err = tests.DB.Select(&notifs, "SELECT * FROM Notifications")
+	if err != nil {
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
+		return
+	}
+	expectedNotif := []lib.Notification{
+		lib.Notification{
+			ID:           "1",
+			TypeID:       "3", // match
+			UserID:       "1",
+			TargetUserID: "2",
+			CreatedAt:    time.Now(),
+			IsRead:       false,
+		},
+	}
+	if compare := pretty.Compare(&expectedNotif, notifs); compare != "" {
+		t.Error(compare)
+	}
 }
 
 func TestLikeAddAlreadyLiked(t *testing.T) {
@@ -194,6 +234,16 @@ func TestLikeAddAlreadyLiked(t *testing.T) {
 		},
 	}
 	if compare := pretty.Compare(&expectedDatabase, likes); compare != "" {
+		t.Error(compare)
+	}
+	var notifs []lib.Notification
+	err = tests.DB.Select(&notifs, "SELECT * FROM Notifications")
+	if err != nil {
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
+		return
+	}
+	expectedNotif := []lib.Notification{}
+	if compare := pretty.Compare(&expectedNotif, notifs); compare != "" {
 		t.Error(compare)
 	}
 }
@@ -337,6 +387,16 @@ func TestLikeDelete(t *testing.T) {
 	if compare := pretty.Compare(&expectedDatabase, likes); compare != "" {
 		t.Error(compare)
 	}
+	var notifs []lib.Notification
+	err = tests.DB.Select(&notifs, "SELECT * FROM Notifications")
+	if err != nil {
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
+		return
+	}
+	expectedNotif := []lib.Notification{}
+	if compare := pretty.Compare(&expectedNotif, notifs); compare != "" {
+		t.Error(compare)
+	}
 }
 
 func TestLikeMe(t *testing.T) {
@@ -362,5 +422,125 @@ func TestLikeMe(t *testing.T) {
 	})
 	if strError != nil {
 		t.Errorf("%v", strError)
+	}
+}
+
+func TestLikeDeleteNoNeedUpdate(t *testing.T) {
+	tests.DbClean()
+	username := "test_" + lib.GetRandomString(43)
+	targetUsername := "target_test_" + lib.GetRandomString(43)
+	userData := tests.InsertUser(lib.User{Username: username}, tests.DB)
+	targetData := tests.InsertUser(lib.User{Username: targetUsername}, tests.DB)
+	_ = tests.InsertLike(lib.Like{UserID: targetData.ID, LikedUserID: userData.ID}, tests.DB)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: username,
+		UserID:   userData.ID,
+	}
+	r := tests.CreateRequest("DELETE", "/v1/users/"+targetUsername+"/like", nil, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		testApplicantServer().ServeHTTP(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{})
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+	var likes []lib.Like
+	err := tests.DB.Select(&likes, "SELECT * FROM Likes")
+	if err != nil {
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
+		return
+	}
+	expectedDatabase := []lib.Like{
+		lib.Like{
+			ID:          "1",
+			UserID:      targetData.ID,
+			LikedUserID: userData.ID,
+			CreatedAt:   time.Now(),
+		},
+	}
+	if compare := pretty.Compare(&expectedDatabase, likes); compare != "" {
+		t.Error(compare)
+	}
+	var notifs []lib.Notification
+	err = tests.DB.Select(&notifs, "SELECT * FROM Notifications")
+	if err != nil {
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
+		return
+	}
+	expectedNotif := []lib.Notification{}
+	if compare := pretty.Compare(&expectedNotif, notifs); compare != "" {
+		t.Error(compare)
+	}
+}
+
+func TestLikeDeleteUnmatch(t *testing.T) {
+	tests.DbClean()
+	username := "test_" + lib.GetRandomString(43)
+	targetUsername := "target_test_" + lib.GetRandomString(43)
+	userData := tests.InsertUser(lib.User{Username: username}, tests.DB)
+	targetData := tests.InsertUser(lib.User{Username: targetUsername}, tests.DB)
+	_ = tests.InsertLike(lib.Like{UserID: userData.ID, LikedUserID: targetData.ID}, tests.DB)
+	_ = tests.InsertLike(lib.Like{UserID: targetData.ID, LikedUserID: userData.ID}, tests.DB)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: username,
+		UserID:   userData.ID,
+	}
+	r := tests.CreateRequest("DELETE", "/v1/users/"+targetUsername+"/like", nil, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		testApplicantServer().ServeHTTP(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{})
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+	var likes []lib.Like
+	err := tests.DB.Select(&likes, "SELECT * FROM Likes")
+	if err != nil {
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
+		return
+	}
+	expectedDatabase := []lib.Like{
+		lib.Like{
+			ID:          "2",
+			UserID:      targetData.ID,
+			LikedUserID: userData.ID,
+			CreatedAt:   time.Now(),
+		},
+	}
+	if compare := pretty.Compare(&expectedDatabase, likes); compare != "" {
+		t.Error(compare)
+	}
+	var notifs []lib.Notification
+	err = tests.DB.Select(&notifs, "SELECT * FROM Notifications")
+	if err != nil {
+		t.Error("\x1b[1;31m" + err.Error() + "\033[0m")
+		return
+	}
+	expectedNotif := []lib.Notification{
+		lib.Notification{
+			ID:           "1",
+			TypeID:       "4", // unmatch
+			UserID:       userData.ID,
+			TargetUserID: targetData.ID,
+			CreatedAt:    time.Now(),
+			IsRead:       false,
+		},
+	}
+	if compare := pretty.Compare(&expectedNotif, notifs); compare != "" {
+		t.Error(compare)
 	}
 }
