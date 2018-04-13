@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"../../lib"
@@ -41,26 +42,25 @@ func withRights() adapter {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Get token from the Authorization header format: Authorization: Bearer <jwt>
-			// tokens := r.Header.Get("Sec-Websocket-Protocol")
-			// if tokens == "" {
-			// 	fmt.Println("No token")
-			// 	return
-			// }
-			// // Check JWT validity on every request
-			// // Parse takes the token string and a function for looking up the key
-			// claims, err := lib.AnalyseJWT(tokens)
-			// if err != nil {
-			// 	fmt.Println(err)
-			// 	return
-			// }
-			// if claims["username"] == nil || claims["sub"] == nil || claims["userId"] == nil {
-			// 	return
-			// }
+			tokens := r.Header.Get("Sec-Websocket-Protocol")
+			if tokens == "" {
+				fmt.Println("No token")
+				return
+			}
+			// Check JWT validity on every request
+			// Parse takes the token string and a function for looking up the key
+			claims, err := lib.AnalyseJWT(tokens)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			if claims["username"] == nil || claims["sub"] == nil || claims["userId"] == nil {
+				return
+			}
 			// Attach data from the token to the request
-			ctx := context.WithValue(r.Context(), lib.Username, "vomnes")
-			// ctx := context.WithValue(r.Context(), lib.UserID, claims["userId"])
-			// ctx = context.WithValue(ctx, lib.Username, claims["username"])
-			// ctx = context.WithValue(ctx, lib.UUID, claims["sub"])
+			ctx := context.WithValue(r.Context(), lib.UserID, claims["userId"])
+			ctx = context.WithValue(ctx, lib.Username, claims["username"])
+			ctx = context.WithValue(ctx, lib.UUID, claims["sub"])
 			h.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}

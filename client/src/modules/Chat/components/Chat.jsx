@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './Chat.css';
 import SendButton from '../../../design/icons/send-button.svg';
+import api from '../../../library/api'
 // import encode from '../../../library/utils/encode.js'
 
 // var conn;
@@ -87,7 +88,7 @@ const MsgItem = (props) => {
         <div className="picture-msg-list" style={pictureStyle}>
           <div className="picture-list-background" style={{ backgroundImage: "url(" + props.picture + ")" }}></div>
         </div>
-        <span className="msg-header" style={msgHeaderStyle}>Valentin Omnes - 12:30</span>
+        <span className="msg-header" style={msgHeaderStyle}>{props.firstname} {props.lastname} - {props.received_at}</span>
         <div className="msg-content" style={msgContentStyle}>
           <span>{props.content}</span>
         </div>
@@ -99,37 +100,36 @@ const MsgItem = (props) => {
 const MsgArea = (props) => {
   var dataMessage;
   var msgScroll;
+  var messages = [];
+  var index = 0;
+  props.listMsg.forEach((message) => {
+    messages.push(
+      <MsgItem
+        key={index} index={index}
+        side={props.myusername === message.username ? "right" : "left"}
+        firstname={message.firstname}
+        lastname={message.lastname}
+        picture={message.picture}
+        content={message.content}
+        received_at={message.received_at}
+      />
+    );
+    index += 1;
+  });
   if (props.listMsg.length > 0) {
     msgScroll = { overflowY: "scroll", overflowX: "hidden" };
     dataMessage = (
       <div>
-        {window.onload = () => {document.getElementById("list-msg-area").scrollTop = document.getElementById("list-msg-area").scrollHeight;}}
+        {/* {window.onload = () => {document.getElementById("list-msg-area").scrollTop = document.getElementById("list-msg-area").scrollHeight;}} */}
         <div id="msg-array">
-          <div className="day">
+          {/* <div className="day">
             <span>Monday 15 December</span>
-          </div>
-          <MsgItem
-            side="left"
-            picture="https://images.unsplash.com/photo-1471943068829-26c1a4ac5bfa?h=1000&q=10"
-            content="laborum explicabo est autem voluptatum esse. debitis quis natus sequi vero velit eos. sit ratione doloremque necessitatibus. et omnis et sed veritatis! laudantium sit quas enim explicabo.
-            omnis et sed veritatis! laudantium.
-            laborum explicabo est autem voluptatum esse. debitis quis natus sequi vero velit eos. sit ratione doloremque necessitatibus. et omnis et sed veritatis! laudantium sit quas enim explicabo."
-          />
-          <div className="day">
+          </div> */}
+
+          {/* <div className="day">
             <span>Today</span>
-          </div>
-          <MsgItem
-            side="left"
-            picture="https://images.unsplash.com/photo-1471943068829-26c1a4ac5bfa?h=1000&q=10"
-            content="laborum explicabo est autem voluptatum esse. debitis quis natus sequi vero velit eos. sit ratione doloremque necessitatibus. et omnis et sed veritatis! laudantium sit quas enim explicabo.
-            omnis et sed veritatis! laudantium.
-            laborum explicabo est autem voluptatum esse. debitis quis natus sequi vero velit eos. sit ratione doloremque necessitatibus. et omnis et sed veritatis! laudantium sit quas enim explicabo."
-          />
-          <MsgItem
-            side="right"
-            picture="https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10"
-            content="laborum explicabo est autem voluptatum esse. debitis quis natus sequi vero velit eos. sit ratione doloremque necessitatibus. et omnis et sed veritatis! laudantium sit quas enim explicabo. omnis et sed veritatis! laudantium."
-          />
+          </div> */}
+          {messages}
         </div>
       </div>
     )
@@ -156,11 +156,67 @@ const MsgArea = (props) => {
   )
 }
 
+const ListMatches = (props) => {
+  var matches = [];
+  var index = 0;
+  props.listMatches.forEach((profile) => {
+    matches.push(
+      <MatchItem
+        selectedProfile={props.selectedProfile}
+        picture={profile.picture_url}
+        username={profile.username}
+        name={`${profile.firstname} ${profile.lastname}`}
+        lastmsg={profile.last_message_content}
+        time={profile.last_message_date}
+        isOnline={profile.online}
+        updateState={props.updateState}
+      />
+    );
+    index += 1;
+  });
+  return (
+    <div id="matches-list-main">
+      {matches}
+    </div>
+  )
+}
+
+const GetListMatches = async (updateState) => {
+  let res = await api.listMatches();
+  if (res) {
+    const response = await res.json();
+    if (res.status >= 500) {
+      throw new Error("Bad response from server - GetMe has failed");
+    } else if (res.status >= 400) {
+      console.log(response.error);
+    } else {
+      if (response.data === "No matches") {
+        updateState("listMatches", []);
+      } else {
+        updateState("listMatches", response);
+      }
+      return;
+    }
+  }
+}
+
 class Chat extends Component {
   constructor (props) {
     super(props);
     this.state = {
       selectedProfile: '',
+      messages: [
+        {
+          username: "vomnes",
+          firstname: "Valentin",
+          lastname: "Omnes",
+          picture: "https://images.unsplash.com/photo-1471943068829-26c1a4ac5bfa?h=1000&q=10",
+          content: "laborum explicabo est autem voluptatum esse. debitis quis natus sequi vero velit eos. sit ratione doloremque necessitatibus. et omnis et sed veritatis! laudantium sit quas enim explicabo. omnis et sed veritatis! laudantium. laborum explicabo est autem voluptatum esse. debitis quis natus sequi vero velit eos. sit ratione doloremque necessitatibus. et omnis et sed veritatis! laudantium sit quas enim explicabo.",
+          received_at: "10:10",
+        }
+      ],
+      selectedProfileData: [],
+      listMatches: [],
     }
     this.updateState = this.updateState.bind(this);
   }
@@ -168,6 +224,9 @@ class Chat extends Component {
     this.setState({
       [key]: content,
     });
+  }
+  componentDidMount() {
+    GetListMatches(this.updateState);
   }
   render () {
     return (
@@ -177,37 +236,14 @@ class Chat extends Component {
             <span className="matches-list-title">Your matches</span>
           </div>
           <div className="limit" style={{ width: "50%", margin: "0px", marginBottom: "2.5px" }}></div>
-          <div id="matches-list-main">
-            <MatchItem selectedProfile={this.state.selectedProfile} picture="https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10" username="a" name="Carolyn Wells" lastmsg="Good newsGood newsGood newsGood newsGood newsGood newsGood news" time={"12:30"} updateState={this.updateState}/>
-            <MatchItem selectedProfile={this.state.selectedProfile} isOnline={true} picture="https://images.unsplash.com/photo-1520512202623-51c5c53957df?h=1000&q=10" username="v" name="Pamela Ross" lastmsg="Good news" time={"12:30"} updateState={this.updateState}/>
-            <MatchItem selectedProfile={this.state.selectedProfile} picture="https://images.unsplash.com/photo-1425009294879-3f15dd0b4ed5?h=1000&q=10" username="c" name="Pamela Ross" lastmsg="Good news" time={"12:30"} updateState={this.updateState}/>
-            <MatchItem selectedProfile={this.state.selectedProfile} picture="https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10" username="d" name="Louise Walker" lastmsg="Good news" time={"12:30"} updateState={this.updateState}/>
-            <MatchItem selectedProfile={this.state.selectedProfile} picture="https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10" username="1" name="Louise Walker" lastmsg="Good news" time={"12:30"} updateState={this.updateState}/>
-            <MatchItem selectedProfile={this.state.selectedProfile} picture="https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10" username="e" name="Louise Walker" lastmsg="Good news" time={"12:30"} updateState={this.updateState}/>
-            <MatchItem selectedProfile={this.state.selectedProfile} picture="https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10" username="f" name="Louise Walker" lastmsg="Good news" time={"12:30"} updateState={this.updateState}/>
-            <MatchItem selectedProfile={this.state.selectedProfile} picture="https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10" username="g" name="Louise Walker" lastmsg="Good news" time={"12:30"} updateState={this.updateState}/>
-            <MatchItem selectedProfile={this.state.selectedProfile} picture="https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10" username="h" name="Louise Walker" lastmsg="Good news" time={"12:30"} updateState={this.updateState}/>
-            <MatchItem selectedProfile={this.state.selectedProfile} picture="https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10" username="8" name="Louise Walker" lastmsg="Good news" time={"12:30"} updateState={this.updateState}/>
-            <MatchItem selectedProfile={this.state.selectedProfile} picture="https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10" username="j" name="Louise Walker" lastmsg="Good news" time={"12:30"} updateState={this.updateState}/>
-            <MatchItem selectedProfile={this.state.selectedProfile} picture="https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10" username="k" name="Louise Walker" lastmsg="Good news" time={"12:30"} updateState={this.updateState}/>
-            <MatchItem selectedProfile={this.state.selectedProfile} picture="https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10" username="l" name="Louise Walker" lastmsg="Good news" time={"12:30"} updateState={this.updateState}/>
-            <MatchItem selectedProfile={this.state.selectedProfile} picture="https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10" username="m" name="Louise Walker" lastmsg="Good news" time={"12:30"} updateState={this.updateState}/>
-            <MatchItem selectedProfile={this.state.selectedProfile} picture="https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10" username="n" name="Louise Walker" lastmsg="Good news" time={"12:30"} updateState={this.updateState}/>
-            <MatchItem selectedProfile={this.state.selectedProfile} picture="https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10" username="o" name="Louise Walker" lastmsg="Good news" time={"12:30"} updateState={this.updateState}/>
-            <MatchItem selectedProfile={this.state.selectedProfile} picture="https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10" username="p" name="Louise Walker" lastmsg="Good news" time={"12:30"} updateState={this.updateState}/>
-            <MatchItem selectedProfile={this.state.selectedProfile} picture="https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10" username="q" name="Louise Walker" lastmsg="Good news" time={"12:30"} updateState={this.updateState}/>
-            <MatchItem selectedProfile={this.state.selectedProfile} picture="https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10" username="r" name="Louise Walker" lastmsg="Good news" time={"12:30"} updateState={this.updateState}/>
-            <MatchItem selectedProfile={this.state.selectedProfile} picture="https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10" username="s" name="Louise Walker" lastmsg="Good news" time={"12:30"} updateState={this.updateState}/>
-            <MatchItem selectedProfile={this.state.selectedProfile} picture="https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10" username="t" name="Louise Walker" lastmsg="Good news" time={"12:30"} updateState={this.updateState}/>
-            <MatchItem selectedProfile={this.state.selectedProfile} picture="https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10" username="u" name="Louise Walker" lastmsg="Good news" time={"12:30"} updateState={this.updateState}/>
-          </div>
+          <ListMatches listMatches={this.state.listMatches} updateState={this.updateState} selectedProfile={this.state.selectedProfile}/>
         </div>
         <div id="chat-area">
           <div id="header-msg-area">
             <span id="main-title">Pamela Ross is typing ...</span>
             {/*  */}
           </div>
-          <MsgArea listMsg={["one"]}/>
+          <MsgArea listMsg={this.state.messages} myusername={"vomnes"}/>
           <div id="new-msg-area">
             <form id="form">
                 <input id="new-msg-input" type="text" placeholder="Type something to send ..." size="64"/>

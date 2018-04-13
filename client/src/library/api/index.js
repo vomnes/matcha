@@ -16,6 +16,7 @@ import me from './me';
 import match from './match';
 import existingTags from './existingtags';
 import targetedmatch from './targetedmatch';
+import listMatches from './listmatches';
 
 const apiConf = {
   BACK_URL: `http://localhost:8080`,
@@ -40,4 +41,5 @@ export default {
   match: (options) => match(options, apiConf),
   targetedmatch: (options, username) => targetedmatch(options, username, apiConf),
   existingTags: () => existingTags(apiConf),
+  listMatches: () => listMatches(apiConf),
 }
