@@ -60,12 +60,6 @@ const NotifList = (props) => {
   return null;
 }
 
-// -> visit
-// -> like
-// -> unlike
-// -> match
-// -> message
-
 class PageLayout extends Component {
   constructor() {
     super();
@@ -78,6 +72,7 @@ class PageLayout extends Component {
     const {
       children,
     } = this.props;
+    // console.log(this.props.wsConn); // This is WebSocket
     var notifStyle = { cursor: "pointer" };
     notifStyle["border"] = this.state.newNotification ? "2px solid #e63946" : "2px solid white";
     return (
@@ -92,13 +87,13 @@ class PageLayout extends Component {
               <span id="notif-btn" className="logout" style={notifStyle}
                 onClick={() => this.setState({notificationsOpen: !this.state.notificationsOpen})}
               >Notifications</span>
-              <NotifList isOpen={this.state.notificationsOpen}/>
               <a href='/logout' className="logout"><span>Logout</span></a>
             </div>
             {this.state.notificationsOpen ? (<div id="notif-arrow"></div>) : null}
           </div>
         </div>
         <div className="content">
+          <NotifList isOpen={this.state.notificationsOpen}/>
           { children }
         </div>
       </div>

@@ -241,6 +241,7 @@ class Chat extends Component {
       listMatches: [],
       message: '',
     }
+    console.log(this.props.wsConn); // This is WebSocket
     this.updateState = this.updateState.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -262,6 +263,7 @@ class Chat extends Component {
   }
   componentDidMount() {
     GetListMatches(this.updateState);
+    this.updateState('wsConn', this.props.wsConn); // Websocket is here
   }
   handleSubmit = (e) => {
     console.log(this.state.message);

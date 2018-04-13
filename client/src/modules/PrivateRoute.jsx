@@ -6,25 +6,29 @@ import {
 import PageLayout from '../layouts/PageLayout';
 
 // Check if the user is logged
-const PrivateRoute = ({
-    component: Component,
-    ...rest,
-  }) => {
-    const isLoggedIn = localStorage.getItem(`matcha_token`);
+const PrivateRoute = ({ component: Component, ...rest }) => {
+    const isLoggedInToken = localStorage.getItem(`matcha_token`);
+    if (isLoggedInToken) {
+      const wsConn = new WebSocket('ws://localhost:8081/ws', isLoggedInToken);
+      return (
+        <Route
+          {...rest}
+          render={(props) => (
+            <PageLayout wsConn={wsConn}>
+              <Component wsConn={wsConn} {...props}/>
+            </PageLayout>
+          )}
+        />
+      );
+    }
     return (
       <Route
         {...rest}
         render={(props) => (
-          isLoggedIn ? (
-            <PageLayout>
-              <Component {...props} />
-            </PageLayout>
-          ) : (
-            <Redirect to={{
-              pathname: '/login',
-              state: { from: props.location }
-            }}/>
-          )
+          <Redirect to={{
+            pathname: '/login',
+            state: { from: props.location }
+          }}/>
         )}
       />
     );
