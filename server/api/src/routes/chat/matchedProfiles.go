@@ -11,19 +11,19 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type DateSorter []OutputMatchedProfiles
+type dateSorter []outputMatchedProfiles
 
-func (a DateSorter) Len() int      { return len(a) }
-func (a DateSorter) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
-func (a DateSorter) Less(i, j int) bool {
+func (a dateSorter) Len() int      { return len(a) }
+func (a dateSorter) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a dateSorter) Less(i, j int) bool {
 	return a[i].LastMessageDate.After(a[j].LastMessageDate)
 }
 
-type UnreadMessageSorter []OutputMatchedProfiles
+type unreadMessageSorter []outputMatchedProfiles
 
-func (a UnreadMessageSorter) Len() int      { return len(a) }
-func (a UnreadMessageSorter) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
-func (a UnreadMessageSorter) Less(i, j int) bool {
+func (a unreadMessageSorter) Len() int      { return len(a) }
+func (a unreadMessageSorter) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a unreadMessageSorter) Less(i, j int) bool {
 	return a[i].TotalUnreadMessages > a[j].TotalUnreadMessages
 }
 
@@ -52,7 +52,7 @@ func getMatchesIDs(db *sqlx.DB, userID string) ([]string, int, string) {
 	return matchesIDs, 0, ""
 }
 
-type MatchedProfiles struct {
+type matchedProfiles struct {
 	Username            string    `db:"username" json:"username"`
 	Firstname           string    `db:"firstname" json:"firstname"`
 	Lastname            string    `db:"lastname" json:"lastname"`
@@ -64,19 +64,19 @@ type MatchedProfiles struct {
 	TotalUnreadMessages int       `db:"total_unread_messages"`
 }
 
-func getMessages(db *sqlx.DB, userID string, matchesIDs []string) (map[string]MatchedProfiles, int, string) {
-	var listMsg []MatchedProfiles
+func getMessages(db *sqlx.DB, userID string, matchesIDs []string) (map[string]matchedProfiles, int, string) {
+	var listMsg []matchedProfiles
 	request := `Select username, firstname, lastname, picture_url_1 as picture_url, online from Users Where id IN (` + strings.Join(matchesIDs, ", ") + `)`
 	err := db.Select(&listMsg, request)
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to collect matches messages in database " + err.Error()))
-		return map[string]MatchedProfiles{}, 500, "Failed to gather matches messages data in the database"
+		return map[string]matchedProfiles{}, 500, "Failed to gather matches messages data in the database"
 	}
-	listMatches := make(map[string]MatchedProfiles)
+	listMatches := make(map[string]matchedProfiles)
 	for _, elem := range listMsg {
 		listMatches[elem.Username] = elem
 	}
-	listMsg = []MatchedProfiles{}
+	listMsg = []matchedProfiles{}
 	request = `Select m.content, m.created_at, m.is_read, u.username
 	From Messages m
 	Left Join Users u On m.senderid = u.id
@@ -85,9 +85,9 @@ func getMessages(db *sqlx.DB, userID string, matchesIDs []string) (map[string]Ma
 	err = db.Select(&listMsg, request, userID)
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to collect matches messages in database " + err.Error()))
-		return map[string]MatchedProfiles{}, 500, "Failed to gather matches messages data in the database"
+		return map[string]matchedProfiles{}, 500, "Failed to gather matches messages data in the database"
 	}
-	unreadMessage := 0
+	var unreadMessage int
 	var lastMessageContent string
 	var lastMessageDate time.Time
 	for _, elem := range listMsg {
@@ -104,7 +104,7 @@ func getMessages(db *sqlx.DB, userID string, matchesIDs []string) (map[string]Ma
 			lastMessageContent = listMatches[elem.Username].LastMessageContent
 			lastMessageDate = listMatches[elem.Username].LastMessageDate
 		}
-		listMatches[elem.Username] = MatchedProfiles{
+		listMatches[elem.Username] = matchedProfiles{
 			Username:            listMatches[elem.Username].Username,
 			Firstname:           listMatches[elem.Username].Firstname,
 			Lastname:            listMatches[elem.Username].Lastname,
@@ -114,14 +114,11 @@ func getMessages(db *sqlx.DB, userID string, matchesIDs []string) (map[string]Ma
 			Online:              listMatches[elem.Username].Online,
 			TotalUnreadMessages: unreadMessage,
 		}
-		unreadMessage = 0
-		lastMessageContent = ""
-		lastMessageDate = time.Time{}
 	}
 	return listMatches, 0, ""
 }
 
-type OutputMatchedProfiles struct {
+type outputMatchedProfiles struct {
 	Username            string    `db:"username" json:"username"`
 	Firstname           string    `db:"firstname" json:"firstname"`
 	Lastname            string    `db:"lastname" json:"lastname"`
@@ -132,7 +129,14 @@ type OutputMatchedProfiles struct {
 	TotalUnreadMessages int       `db:"total_unread_messages" json:"total_unread_messages"`
 }
 
-// GetMatchedProfiles ...
+// GetMatchedProfiles is the route '/v1/chat/matches' with the method GET.
+// Collect the user's matchesIDs in the database
+// If matchesIDs is empty
+// 		-> Return an error - HTTP Code 200 OK - JSON Content "data: No matches"
+// Get in the database for each id, the username, firstname, lastname, picture url
+// online status, the last message (content/date) and total unread messages
+// Everything is stored in a structure, sorted by last message date and unread message count
+// Return HTTP Code 200 Status OK - JSON Content Structure
 func GetMatchedProfiles(w http.ResponseWriter, r *http.Request) {
 	db, _, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"GET"})
 	if !ok {
@@ -155,9 +159,9 @@ func GetMatchedProfiles(w http.ResponseWriter, r *http.Request) {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
 	}
-	var matches []OutputMatchedProfiles
+	var matches []outputMatchedProfiles
 	for _, profile := range listMatches {
-		matches = append(matches, OutputMatchedProfiles{
+		matches = append(matches, outputMatchedProfiles{
 			Username:            profile.Username,
 			Firstname:           profile.Firstname,
 			Lastname:            profile.Lastname,
@@ -168,7 +172,7 @@ func GetMatchedProfiles(w http.ResponseWriter, r *http.Request) {
 			TotalUnreadMessages: profile.TotalUnreadMessages,
 		})
 	}
-	sort.Sort(DateSorter(matches))
-	sort.Sort(UnreadMessageSorter(matches))
+	sort.Sort(dateSorter(matches))
+	sort.Sort(unreadMessageSorter(matches))
 	lib.RespondWithJSON(w, http.StatusOK, matches)
 }

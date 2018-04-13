@@ -1,7 +1,7 @@
 Go back to [Table of Contents](../../../)
 
 ### Users
-#### GET - /v1/users/data/match
+#### GET - /v1/chat/matches
 
 ```
 JSON Encoded Base64 - Search-Parameters Header :
@@ -218,6 +218,7 @@ If the profile is already liked by the connected user
 Insert like in the table Likes in the database  
 Update target user rating  
 Check if now the user are connected  
+Handle PushNotif like and match
 Return HTTP Code 200 Status OK  
 
 ```
@@ -241,6 +242,7 @@ If the username doesn't match with any data
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: User<username> doesn't exists"  
 Remove the like from the table Likes in the database
 Update target user rating
+Handle PushNotif unmatch
 Return HTTP Code 200 Status OK  
 
 ___
@@ -276,3 +278,36 @@ If the username doesn't match with any data
 Remove the like from the table Fake_Reports in the database
 Update target user rating
 Return HTTP Code 200 Status OK  
+___
+
+#### GET - /v1/users/notifications
+
+Collect the user's notifications in the the database with profile data  
+If one of the notifications is mark as unread  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Update with is_read true all the notifications  
+Return HTTP Code 200 Status OK  
+If notifications list is empty JSON contains "data": "No notifications"  
+
+```
+JSON Content Response :
+  {
+    "data":   string,
+  }
+```
+
+Else JSON Content Array  
+
+```
+JSON Content Response :
+  [
+    {
+      "type":             string,
+      "date":             time.Time,
+      "new":              bool,
+      "username":         string,
+      "firstname":        string,
+      "lastname":         string,
+      "user_picture_url": string,
+    },
+  ]
+```

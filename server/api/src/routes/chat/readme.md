@@ -1,50 +1,11 @@
 Go back to [Table of Contents](../../../)
 
 ### Chat
-#### GET - /v1/users/data/match
+#### GET - /v1/chat/matches
 
-```
-JSON Encoded Base64 - Search-Parameters Header :
-  {
-    "age": {
-     "min": int,
-     "max": int
-    },
-    "rating": {
-     "min": float,
-     "max": float
-    },
-    "distance": {
-     "max": int
-    },
-    "tags": []string,
-    "lat": float,
-    "lng": float,
-    "sort_type": string,      // age, rating, distance, common_tags
-    "sort_direction": string, // normal or reverse
-    "start_position": uint,   // default = 0
-    "finish_position": uint,  // default = 20
-  }
-```
-
-The route match will return an array with the possible match of the connected user according his data and parameters from the header (base64).  
-Check input :  
-- Age must be a float greater than 1  
-- Rating must be a float between 0.1 and 5.0  
-- If min > max, automatic swap  
-- Distance is an integer with default value 50 (km)  
-- Sort type available are age, common_tags (when there are no selected tags) distance, rating (default)  
-- Sort direction available are reverse and normal  
-- Finish position is an unsigned integer, default value 20  
-
-Collect the logged in user data (users, tags)  
-Handle genre by creating an array with the possible match  
-Create the request according the logged in user data and options from the body that will the matching users  
-- Default range age is between -3 and +3 the age of the logged in user  
-
-Generate an map[string]interface{} array with the users from the SQL request output between StartPosition and FinishPosition  
-Return HTTP Code 200 Status OK  
-If the array is empty return JSON Content "data": "No (more) users"  
+Collect the user's matchesIDs in the database  
+If matchesIDs is empty  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 200 OK - JSON Content "data: No matches"
 
 ```
 JSON Content Response :
@@ -53,21 +14,70 @@ JSON Content Response :
   }
 ```
 
-Else JSON Content Array  
+Get in the database for each id, the username, firstname, lastname, picture url, online status, the last message (content/date) and total unread messages  
+Everything is stored in a structure, sorted by last message date and unread message count  
+Return HTTP Code 200 Status OK - JSON Content Structure  
 
 ```
 JSON Content Response :
   [
     {
-      "username":    string,
-      "firstname":   string,
-      "lastname":    string,
-      "picture_url": string,
-      "age":         int,
-      "rating":      float64,
-      "latitude":    float64,
-      "longitude":   float64,
-      "distance":    float64 /* Round about 0.1 */
+      "username":                 string,
+      "firstname":                string,
+      "lastname":                 string,
+      "picture_url":              string,
+      "last_message_content":     string,
+      "last_message_date":        time.Time,
+      "online":                   bool,
+      "total_unread_messages":    int,
     },
   ]
 ```
+
+---
+
+#### GET - /v1/chat/messages/{username}
+
+If parameter username is not a valid username  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Username parameter is invalid"  
+If logged username is equal to targetUsername  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 400 Bad Request - JSON Content "Error: Cannot target your own profile"  
+Get targetUserID from targetUsername  
+Collect the discussion between logged user and target user and the profiles data in the database, sort by asc  
+Update all the messages as read in the database  
+If there are no messages  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 200 OK - JSON Content "data: "No messages"  
+```
+JSON Content Response :
+  {
+    "data": string,
+  },
+```
+Else  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return HTTP Code 200 Status OK - JSON Content Messages  
+
+```
+JSON Content Response :
+  [
+    {
+      "username":     string,
+      "lastname":     string,
+      "firstname":    string,
+      "picture_url":  string,
+      "content":      string,
+      "received_at":  time.Time,
+    },
+  ]
+```
+
+---
+
+#### POST - /v1/chat/messages/{username}
+
+If parameter username is not a valid username  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Username parameter is invalid"  
+If logged username is equal to targetUsername  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 400 Bad Request - JSON Content "Error: Cannot target your own profile"  
+Get targetUserID from targetUsername  
+Update all the messages as read in the discussion between logged user and target user  
+Return HTTP Code 200 Status OK  

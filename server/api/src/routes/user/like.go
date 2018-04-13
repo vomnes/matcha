@@ -45,6 +45,7 @@ func insertLike(db *sqlx.DB, userID, targetUserID string) (int, string) {
 // Insert like in the table Likes in the database
 // Update target user rating
 // Check if now the user are connected
+// Handle PushNotif like and match
 // Return HTTP Code 200 Status OK - JSON Content
 func addLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB,
 	userID, targetUserID string) {
@@ -118,6 +119,7 @@ func handleUpdateNeed(db *sqlx.DB, userID, targetUserID string) (bool, int, stri
 // Delete Like Method DELETE
 // Remove the like from the table Likes in the database
 // Update target user rating
+// Handle PushNotif unmatch
 // Return HTTP Code 200 Status OK
 func deleteLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB, userID, targetUserID string) {
 	needDeleteLike, errCode, errContent := handleUpdateNeed(db, userID, targetUserID)

@@ -49,7 +49,14 @@ func notificationsMarkAsRead(db *sqlx.DB, userID string) (int, string, error) {
 	return 0, "", nil
 }
 
-// GetListNotifications ...
+// GetListNotifications is the route '/v1/users/notifications' with the method GET.
+// Collect the user's notifications in the the database with profile data
+// If one of the notifications is mark as unread
+// -> Update with is_read true all the notifications
+// If there are no notifications
+// 		-> Return an error - HTTP Code 200 OK - JSON Content "data: "No notifications"
+// Else
+// 		-> Return HTTP Code 200 Status OK - JSON Content Notifications
 func GetListNotifications(w http.ResponseWriter, r *http.Request) {
 	db, _, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"GET"})
 	if !ok {

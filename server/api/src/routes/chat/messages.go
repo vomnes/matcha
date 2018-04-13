@@ -66,7 +66,14 @@ func updateIsReadMessages(db *sqlx.DB, userID, targetUserID string) (int, string
 }
 
 // listMessages is the route '/v1/chat/messages/{username}' with the method GET.
-func listMessages(w http.ResponseWriter, r *http.Request, db *sqlx.DB, targetUsername, userID, targetUserID string) {
+// Collect the discussion between logged user and target user
+// and the profiles data in the database, sort by asc
+// Update all the messages as read in the database
+// If there are no messages
+// 		-> Return an error - HTTP Code 200 OK - JSON Content "data: "No messages"
+// Else
+// 		-> Return HTTP Code 200 Status OK - JSON Content Messages
+func listMessages(w http.ResponseWriter, r *http.Request, db *sqlx.DB, userID, targetUserID string) {
 	messages, errCode, errContent := getMessageData(db, userID, targetUserID)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
@@ -87,12 +94,9 @@ func listMessages(w http.ResponseWriter, r *http.Request, db *sqlx.DB, targetUse
 }
 
 // markAsRead is the route '/v1/chat/messages/{username}' with the method POST.
-func markAsRead(w http.ResponseWriter, r *http.Request, db *sqlx.DB, targetUsername, userID, targetUserID string) {
-	targetUserID, errCode, errContent := getUserIDFromUsername(db, targetUsername)
-	if errCode != 0 || errContent != "" {
-		lib.RespondWithErrorHTTP(w, errCode, errContent)
-		return
-	}
+// Update all the messages as read in the discussion between logged user and target user
+// Return HTTP Code 200 Status OK
+func markAsRead(w http.ResponseWriter, r *http.Request, db *sqlx.DB, userID, targetUserID string) {
 	errCode, errContent, err := updateIsReadMessages(db, userID, targetUserID)
 	if err != nil {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
@@ -102,6 +106,12 @@ func markAsRead(w http.ResponseWriter, r *http.Request, db *sqlx.DB, targetUsern
 }
 
 // Messages is the route '/v1/chat/messages/{username}'
+// The url contains the parameter username
+// If username is not a valid username
+// 		-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Username parameter is invalid"
+// If logged username is equal to targetUsername
+// 		-> Return an error - HTTP Code 400 Bad Request - JSON Content "Error: Cannot target your own profile"
+// Get targetUserID from targetUsername
 func Messages(w http.ResponseWriter, r *http.Request) {
 	db, username, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"GET", "POST"})
 	if !ok {
@@ -126,10 +136,10 @@ func Messages(w http.ResponseWriter, r *http.Request) {
 	}
 	switch r.Method {
 	case "GET":
-		listMessages(w, r, db, targetUsername, userID, targetUserID)
+		listMessages(w, r, db, userID, targetUserID)
 		return
 	case "POST":
-		markAsRead(w, r, db, targetUsername, userID, targetUserID)
+		markAsRead(w, r, db, userID, targetUserID)
 		return
 	}
 }
