@@ -138,7 +138,7 @@ ___
 
 #### GET - /v1/users/data/me
 
-Collect the data concerning the user in the table Users of the database  
+Collect the data concerning the user in the table Users of the database, total_new_notifications and total_new_messages
 If the user doesn't exists  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: User[<username>] doesn't exists"  
 Return HTTP Code 200 Status OK - JSON Content User data  
@@ -146,13 +146,15 @@ Return HTTP Code 200 Status OK - JSON Content User data
 ```
 JSON Content Response :
   {
-    "username":         string,
-    "firstname":        string,
-    "lastname":         string,
-    "age":              int,
-    "profile_picture":  string,
-    "lat":              float64,
-    "lng":              float64,
+    "username":                string,
+    "firstname":               string,
+    "lastname":                string,
+    "age":                     int,
+    "profile_picture":         string,
+    "lat":                     float64,
+    "lng":                     float64,
+    "total_new_notifications": int,
+    "total_new_messages":      int,
   }
 ```
 
