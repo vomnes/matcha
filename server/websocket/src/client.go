@@ -116,7 +116,7 @@ func (s *subscription) writePump() {
 	}
 }
 
-func ErrorWS(ws *websocket.Conn, message string) {
+func errorWS(ws *websocket.Conn, message string) {
 	websocket.WriteJSON(ws, map[string]string{
 		"error": message,
 	})
@@ -133,7 +133,7 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	/* ======== Get data ======== */
 	username, ok := r.Context().Value(lib.Username).(string)
 	if !ok {
-		ErrorWS(ws, "Failed to collect user username")
+		errorWS(ws, "Failed to collect user username")
 		return
 	}
 	/* ========================== */
