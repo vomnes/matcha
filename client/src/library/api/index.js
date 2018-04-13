@@ -17,6 +17,7 @@ import match from './match';
 import existingTags from './existingtags';
 import targetedmatch from './targetedmatch';
 import listMatches from './listmatches';
+import getMessages from './getmessages';
 
 const apiConf = {
   BACK_URL: `http://localhost:8080`,
@@ -42,4 +43,5 @@ export default {
   targetedmatch: (options, username) => targetedmatch(options, username, apiConf),
   existingTags: () => existingTags(apiConf),
   listMatches: () => listMatches(apiConf),
+  getMessages: (username) => getMessages(username, apiConf),
 }

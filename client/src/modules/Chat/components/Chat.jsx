@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import './Chat.css';
 import SendButton from '../../../design/icons/send-button.svg';
 import api from '../../../library/api'
+
+var moment = require('moment');
 // import encode from '../../../library/utils/encode.js'
 
 // var conn;
@@ -45,9 +47,22 @@ const MatchItem = (props) => {
     boxShadow: "0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)",
     zIndex: "2",
   }
+  if (props && props.time) {
+    var date = moment(props.time)
+    var formatedDate;
+    if (moment().diff(date, 'days') > 1) {
+      if (moment().diff(date, 'years') > 1) {
+        formatedDate = date.format("DD MMM, YYYY")
+      } else {
+        formatedDate = date.format("DD MMM")
+      }
+    } else {
+      formatedDate = date.startOf("minute").fromNow();
+    }
+  }
   return (
     <div>
-      <div className="match-element" id={props.username} style={props.selectedProfile === props.username ? selectedStyle : null } onClick={() => props.updateState("selectedProfile", props.username)}>
+      <div className="match-element" id={props.username} style={props.selectedProfile === props.username ? selectedStyle : null } onClick={() => props.updateSelectedProfile(props.username)}>
         {props.isOnline ? (<span className="online-dot" title={`${props.name} is online`}>&bull;</span>) : null}
         <div className="picture-list">
           <a href={`/profile/${props.username}` + (props.optionsBase64 ? '/' + props.optionsBase64 : '')} title={`Click to see ${props.name}'s profile`}>
@@ -57,7 +72,7 @@ const MatchItem = (props) => {
         <span className="match-element-list">{props.name}</span>
         {props.selectedProfile === props.username ? null : (
           <div>
-            <span className="match-element-time" title={`Last message sent at ${props.time}`}>{props.time}</span>
+            <span className="match-element-time" title={`Last message sent - ${formatedDate}`}>{formatedDate}</span>
             <span className="match-element-lastmsg">{props.lastmsg}</span>
           </div>
         )}
@@ -68,28 +83,23 @@ const MatchItem = (props) => {
 }
 
 const MsgItem = (props) => {
-  var msgStyle = null;
   var pictureStyle = null;
-  var msgContentStyle = null;
   var msgHeaderStyle = null;
   if (props.side === "left") {
-    msgStyle = { marginLeft: "5%" };
     pictureStyle = { left: "-22px" };
-    msgContentStyle = { marginLeft: "3%" };
     msgHeaderStyle = { left: "25px" };
   } else {
-    msgStyle = { marginLeft: "10%" };
     pictureStyle = { right: "-22px" };
     msgHeaderStyle = { right: "30px" };
   }
   return (
     <div className="msg-element">
-      <div className="msg" style={msgStyle}>
+      <div className="msg">
         <div className="picture-msg-list" style={pictureStyle}>
           <div className="picture-list-background" style={{ backgroundImage: "url(" + props.picture + ")" }}></div>
         </div>
-        <span className="msg-header" style={msgHeaderStyle}>{props.firstname} {props.lastname} - {props.received_at}</span>
-        <div className="msg-content" style={msgContentStyle}>
+        <span className="msg-header" style={msgHeaderStyle}>{props.firstname} {props.lastname} - {moment(props.received_at).format('LT')}</span>
+        <div className="msg-content" style={{ textAlign: props.side }}>
           <span>{props.content}</span>
         </div>
       </div>
@@ -109,7 +119,7 @@ const MsgArea = (props) => {
         side={props.myusername === message.username ? "right" : "left"}
         firstname={message.firstname}
         lastname={message.lastname}
-        picture={message.picture}
+        picture={message.picture_url}
         content={message.content}
         received_at={message.received_at}
       />
@@ -133,18 +143,18 @@ const MsgArea = (props) => {
         </div>
       </div>
     )
-  } else {
+  } else if (props.selectedProfileData.username !== undefined) {
     dataMessage = (
       <div id="no-msg">
-        <a href={`/profile/${props.username}` + (props.optionsBase64 ? '/' + props.optionsBase64 : '')} title={`Click to see ${props.name}'s profile`}>
+        <a href={`/profile/${props.selectedProfileData.username}`} title={`Click to see ${props.selectedProfileData.firstname}'s profile`}>
           <div id="picture-no-msg" style={null}>
-            <div className="picture-list-background" style={{ backgroundImage: "url(https://images.unsplash.com/photo-1522234811749-abc512463137?h=1000&q=10)" }}></div>
+            <div className="picture-list-background" style={{ backgroundImage: `url(${props.selectedProfileData.picture_url})` }}></div>
           </div>
         </a>
         <div id="text-no-msg">
-          <span id="fullname-no-msg">Pamela Ross</span>
+          <span id="fullname-no-msg">{props.selectedProfileData.firstname} {props.selectedProfileData.lastname}</span>
           <br/>
-          <span style={{ fontSize: "12.5px" }}>Start the discussion by typing a message</span>
+          <span style={{ fontSize: "12.5px" }}>Start the discussion by sending a message</span>
         </div>
       </div>
     )
@@ -169,7 +179,8 @@ const ListMatches = (props) => {
         lastmsg={profile.last_message_content}
         time={profile.last_message_date}
         isOnline={profile.online}
-        updateState={props.updateState}
+        updateSelectedProfile={props.updateSelectedProfile}
+        key={index}
       />
     );
     index += 1;
@@ -186,7 +197,7 @@ const GetListMatches = async (updateState) => {
   if (res) {
     const response = await res.json();
     if (res.status >= 500) {
-      throw new Error("Bad response from server - GetMe has failed");
+      throw new Error("Bad response from server - ListMatches has failed");
     } else if (res.status >= 400) {
       console.log(response.error);
     } else {
@@ -200,33 +211,67 @@ const GetListMatches = async (updateState) => {
   }
 }
 
+const GetListMessages = async (username, updateState) => {
+  let res = await api.getMessages(username);
+  if (res) {
+    const response = await res.json();
+    if (res.status >= 500) {
+      throw new Error("Bad response from server - GetMe has failed");
+    } else if (res.status >= 400) {
+      console.log(response.error);
+    } else {
+      if (response.data === "No messages") {
+        updateState("messages", []);
+      } else {
+        updateState("messages", response);
+        console.log(response);
+      }
+      return;
+    }
+  }
+}
+
 class Chat extends Component {
   constructor (props) {
     super(props);
     this.state = {
       selectedProfile: '',
-      messages: [
-        {
-          username: "vomnes",
-          firstname: "Valentin",
-          lastname: "Omnes",
-          picture: "https://images.unsplash.com/photo-1471943068829-26c1a4ac5bfa?h=1000&q=10",
-          content: "laborum explicabo est autem voluptatum esse. debitis quis natus sequi vero velit eos. sit ratione doloremque necessitatibus. et omnis et sed veritatis! laudantium sit quas enim explicabo. omnis et sed veritatis! laudantium. laborum explicabo est autem voluptatum esse. debitis quis natus sequi vero velit eos. sit ratione doloremque necessitatibus. et omnis et sed veritatis! laudantium sit quas enim explicabo.",
-          received_at: "10:10",
-        }
-      ],
-      selectedProfileData: [],
+      messages: [],
+      selectedProfileData: {},
       listMatches: [],
+      message: '',
     }
     this.updateState = this.updateState.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
   updateState(key, content) {
     this.setState({
       [key]: content,
     });
   }
+  updateSelectedProfile = (username) => {
+    this.state.listMatches.forEach((profile) => {
+      if (profile.username === username) {
+        this.updateState("selectedProfileData", profile);
+        return;
+      }
+    })
+    this.updateState("selectedProfile", username);
+    GetListMessages(username, this.updateState);
+  }
   componentDidMount() {
     GetListMatches(this.updateState);
+  }
+  handleSubmit = (e) => {
+    console.log(this.state.message);
+    this.updateState("message", "");
+    e.preventDefault();
+  }
+  handleChange (e) {
+    this.setState({
+      [e.target.name]: e.target.value,
+    });
   }
   render () {
     return (
@@ -236,21 +281,25 @@ class Chat extends Component {
             <span className="matches-list-title">Your matches</span>
           </div>
           <div className="limit" style={{ width: "50%", margin: "0px", marginBottom: "2.5px" }}></div>
-          <ListMatches listMatches={this.state.listMatches} updateState={this.updateState} selectedProfile={this.state.selectedProfile}/>
+          <ListMatches listMatches={this.state.listMatches} updateSelectedProfile={this.updateSelectedProfile} selectedProfile={this.state.selectedProfile}/>
         </div>
-        <div id="chat-area">
-          <div id="header-msg-area">
-            <span id="main-title">Pamela Ross is typing ...</span>
-            {/*  */}
+        {this.state.selectedProfile ? (
+          <div id="chat-area">
+            <div id="header-msg-area">
+              <span id="main-title">{this.state.selectedProfileData.firstname} {this.state.selectedProfileData.lastname}</span>
+              {/* is typing ... */}
+            </div>
+            <MsgArea listMsg={this.state.messages} myusername={"LawrenceHall2Hx24"} selectedProfileData={this.state.selectedProfileData}/>
+            <div id="new-msg-area">
+              {this.state.selectedProfileData.username !== undefined ? (
+                <form id="form" onSubmit={this.handleSubmit}>
+                    <input id="new-msg-input" type="text" placeholder="Type something to send ..." name="message" value={this.state.message} onChange={this.handleChange} size="64"/>
+                    <button id="new-msg-submit" title="Send message"><img alt="Submit message" src={SendButton} style={{position: "absolute", top: "25%", left: "0px", width: "100%"}}/></button>
+                </form>
+              ) : null}
+            </div>
           </div>
-          <MsgArea listMsg={this.state.messages} myusername={"vomnes"}/>
-          <div id="new-msg-area">
-            <form id="form">
-                <input id="new-msg-input" type="text" placeholder="Type something to send ..." size="64"/>
-                <button id="new-msg-submit" title="Send message"><img alt="Submit message" src={SendButton} style={{position: "absolute", top: "25%", left: "0px", width: "100%"}}/></button>
-            </form>
-          </div>
-        </div>
+        ) : null}
       </div>
     )
   }

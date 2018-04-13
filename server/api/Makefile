@@ -5,9 +5,6 @@ export GOPATH
 
 default: build
 
-fake:
-	go run ../fakeData.go
-
 build:
 	go build -v -o ./bin/api ./src/*.go
 
@@ -85,5 +82,4 @@ vendor_get: vendor_clean
 		github.com/jmoiron/sqlx \
 		github.com/dgrijalva/jwt-go \
 		github.com/go-redis/redis \
-		github.com/mailjet/mailjet-apiv3-go \
-		github.com/icrowley/fake
+		github.com/mailjet/mailjet-apiv3-go

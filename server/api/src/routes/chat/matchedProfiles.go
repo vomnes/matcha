@@ -31,7 +31,7 @@ func getMatchesIDs(db *sqlx.DB, userID string) ([]string, int, string) {
 	var matchesIDs []string
 	request := `
 		Select
-			CASE when Part1 = '$1' then Part1 else Part2 END as MatchesID
+			CASE when Part1 <> $1::text then Part1 else Part2 END as MatchesID
 				from (
 					Select Split_part(concat, ',', 1) as Part1,
 								 Split_part(concat, ',', 2) as Part2
