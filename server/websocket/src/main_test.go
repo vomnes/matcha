@@ -5,8 +5,8 @@ import (
 	"os"
 	"testing"
 
-	"../lib"
-	"../tests"
+	"../../lib"
+	"../../tests"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 )
@@ -15,9 +15,9 @@ import (
 func testWebsocketServer(ctxData tests.ContextData) *mux.Router {
 	// instantiating the router
 	router := mux.NewRouter()
-	router.HandleFunc("/ws/chat/{room}", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		r = tests.WithContextWS(r, ctxData)
-		serveWsChat(&hub, w, r)
+		serveWs(&hub, w, r)
 	})
 	return router
 }
@@ -27,7 +27,7 @@ func TestMain(m *testing.M) {
 		broadcast:  make(chan message),
 		register:   make(chan subscription),
 		unregister: make(chan subscription),
-		rooms:      make(map[string]map[*connection]bool),
+		users:      make(map[string]map[*connection]bool),
 	} // Be carefull if you use Hub as global
 	go hub.run() // Launch test hub
 	tests.DB = lib.PostgreSQLConn(lib.PostgreSQLNameTests)

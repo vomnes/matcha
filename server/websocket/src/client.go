@@ -5,9 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"../lib"
+	"../../lib"
 
-	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 )
 
@@ -64,7 +63,7 @@ func (s subscription) readPump() {
 			}
 			break
 		}
-		m := message{msg, s.room}
+		m := message{msg, s.username}
 		hub.broadcast <- m
 	}
 }
@@ -124,12 +123,8 @@ func ErrorWS(ws *websocket.Conn, message string) {
 	ws.WriteMessage(websocket.CloseMessage, []byte{})
 }
 
-type roomData struct {
-	Username1, Username2 string
-}
-
-// serveWsChat handles websocket requests from the users.
-func serveWsChat(hub *Hub, w http.ResponseWriter, r *http.Request) {
+// serveWs handles websocket requests from the users.
+func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(lib.PrettyError("[WS] Get websocket connection from Upgrade failed - " + err.Error()))
@@ -141,20 +136,9 @@ func serveWsChat(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		ErrorWS(ws, "Failed to collect user username")
 		return
 	}
-	var room roomData
-	vars := mux.Vars(r)
-	err = lib.ExtractBase64Struct(vars["room"], &room)
-	if err != nil {
-		ErrorWS(ws, "Failed to extract room identity")
-		return
-	}
-	if room.Username1 != username && room.Username2 != username {
-		ErrorWS(ws, "Room access denied")
-		return
-	}
 	/* ========================== */
 	c := &connection{ws: ws, send: make(chan []byte, 256)}
-	s := subscription{conn: c, room: vars["room"]}
+	s := subscription{conn: c, username: username}
 	hub.register <- s
 	go s.writePump()
 	s.readPump()
