@@ -1,0 +1,115 @@
+@import '../../../design/style/variables.scss';
+@import '../../../design/style/functions.scss';
+
+#list-msg-area {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #ECF0F3;
+  z-index: 1;
+}
+
+.msg {
+  position: relative;
+  width: auto;
+  max-width: 90%;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  background: white;
+  margin: 5px;
+  @include position-center(50%);
+}
+
+.msg-element {
+  margin-top: 15px;
+}
+
+.picture-msg-list {
+  position: absolute;
+  width: 45px;
+  height: 45px;
+  -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  border-radius: 25px;
+  background: white;
+  top: -4px;
+}
+
+.msg-content {
+  font-size: 14px;
+  font-family: $font-header;
+  padding: 15px 25px 10px 25px;
+  margin-bottom: 15px;
+  word-wrap: break-word;
+}
+
+.msg-header {
+  position: absolute;
+  top: 2px;
+  font-size: 10px;
+}
+
+#msg-array {
+  position: absolute;
+  padding-top: 35px;
+  padding-bottom: 55px;
+  min-width: 400px;
+  @include position-center(50%);
+  max-width: 95%;
+}
+
+.day {
+  position: relative;
+  text-align: center;
+  width: 100%;
+  font-family: $font-header;
+  color: #434343;
+}
+
+.online-dot {
+  position: absolute;
+  font-size: 20px;
+  left: 5px;
+  top: -4px;
+  color: #45B649;
+  z-index: 1;
+  cursor: default;
+}
+
+#no-msg {
+  position: absolute;
+  bottom: 75px;
+  width: 100%;
+  height: 42%;
+  min-height: 250px;
+}
+
+#picture-no-msg {
+  position: absolute;
+  width: 25%;
+  height: 75%;
+  -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  border-radius: 100px;
+  background: #ffffff0d;
+  @include position-center(50%);
+  cursor: pointer;
+}
+
+#fullname-no-msg {
+  position: relative;
+  top: 57.5%;
+  font-size: 25px;
+  font-family: $font-header;
+}
+
+#text-no-msg {
+  position: absolute;
+  @include position-center(50%);
+  bottom: 5px;
+  text-align: center;
+  z-index: -1;
+  padding: 10px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  background: white;
+  border-radius: 5px;
+}

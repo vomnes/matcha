@@ -2,196 +2,10 @@ import React, { Component } from 'react';
 import './Chat.css';
 import SendButton from '../../../design/icons/send-button.svg';
 import api from '../../../library/api'
+import ListMatches from './Matches.jsx'
+import MsgArea from './Messages.jsx'
 
 var moment = require('moment');
-// import encode from '../../../library/utils/encode.js'
-
-// var conn;
-// var msg = document.getElementById("msg");
-// document.getElementById("form").onsubmit = function () {
-//     if (!conn) {
-//         return false;
-//     }
-//     if (!msg.value) {
-//         return false;
-//     }
-//     conn.send(msg.value);
-//     msg.value = "";
-//     return false;
-// };
-// if (window["WebSocket"]) {
-//     var room = encode.objectToBase64({username1: "voluptas_atque_etpawSY", username2: "Elsa"});
-//     conn = new WebSocket(`ws://localhost:8081/ws/chat/${room}`, localStorage.getItem('matcha_token'));
-//     conn.onclose = function (evt) {
-//         var item = document.createElement("div");
-//         item.innerHTML = "<b>Connection closed.</b>";
-//         document.getElementById("log").appendChild(item);
-//     };
-//     conn.onmessage = function (evt) {
-//         var messages = evt.data.split('\n');
-//         for (var i = 0; i < messages.length; i++) {
-//             var item = document.createElement("div");
-//             item.innerText = messages[i];
-//             document.getElementById("log").appendChild(item);
-//         }
-//     };
-// }
-/*<span>Nice chat isn't it ?</span>
-<div id="log"></div>*/
-
-const MatchItem = (props) => {
-  const selectedStyle = {
-    top: "-5px",
-    left: "-5px",
-    border: "none",
-    boxShadow: "0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)",
-    zIndex: "2",
-  }
-  if (props && props.time) {
-    var date = moment(props.time)
-    var formatedDate;
-    if (moment().diff(date, 'days') > 1) {
-      if (moment().diff(date, 'years') > 1) {
-        formatedDate = date.format("DD MMM, YYYY")
-      } else {
-        formatedDate = date.format("DD MMM")
-      }
-    } else {
-      formatedDate = date.startOf("minute").fromNow();
-    }
-  }
-  return (
-    <div>
-      <div className="match-element" id={props.username} style={(props.selectedProfile === props.username ? selectedStyle : null), (props.total_unread_messages ? {background: "#eaeaea"} : null) } onClick={() => props.updateSelectedProfile(props.username)}>
-        {props.isOnline ? (<span className="online-dot" title={`${props.name} is online`}>&bull;</span>) : null}
-        <div className="picture-list">
-          <a href={`/profile/${props.username}` + (props.optionsBase64 ? '/' + props.optionsBase64 : '')} title={`Click to see ${props.name}'s profile`}>
-            <div className="picture-list-background" style={{ backgroundImage: "url(" + props.picture + ")" }}></div>
-          </a>
-        </div>
-        <span className="match-element-list">{props.name}</span>
-        {props.selectedProfile === props.username ? null : (
-          <div>
-            <span className="match-element-time" title={`Last message sent - ${formatedDate}`}>{formatedDate}</span>
-            <span className="match-element-lastmsg">{props.lastmsg}</span>
-            {props.total_unread_messages ? (<span className="match-element-new-mesage-count">{props.total_unread_messages}</span>) : null}
-          </div>
-        )}
-      </div>
-      <div className="limit" style={{ width: "94.25%", margin: "2.5px 0px 2.5px" }}></div>
-    </div>
-  )
-}
-
-const MsgItem = (props) => {
-  var pictureStyle = null;
-  var msgHeaderStyle = null;
-  if (props.side === "left") {
-    pictureStyle = { left: "-22px" };
-    msgHeaderStyle = { left: "25px" };
-  } else {
-    pictureStyle = { right: "-22px" };
-    msgHeaderStyle = { right: "30px" };
-  }
-  return (
-    <div className="msg-element">
-      <div className="msg">
-        <div className="picture-msg-list" style={pictureStyle}>
-          <div className="picture-list-background" style={{ backgroundImage: "url(" + props.picture + ")" }}></div>
-        </div>
-        <span className="msg-header" style={msgHeaderStyle}>{props.firstname} {props.lastname} - {moment(props.received_at).format('LT')}</span>
-        <div className="msg-content" style={{ textAlign: props.side }}>
-          <span>{props.content}</span>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-const MsgArea = (props) => {
-  var dataMessage;
-  var msgScroll;
-  var messages = [];
-  var index = 0;
-  props.listMsg.forEach((message) => {
-    messages.push(
-      <MsgItem
-        key={index} index={index}
-        side={props.myusername === message.username ? "right" : "left"}
-        firstname={message.firstname}
-        lastname={message.lastname}
-        picture={message.picture_url}
-        content={message.content}
-        received_at={message.received_at}
-      />
-    );
-    index += 1;
-  });
-  if (props.listMsg.length > 0) {
-    msgScroll = { overflowY: "scroll", overflowX: "hidden" };
-    dataMessage = (
-      <div>
-        {/* {window.onload = () => {document.getElementById("list-msg-area").scrollTop = document.getElementById("list-msg-area").scrollHeight;}} */}
-        <div id="msg-array">
-          {/* <div className="day">
-            <span>Monday 15 December</span>
-          </div> */}
-
-          {/* <div className="day">
-            <span>Today</span>
-          </div> */}
-          {messages}
-        </div>
-      </div>
-    )
-  } else if (props.selectedProfileData.username !== undefined) {
-    dataMessage = (
-      <div id="no-msg">
-        <a href={`/profile/${props.selectedProfileData.username}`} title={`Click to see ${props.selectedProfileData.firstname}'s profile`}>
-          <div id="picture-no-msg" style={null}>
-            <div className="picture-list-background" style={{ backgroundImage: `url(${props.selectedProfileData.picture_url})` }}></div>
-          </div>
-        </a>
-        <div id="text-no-msg">
-          <span id="fullname-no-msg">{props.selectedProfileData.firstname} {props.selectedProfileData.lastname}</span>
-          <br/>
-          <span style={{ fontSize: "12.5px" }}>Start the discussion by sending a message</span>
-        </div>
-      </div>
-    )
-  }
-  return (
-    <div id="list-msg-area" style={msgScroll}>
-      {dataMessage}
-    </div>
-  )
-}
-
-const ListMatches = (props) => {
-  var matches = [];
-  var index = 0;
-  props.listMatches.forEach((profile) => {
-    matches.push(
-      <MatchItem
-        selectedProfile={props.selectedProfile}
-        picture={profile.picture_url}
-        username={profile.username}
-        name={`${profile.firstname} ${profile.lastname}`}
-        lastmsg={profile.last_message_content}
-        time={profile.last_message_date}
-        isOnline={profile.online}
-        updateSelectedProfile={props.updateSelectedProfile}
-        key={index}
-      />
-    );
-    index += 1;
-  });
-  return (
-    <div id="matches-list-main">
-      {matches}
-    </div>
-  )
-}
 
 const GetListMatches = async (updateState) => {
   let res = await api.listMatches();
@@ -243,8 +57,10 @@ class Chat extends Component {
       selectedProfile: '',
       messages: [],
       selectedProfileData: {},
+      loggedProfileData: {},
       listMatches: [],
       message: '',
+      isTyping: false,
     }
     this.updateState = this.updateState.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -263,35 +79,101 @@ class Chat extends Component {
       }
     })
     this.updateState("selectedProfile", username);
+    this.updateProfile(0, username);
     GetListMessages(username, this.updateState);
   }
   componentDidMount() {
     GetListMatches(this.updateState);
+    this.props.myProfileData.then((data) => {
+      this.updateState("loggedProfileData", data);
+    });
   }
   handleSubmit = (e) => {
-    wsSend(this.props.wsConn, {
-      "event": "message",
-      "target": this.state.selectedProfile,
-      "data": this.state.message,
-    });
-    this.updateState("message", "");
+    if (this.state.message !== "") {
+      wsSend(this.props.wsConn, {
+        "event": "message",
+        "target": this.state.selectedProfile,
+        "data": this.state.message,
+      });
+      const data = this.state.loggedProfileData;
+      this.appendMessage(
+        {
+          content: this.state.message,
+          from: data.username
+        }, {
+          firstname: data.firstname,
+          lastname: data.lastname,
+          picture_url: data.profile_picture
+        },
+      );
+      this.updateState("message", "");
+      this.updateState('isTyping', false);
+    }
     e.preventDefault();
   }
   handleChange (e) {
+    if (e.target.value.length > 255) {
+      return;
+    }
+    wsSend(this.props.wsConn, {
+      "event": "isTyping",
+      "target": this.state.selectedProfile,
+    });
     this.setState({
       [e.target.name]: e.target.value,
     });
   }
-  appendMessage(message) {
+  appendMessage(message, {firstname, lastname, picture_url}) {
     this.state.messages.push({
       content: message.content,
       username: message.from,
-      firstname: this.state.selectedProfileData.firstname,
-      lastname: this.state.selectedProfileData.firstname,
-      picture_url: this.state.selectedProfileData.picture_url,
       received_at: moment(),
+      firstname,
+      lastname,
+      picture_url,
     })
     this.updateState('messages', this.state.messages);
+  }
+  updateProfile(total_unread_messages, username, content) {
+    var data = this.state.listMatches;
+    var len = data.length;
+    for (var i = 0; i < len; i++) {
+      if (data[i].username === username) {
+        if (total_unread_messages === 0) {
+          data[i].total_unread_messages = 0;
+        } else {
+          data[i].total_unread_messages += 1;
+        }
+        if (content !== undefined) {
+          data[i].last_message_content = content;
+          data[i].last_message_date = moment();
+        }
+      }
+    }
+    this.updateState('listMatches', data);
+  }
+  handleWebsocket = (msg) => {
+    if (msg.event === "message") {
+      if (msg.data.from === this.state.selectedProfile) {
+        const data = this.state.selectedProfileData;
+        this.appendMessage(msg.data, {
+          firstname: data.firstname,
+          lastname: data.lastname,
+          picture_url: data.picture_url,
+        });
+      } else {
+        this.updateProfile(1, msg.data.from, msg.data.content);
+      }
+      console.log(`New message from ${msg.data.from} - Content: ${msg.data.content}`);
+    }
+    if (msg.event === "isTyping") {
+      if (msg.from === this.state.selectedProfile && !this.state.isTyping) {
+        this.updateState('isTyping', true);
+        setTimeout(async () => {
+          this.updateState('isTyping', false);
+        }, 2000);
+      }
+    }
   }
   render () {
     this.props.wsConn.onmessage = (e) => {
@@ -300,14 +182,7 @@ class Chat extends Component {
       } catch (e) {
         return;
       }
-      if (msg.event === "message") {
-        if (msg.data.from === this.state.selectedProfile) {
-          this.appendMessage(msg.data);
-        } else {
-
-        }
-        console.log(`New message from ${msg.data.from} - Content: ${msg.data.content}`);
-      }
+      this.handleWebsocket(msg);
     }
     return (
       <div>
@@ -321,14 +196,13 @@ class Chat extends Component {
         {this.state.selectedProfile ? (
           <div id="chat-area">
             <div id="header-msg-area">
-              <span id="main-title">{this.state.selectedProfileData.firstname} {this.state.selectedProfileData.lastname}</span>
-              {/* is typing ... */}
+              <span id="main-title">{this.state.selectedProfileData.firstname} {this.state.selectedProfileData.lastname} {this.state.isTyping ? ("is typing ...") : null}</span>
             </div>
-            <MsgArea listMsg={this.state.messages} myusername={"LawrenceHall2Hx24"} selectedProfileData={this.state.selectedProfileData}/>
+            <MsgArea listMsg={this.state.messages} myusername={this.state.loggedProfileData.username} selectedProfileData={this.state.selectedProfileData}/>
             <div id="new-msg-area">
               {this.state.selectedProfileData.username !== undefined ? (
                 <form id="form" onSubmit={this.handleSubmit}>
-                    <input id="new-msg-input" type="text" placeholder="Type something to send ..." name="message" value={this.state.message} onChange={this.handleChange} size="64"/>
+                    <input id="new-msg-input" type="text" placeholder="Type something to send ..." maxLength="255" name="message" value={this.state.message} onChange={this.handleChange} size="64"/>
                     <button id="new-msg-submit" title="Send message"><img alt="Submit message" src={SendButton} style={{position: "absolute", top: "25%", left: "0px", width: "100%"}}/></button>
                 </form>
               ) : null}

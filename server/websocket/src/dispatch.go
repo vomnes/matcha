@@ -51,7 +51,7 @@ func (h *Hub) toEveryone(m message) {
 }
 
 func handleEvents(receivedMessage messageDecoded, senderUsername string) (bool, []byte) {
-	availableEvents := []string{"view", "like", "match", "unmatch", "message"}
+	availableEvents := []string{"view", "like", "match", "unmatch", "message", "isTyping"}
 	if receivedMessage.Event == "message" {
 		data, _ := lib.InterfaceToByte(map[string]interface{}{
 			"event": "message",
