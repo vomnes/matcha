@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"../../lib"
 )
@@ -75,7 +76,7 @@ func (h *Hub) dispatch(m message) {
 	var msgDecoded messageDecoded
 	err := lib.DecodeByte(m.data, &msgDecoded)
 	if err != nil {
-		fmt.Println("[WS] Failed to decode message", "-", err)
+		log.Println(lib.PrettyError("[WEBSOCKET] Failed to decode message - " + err.Error()))
 		return
 	}
 	if msgDecoded.Target != "" && msgDecoded.Event != "login" && msgDecoded.Event != "logout" {

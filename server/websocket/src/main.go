@@ -11,19 +11,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func serveHome(w http.ResponseWriter, r *http.Request) {
-	log.Println(r.URL)
-	if r.URL.Path != "/" {
-		http.Error(w, "Not found", http.StatusNotFound)
-		return
-	}
-	if r.Method != "GET" {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-	http.ServeFile(w, r, "home.html")
-}
-
 // handleWSRoutes instantiates and populates the router
 func handleWSRoutes() *mux.Router {
 	// instantiating the router
@@ -56,6 +43,6 @@ func main() {
 	fmt.Printf("Websocket - listen and serve: ws://localhost:%s/ws/{jwt}\n", *addr)
 	err := http.ListenAndServe(":"+*addr, enhancedRouter)
 	if err != nil {
-		log.Fatal("ListenAndServe: ", err)
+		log.Println(lib.PrettyError("[WEBSOCKET] ListenAndServe - " + err.Error()))
 	}
 }

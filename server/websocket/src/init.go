@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
@@ -56,7 +57,7 @@ func withRights() adapter {
 			// Parse takes the token string and a function for looking up the key
 			claims, err := lib.AnalyseJWT(token)
 			if err != nil {
-				fmt.Println(err)
+				log.Println(lib.PrettyError("[WEBSOCKET] JSON Web Token - " + err.Error()))
 				return
 			}
 			if claims["username"] == nil || claims["sub"] == nil || claims["userId"] == nil {

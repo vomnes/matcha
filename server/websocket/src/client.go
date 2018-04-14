@@ -59,7 +59,7 @@ func (s subscription) readPump() {
 		_, msg, err := c.ws.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Printf("error: %v", err)
+				log.Println(lib.PrettyError("[WEBSOCKET] Read Pump - Is unexpected close error - " + err.Error()))
 			}
 			break
 		}
@@ -105,11 +105,13 @@ func (s *subscription) writePump() {
 			}
 			err := c.sendMessage(message)
 			if err != nil {
+				log.Println(lib.PrettyError("[WEBSOCKET] Write Pump - Send message - " + err.Error()))
 				return
 			}
 		case <-ticker.C:
 			c.ws.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := c.ws.WriteMessage(websocket.PingMessage, nil); err != nil {
+				log.Println(lib.PrettyError("[WEBSOCKET] Write Pump - Write message - " + err.Error()))
 				return
 			}
 		}
@@ -127,7 +129,7 @@ func errorWS(ws *websocket.Conn, message string) {
 func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Println(lib.PrettyError("[WS] Get websocket connection from Upgrade failed - " + err.Error()))
+		log.Println(lib.PrettyError("[WEBSOCKET] Get websocket connection from Upgrade failed - " + err.Error()))
 		return
 	}
 	/* ======== Get data ======== */
