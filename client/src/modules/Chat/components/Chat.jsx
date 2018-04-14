@@ -62,7 +62,7 @@ const MatchItem = (props) => {
   }
   return (
     <div>
-      <div className="match-element" id={props.username} style={props.selectedProfile === props.username ? selectedStyle : null } onClick={() => props.updateSelectedProfile(props.username)}>
+      <div className="match-element" id={props.username} style={(props.selectedProfile === props.username ? selectedStyle : null), (props.total_unread_messages ? {background: "#eaeaea"} : null) } onClick={() => props.updateSelectedProfile(props.username)}>
         {props.isOnline ? (<span className="online-dot" title={`${props.name} is online`}>&bull;</span>) : null}
         <div className="picture-list">
           <a href={`/profile/${props.username}` + (props.optionsBase64 ? '/' + props.optionsBase64 : '')} title={`Click to see ${props.name}'s profile`}>
@@ -74,6 +74,7 @@ const MatchItem = (props) => {
           <div>
             <span className="match-element-time" title={`Last message sent - ${formatedDate}`}>{formatedDate}</span>
             <span className="match-element-lastmsg">{props.lastmsg}</span>
+            {props.total_unread_messages ? (<span className="match-element-new-mesage-count">{props.total_unread_messages}</span>) : null}
           </div>
         )}
       </div>
@@ -204,6 +205,7 @@ const GetListMatches = async (updateState) => {
       if (response.data === "No matches") {
         updateState("listMatches", []);
       } else {
+        console.log(response);
         updateState("listMatches", response);
       }
       return;
@@ -224,11 +226,14 @@ const GetListMessages = async (username, updateState) => {
         updateState("messages", []);
       } else {
         updateState("messages", response);
-        console.log(response);
       }
       return;
     }
   }
+}
+
+const wsSend = (conn, object) => {
+  conn.send(JSON.stringify(object));
 }
 
 class Chat extends Component {
@@ -241,7 +246,6 @@ class Chat extends Component {
       listMatches: [],
       message: '',
     }
-    console.log(this.props.wsConn); // This is WebSocket
     this.updateState = this.updateState.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -263,10 +267,13 @@ class Chat extends Component {
   }
   componentDidMount() {
     GetListMatches(this.updateState);
-    this.updateState('wsConn', this.props.wsConn); // Websocket is here
   }
   handleSubmit = (e) => {
-    console.log(this.state.message);
+    wsSend(this.props.wsConn, {
+      "event": "message",
+      "target": this.state.selectedProfile,
+      "data": this.state.message,
+    });
     this.updateState("message", "");
     e.preventDefault();
   }
@@ -275,7 +282,33 @@ class Chat extends Component {
       [e.target.name]: e.target.value,
     });
   }
+  appendMessage(message) {
+    this.state.messages.push({
+      content: message.content,
+      username: message.from,
+      firstname: this.state.selectedProfileData.firstname,
+      lastname: this.state.selectedProfileData.firstname,
+      picture_url: this.state.selectedProfileData.picture_url,
+      received_at: moment(),
+    })
+    this.updateState('messages', this.state.messages);
+  }
   render () {
+    this.props.wsConn.onmessage = (e) => {
+      try {
+        var msg = JSON.parse(e.data);
+      } catch (e) {
+        return;
+      }
+      if (msg.event === "message") {
+        if (msg.data.from === this.state.selectedProfile) {
+          this.appendMessage(msg.data);
+        } else {
+
+        }
+        console.log(`New message from ${msg.data.from} - Content: ${msg.data.content}`);
+      }
+    }
     return (
       <div>
         <div id="matches-list" style={{ height: (window.innerHeight - 75) + "px" }}>

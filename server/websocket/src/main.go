@@ -28,8 +28,11 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 func handleWSRoutes() *mux.Router {
 	// instantiating the router
 	router := mux.NewRouter()
-	router.HandleFunc("/", serveHome)
-	router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		lib.RespondWithErrorHTTP(w, http.StatusNotFound, "Wrong route")
+		return
+	})
+	router.HandleFunc("/ws/{jwt}", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(&hub, w, r)
 	})
 	return router
@@ -50,7 +53,7 @@ func main() {
 	db := lib.PostgreSQLConn(lib.PostgreSQLName)
 	router := handleWSRoutes()
 	enhancedRouter := enhanceHandlers(router, db)
-	fmt.Printf("Websocket - listen and serve: ws://localhost:%s/ws\n", *addr)
+	fmt.Printf("Websocket - listen and serve: ws://localhost:%s/ws/{jwt}\n", *addr)
 	err := http.ListenAndServe(":"+*addr, enhancedRouter)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)

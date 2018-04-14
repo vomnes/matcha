@@ -9,7 +9,7 @@ import PageLayout from '../layouts/PageLayout';
 const PrivateRoute = ({ component: Component, ...rest }) => {
     const isLoggedInToken = localStorage.getItem(`matcha_token`);
     if (isLoggedInToken) {
-      const wsConn = new WebSocket('ws://localhost:8081/ws', isLoggedInToken);
+      const wsConn = new WebSocket(`ws://localhost:8081/ws/${isLoggedInToken}`);
       return (
         <Route
           {...rest}

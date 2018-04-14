@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"../../lib"
 	"github.com/gorilla/mux"
@@ -41,15 +42,19 @@ func withDB(db *sqlx.DB) adapter {
 func withRights() adapter {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// Get token from the Authorization header format: Authorization: Bearer <jwt>
-			tokens := r.Header.Get("Sec-Websocket-Protocol")
-			if tokens == "" {
+			// Get token from url
+			urlParsed := strings.Split(r.URL.Path, "/")
+			var token string
+			if len(urlParsed) == 3 {
+				token = urlParsed[2]
+			}
+			if token == "" || len(urlParsed) != 3 {
 				fmt.Println("No token")
 				return
 			}
 			// Check JWT validity on every request
 			// Parse takes the token string and a function for looking up the key
-			claims, err := lib.AnalyseJWT(tokens)
+			claims, err := lib.AnalyseJWT(token)
 			if err != nil {
 				fmt.Println(err)
 				return
