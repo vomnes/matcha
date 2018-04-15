@@ -37,6 +37,7 @@ func main() {
 		unregister: make(chan subscription),
 		users:      make(map[string]map[*connection]bool),
 		db:         db,
+		usersTime:  make(map[string]timeIO),
 	}
 	go hub.run()
 	router := handleWSRoutes()

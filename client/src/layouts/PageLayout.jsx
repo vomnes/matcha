@@ -138,10 +138,10 @@ class PageLayout extends Component {
     if (!this.state.notificationsOpen) {
       GetListNotifications(this.updateState);
     }
-    updateState("notificationsOpen", !this.state.notificationsOpen);
+    this.updateState("notificationsOpen", !this.state.notificationsOpen);
     var profile = this.state.loggedProfileData;
     profile["total_new_notifications"] = 0;
-    updateState("loggedProfileData", profile);
+    this.updateState("loggedProfileData", profile);
   }
   componentDidMount() {
     this.props.myProfileData.then((data) => {
@@ -149,11 +149,27 @@ class PageLayout extends Component {
       console.log(data);
     });
   }
+  handleWebsocket = (msg) => {
+    var profile = this.state.loggedProfileData;
+    if (msg.event === "message") {
+      profile["total_new_messages"] += 1;
+    } else if (msg.event !== "isTyping") {
+      profile["total_new_notifications"] += 1;
+    }
+    this.updateState("loggedProfileData", profile);
+  }
   render() {
     const {
       children,
     } = this.props;
-    // console.log(this.props.wsConn); // This is WebSocket
+    this.props.wsConn.onmessage = (e) => {
+      try {
+        var msg = JSON.parse(e.data);
+      } catch (e) {
+        return;
+      }
+      this.handleWebsocket(msg);
+    }
     return (
       <div className="general-layout">
         <div className="header">
@@ -162,7 +178,7 @@ class PageLayout extends Component {
             <div className="header-left-side">
               <a href='/browsing' className="logout"><span>Browsing</span></a>
               <a href='/matches' className="logout"><span>Matches</span></a>
-              {this.state.loggedProfileData.total_new_messages ? (<span className="top-notif red-cercle-notif" id="matches-notif">{this.state.loggedProfileData.total_new_messages}</span>) : null}
+              {this.state.loggedProfileData.total_new_messages && !window.location.href.endsWith("matches") ? (<span className="top-notif red-cercle-notif" id="matches-notif">{this.state.loggedProfileData.total_new_messages}</span>) : null}
               <a href='/profile' className="logout"><span>My Profile</span></a>
               <span id="notif-btn" className="logout" onClick={() => this.handleNotifications(this.updateState)}>Notifications</span>
               {this.state.loggedProfileData.total_new_notifications ? (<span className="top-notif red-cercle-notif" id="true-notif">{this.state.loggedProfileData.total_new_notifications}</span>) : null}
