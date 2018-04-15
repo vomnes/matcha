@@ -51,7 +51,7 @@ func TestPushNotif(t *testing.T) {
 			Username: targetUsername,
 		}, tests.DB)
 		_ = tests.InsertNotification(lib.Notification{TypeID: "2", UserID: "12", TargetUserID: "13", IsRead: true}, tests.DB)
-		errCode, errContent := PushNotif(tests.DB, tt.typeText, userData.ID, targetUser.ID)
+		errCode, errContent := PushNotif(tests.DB, tt.typeText, userData.ID, targetUser.ID, false)
 		if errCode != 0 || errContent != "" {
 			t.Error(errCode, errContent)
 		}
@@ -97,7 +97,7 @@ func TestPushNotifIsReportedAsFake(t *testing.T) {
 	}, tests.DB)
 	_ = tests.InsertNotification(lib.Notification{TypeID: "2", UserID: "12", TargetUserID: "13", IsRead: true}, tests.DB)
 	_ = tests.InsertFakeReport(lib.FakeReport{UserID: targetUser.ID, TargetUserID: userData.ID}, tests.DB)
-	errCode, errContent := PushNotif(tests.DB, "message", userData.ID, targetUser.ID)
+	errCode, errContent := PushNotif(tests.DB, "message", userData.ID, targetUser.ID, false)
 	if errCode != 0 || errContent != "" {
 		t.Error(errCode, errContent)
 	}

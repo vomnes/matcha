@@ -197,7 +197,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 			lib.RespondWithErrorHTTP(w, errCode, errContent)
 			return
 		}
-		errCode, errContent = PushNotif(db, "view", userID, targetUserData.ID)
+		errCode, errContent = PushNotif(db, "view", userID, targetUserData.ID, false)
 		if errCode != 0 || errContent != "" {
 			lib.RespondWithErrorHTTP(w, errCode, errContent)
 			return

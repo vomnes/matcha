@@ -139,7 +139,7 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	/* ========================== */
-	c := &connection{ws: ws, send: make(chan []byte, 256)}
+	c := &connection{ws: ws, send: make(chan []byte, 255)}
 	s := subscription{conn: c, username: username}
 	hub.register <- s
 	go s.writePump()

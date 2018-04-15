@@ -30,14 +30,15 @@ var hub Hub
 func main() {
 	addr := flag.String("addr", "8081", "websocket service address")
 	flag.Parse()
+	db := lib.PostgreSQLConn(lib.PostgreSQLName)
 	hub = Hub{
 		broadcast:  make(chan message),
 		register:   make(chan subscription),
 		unregister: make(chan subscription),
 		users:      make(map[string]map[*connection]bool),
+		db:         db,
 	}
 	go hub.run()
-	db := lib.PostgreSQLConn(lib.PostgreSQLName)
 	router := handleWSRoutes()
 	enhancedRouter := enhanceHandlers(router, db)
 	fmt.Printf("Websocket - listen and serve: ws://localhost:%s/ws/{jwt}\n", *addr)

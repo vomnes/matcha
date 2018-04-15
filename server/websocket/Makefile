@@ -25,6 +25,9 @@ run: build launch
 test:
 	@go test ./src/.
 
+test-verbose:
+	@go test -v ./src/.
+
 vendor_clean:
 	rm -rf ./_vendor/src
 

@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"../../lib"
+	"github.com/jmoiron/sqlx"
 )
 
 type messageDecoded struct {
@@ -51,9 +52,14 @@ func (h *Hub) toEveryone(m message) {
 	}
 }
 
-func handleEvents(receivedMessage messageDecoded, senderUsername string) (bool, []byte) {
+func handleEvents(db *sqlx.DB, receivedMessage messageDecoded, senderUsername string) (bool, []byte) {
 	availableEvents := []string{"view", "like", "match", "unmatch", "message", "isTyping"}
 	if receivedMessage.Event == "message" {
+		// Update database message - Insert notification
+		err := messageInDB(db, senderUsername, receivedMessage.Target, receivedMessage.Data)
+		if err != nil {
+			return false, []byte{}
+		}
 		data, _ := lib.InterfaceToByte(map[string]interface{}{
 			"event": "message",
 			"data": map[string]interface{}{
@@ -80,7 +86,7 @@ func (h *Hub) dispatch(m message) {
 		return
 	}
 	if msgDecoded.Target != "" && msgDecoded.Event != "login" && msgDecoded.Event != "logout" {
-		hasMessage, data := handleEvents(msgDecoded, m.username)
+		hasMessage, data := handleEvents(h.db, msgDecoded, m.username)
 		if !hasMessage {
 			return
 		}

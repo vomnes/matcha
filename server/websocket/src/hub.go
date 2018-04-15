@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
 	"../../lib"
+	"github.com/jmoiron/sqlx"
 )
 
 type message struct {
@@ -30,6 +30,9 @@ type Hub struct {
 
 	// Unregister requests from clients.
 	unregister chan subscription
+
+	// db is the postgresql database connection
+	db *sqlx.DB
 }
 
 func (h *Hub) handleLogout(username string, previousTime *time.Time) {
@@ -38,7 +41,6 @@ func (h *Hub) handleLogout(username string, previousTime *time.Time) {
 		*previousTime = time.Now()
 		h.sendOnBroadcast("logout", username)
 	}
-	fmt.Println(h.users[username])
 }
 
 func (h *Hub) sendOnBroadcast(event string, username string) {

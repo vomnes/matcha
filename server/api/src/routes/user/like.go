@@ -66,7 +66,7 @@ func addLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB,
 			err = db.Get(&like, "SELECT id FROM Likes WHERE userid = $1 AND liked_userID = $2", targetUserID, userID)
 			if err != nil {
 				if err == sql.ErrNoRows {
-					errCode, errContent = PushNotif(db, "like", userID, targetUserID)
+					errCode, errContent = PushNotif(db, "like", userID, targetUserID, false)
 					if errCode != 0 || errContent != "" {
 						lib.RespondWithErrorHTTP(w, errCode, errContent)
 						return
@@ -80,7 +80,7 @@ func addLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB,
 				lib.RespondWithErrorHTTP(w, 500, "Failed to check if like exists in database")
 				return
 			}
-			errCode, errContent = PushNotif(db, "match", userID, targetUserID)
+			errCode, errContent = PushNotif(db, "match", userID, targetUserID, false)
 			if errCode != 0 || errContent != "" {
 				lib.RespondWithErrorHTTP(w, errCode, errContent)
 				return
@@ -108,7 +108,7 @@ func handleUpdateNeed(db *sqlx.DB, userID, targetUserID string) (bool, int, stri
 		return false, 0, ""
 	}
 	if lib.StringInArray(targetUserID, likes) {
-		errCode, errContent := PushNotif(db, "unmatch", userID, targetUserID)
+		errCode, errContent := PushNotif(db, "unmatch", userID, targetUserID, false)
 		if errCode != 0 || errContent != "" {
 			return true, errCode, errContent
 		}

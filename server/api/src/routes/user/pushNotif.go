@@ -21,14 +21,14 @@ func isReportedAsFake(db *sqlx.DB, userID, targetUserID string) (bool, int, stri
 	return true, 0, ""
 }
 
-func insertNotif(db *sqlx.DB, typeID, userID, targetUserID string) (int, string) {
-	stmt, err := db.Preparex(`INSERT INTO Notifications (typeid, userid, target_userid) VALUES ($1, $2, $3)`)
+func insertNotif(db *sqlx.DB, typeID, userID, targetUserID string, isRead bool) (int, string) {
+	stmt, err := db.Preparex(`INSERT INTO Notifications (typeid, userid, target_userid, is_read) VALUES ($1, $2, $3, $4)`)
 	defer stmt.Close()
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request insert notification" + err.Error()))
 		return 500, "Insert new notification failed"
 	}
-	rows, err := stmt.Queryx(typeID, userID, targetUserID)
+	rows, err := stmt.Queryx(typeID, userID, targetUserID, isRead)
 	rows.Close()
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - INSERT] Failed to prepare request insert notification" + err.Error()))
@@ -38,7 +38,7 @@ func insertNotif(db *sqlx.DB, typeID, userID, targetUserID string) (int, string)
 }
 
 // PushNotif is used to add a notification to a user
-func PushNotif(db *sqlx.DB, notifType, userID, targetUserID string) (int, string) {
+func PushNotif(db *sqlx.DB, notifType, userID, targetUserID string, isRead bool) (int, string) {
 	hasBeenReportedAsFake, errCode, errContent := isReportedAsFake(db, userID, targetUserID)
 	if errCode != 0 || errContent != "" {
 		return errCode, errContent
@@ -61,5 +61,5 @@ func PushNotif(db *sqlx.DB, notifType, userID, targetUserID string) (int, string
 	default:
 		typeID = "1"
 	}
-	return insertNotif(db, typeID, userID, targetUserID)
+	return insertNotif(db, typeID, userID, targetUserID, isRead)
 }
