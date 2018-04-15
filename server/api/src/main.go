@@ -44,7 +44,7 @@ func handleAPIRoutes() *mux.Router {
 	api.HandleFunc("/v1/users/data/match/{username}", user.TargetedMatch)
 	api.HandleFunc("/v1/users/data/me", user.GetMe)
 	api.HandleFunc("/v1/users/data/tags", user.GetExistingTags)
-	api.HandleFunc("/v1/users/notifications", user.GetListNotifications)
+	api.HandleFunc("/v1/users/data/notifications", user.GetListNotifications)
 	api.HandleFunc("/storage/pictures/profiles/{username}/{item}", user.GetPicture)
 	api.HandleFunc("/v1/chat/messages/{username}", chat.Messages)
 	api.HandleFunc("/v1/chat/matches", chat.GetMatchedProfiles)

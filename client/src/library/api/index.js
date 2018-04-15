@@ -18,6 +18,7 @@ import existingTags from './existingtags';
 import targetedmatch from './targetedmatch';
 import listMatches from './listmatches';
 import getMessages from './getmessages';
+import getNotifications from './getnotifications';
 
 const apiConf = {
   BACK_URL: `http://localhost:8080`,
@@ -44,4 +45,5 @@ export default {
   existingTags: () => existingTags(apiConf),
   listMatches: () => listMatches(apiConf),
   getMessages: (username) => getMessages(username, apiConf),
+  getNotifications: () => getNotifications(apiConf),
 }

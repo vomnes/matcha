@@ -5,28 +5,56 @@ import HeartIcon from '../design/icons/like.svg'
 import BrokenHeartIcon from '../design/icons/broken-heart-divided-in-two-parts.svg'
 import MatchIcon from '../design/icons/flame.svg'
 import MessageIcon from '../design/icons/conversation-speech-bubbles.svg'
+import ViewIconRed from '../design/icons/eye-red.svg'
+import HeartIconRed from '../design/icons/like-red.svg'
+import BrokenHeartIconRed from '../design/icons/broken-heart-divided-in-two-parts-red.svg'
+import MatchIconRed from '../design/icons/flame-red.svg'
+import MessageIconRed from '../design/icons/conversation-speech-bubbles-red.svg'
+import api from '../library/api'
+
+var moment = require('moment');
 
 const NotifElement = (props) => {
   var icon, content;
   switch (props.type) {
     case "view":
-        icon = ViewIcon;
+        if (props.new) {
+          icon = ViewIconRed;
+        } else {
+          icon = ViewIcon;
+        }
         content = `${props.fullname} has viewed your profile`;
         break;
     case "like":
-        icon = HeartIcon;
+        if (props.new) {
+          icon = HeartIconRed;
+        } else {
+          icon = HeartIcon;
+        }
         content = `${props.fullname} has liked your profile`;
         break;
     case "unlike":
-        icon = BrokenHeartIcon;
+        if (props.new) {
+          icon = BrokenHeartIconRed;
+        } else {
+          icon = BrokenHeartIcon;
+        }
         content = `${props.fullname} has unliked your profile`;
         break;
     case "match":
-        icon = MatchIcon;
+        if (props.new) {
+          icon = MatchIconRed;
+        } else {
+          icon = MatchIcon;
+        }
         content = `You have a match with ${props.fullname}`;
         break;
     case "message":
-        icon = MessageIcon;
+        if (props.new) {
+          icon = MessageIconRed;
+        } else {
+          icon = MessageIcon;
+        }
         content = `${props.fullname} has sent you a message`;
         break;
     default:
@@ -38,43 +66,94 @@ const NotifElement = (props) => {
       <div className="picture-notif-background" style={{ backgroundImage: `url(${props.picture})` }}></div>
       <div className="white-notif-background"></div>
       <div className="notif-logo" title="See more">
-        <img alt="View profile" src={icon} style={{ width: "100%", opacity: "0.7" }}/>
+        <img alt="View profile" src={icon} style={{ fill: "#434343", width: "100%", opacity: "0.7" }}/>
       </div>
-      <span className="notif-text">{content}<br/>{props.date}</span>
+      <span className="notif-text">{content}<br/>{moment(props.date).format("M/D/YYYY - HH:mm")}</span>
     </div>
   )
 }
 
 const NotifList = (props) => {
+  var listNotifications = [];
+  var index = 0;
+  props.notifications.forEach((notification) => {
+    listNotifications.push(
+      <NotifElement
+        type={notification.type}
+        fullname={`${notification.firstname} ${notification.lastname}`}
+        picture={notification.user_picture_url}
+        date={notification.date}
+        key={index}
+        new={notification.new}
+      />
+    );
+    index += 1;
+  });
   if (props.isOpen) {
     return (
       <div id="notif">
-        <NotifElement type="unlike" fullname="Valentin Omnes" picture="https://images.unsplash.com/photo-1520512202623-51c5c53957df?h=1000&q=10" date={"12/12/12 - 12:42"}/>
-        <NotifElement type="message" fullname="Valentin Omnes" picture="https://images.unsplash.com/photo-1520512202623-51c5c53957df?h=1000&q=10" date={"12/12/12 - 12:42"}/>
-        <NotifElement type="match" fullname="Valentin Omnes" picture="https://images.unsplash.com/photo-1520512202623-51c5c53957df?h=1000&q=10" date={"12/12/12 - 12:42"}/>
-        <NotifElement type="like" fullname="Valentin Omnes" picture="https://images.unsplash.com/photo-1520512202623-51c5c53957df?h=1000&q=10" date={"12/12/12 - 12:42"}/>
-        <NotifElement type="view" fullname="Valentin Omnes" picture="https://images.unsplash.com/photo-1520512202623-51c5c53957df?h=1000&q=10" date={"12/12/12 - 12:42"}/>
+        {listNotifications}
       </div>
     )
   }
   return null;
 }
 
+const GetListNotifications = async (updateState) => {
+  let res = await api.getNotifications();
+  if (res) {
+    const response = await res.json();
+    if (res.status >= 500) {
+      throw new Error("Bad response from server - GetListNotifications has failed");
+    } else if (res.status >= 400) {
+      console.log(response.error);
+    } else {
+      if (response.data === "No notifications") {
+        updateState("notifications", []);
+      } else {
+        console.log(response);
+        updateState("notifications", response);
+      }
+    }
+  }
+}
+
 class PageLayout extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       notificationsOpen: false,
       newNotification: true,
+      loggedProfileData: {},
+      notifications: [],
     }
+    this.updateState = this.updateState.bind(this);
+  }
+  updateState(key, content) {
+    this.setState({
+      [key]: content,
+    });
+  }
+  handleNotifications(updateState) {
+    if (!this.state.notificationsOpen) {
+      GetListNotifications(this.updateState);
+    }
+    updateState("notificationsOpen", !this.state.notificationsOpen);
+    var profile = this.state.loggedProfileData;
+    profile["total_new_notifications"] = 0;
+    updateState("loggedProfileData", profile);
+  }
+  componentDidMount() {
+    this.props.myProfileData.then((data) => {
+      this.updateState("loggedProfileData", data);
+      console.log(data);
+    });
   }
   render() {
     const {
       children,
     } = this.props;
     // console.log(this.props.wsConn); // This is WebSocket
-    var notifStyle = { cursor: "pointer" };
-    notifStyle["border"] = this.state.newNotification ? "2px solid #e63946" : "2px solid white";
     return (
       <div className="general-layout">
         <div className="header">
@@ -83,17 +162,17 @@ class PageLayout extends Component {
             <div className="header-left-side">
               <a href='/browsing' className="logout"><span>Browsing</span></a>
               <a href='/matches' className="logout"><span>Matches</span></a>
+              {this.state.loggedProfileData.total_new_messages ? (<span className="top-notif red-cercle-notif" id="matches-notif">{this.state.loggedProfileData.total_new_messages}</span>) : null}
               <a href='/profile' className="logout"><span>My Profile</span></a>
-              <span id="notif-btn" className="logout" style={notifStyle}
-                onClick={() => this.setState({notificationsOpen: !this.state.notificationsOpen})}
-              >Notifications</span>
+              <span id="notif-btn" className="logout" onClick={() => this.handleNotifications(this.updateState)}>Notifications</span>
+              {this.state.loggedProfileData.total_new_notifications ? (<span className="top-notif red-cercle-notif" id="true-notif">{this.state.loggedProfileData.total_new_notifications}</span>) : null}
               <a href='/logout' className="logout"><span>Logout</span></a>
             </div>
             {this.state.notificationsOpen ? (<div id="notif-arrow"></div>) : null}
           </div>
         </div>
         <div className="content">
-          <NotifList isOpen={this.state.notificationsOpen}/>
+          <NotifList isOpen={this.state.notificationsOpen} notifications={this.state.notifications}/>
           { children }
         </div>
       </div>

@@ -44,7 +44,7 @@ const MatchItem = (props) => {
           <div>
             <span className="match-element-time" title={`Last message sent - ${formatedDate}`}>{formatedDate}</span>
             <span className="match-element-lastmsg">{props.lastmsg}</span>
-            {props.total_unread_messages > 0 ? (<span className="match-element-new-mesage-count">{props.total_unread_messages}</span>) : null}
+            {props.total_unread_messages ? (<span className="match-element-new-message-count red-cercle-notif">{props.total_unread_messages}</span>) : null}
           </div>
         )}
       </div>

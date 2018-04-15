@@ -22,7 +22,7 @@ type elementNotification struct {
 func getNotifications(db *sqlx.DB, userID string) ([]elementNotification, int, string) {
 	var listNotifications []elementNotification
 	err := db.Select(&listNotifications, `Select
-		nt.name as type, n.created_at as date, n.is_read as new, u.username, u.firstname, u.lastname,
+		nt.name as type, n.created_at as date, NOT n.is_read as new, u.username, u.firstname, u.lastname,
 		U.picture_url_1 as user_picture_url
 			From Notifications n
 				Left Join Notifications_Types nt
@@ -49,7 +49,7 @@ func notificationsMarkAsRead(db *sqlx.DB, userID string) (int, string, error) {
 	return 0, "", nil
 }
 
-// GetListNotifications is the route '/v1/users/notifications' with the method GET.
+// GetListNotifications is the route '/v1/users/data/notifications' with the method GET.
 // Collect the user's notifications in the the database with profile data
 // If one of the notifications is mark as unread
 // -> Update with is_read true all the notifications

@@ -282,7 +282,7 @@ Update target user rating
 Return HTTP Code 200 Status OK  
 ___
 
-#### GET - /v1/users/notifications
+#### GET - /v1/users/data/notifications
 
 Collect the user's notifications in the the database with profile data  
 If one of the notifications is mark as unread  
