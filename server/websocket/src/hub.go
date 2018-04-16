@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
-	"../../lib"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -19,8 +17,9 @@ type subscription struct {
 }
 
 type timeIO struct {
-	login  time.Time
-	logout time.Time
+	login   time.Time
+	logout  time.Time
+	isLogin bool
 }
 
 // Hub maintains the set of active clients and broadcasts messages to the clients.
@@ -44,47 +43,17 @@ type Hub struct {
 	usersTime map[string]timeIO
 }
 
-func (h *Hub) handleLogout(username string, previousTime *time.Time) {
-	io := h.usersTime[username]
-	io.logout = time.Now()
-	h.usersTime[username] = io
-	time.Sleep(500 * time.Millisecond)
-	if h.users[username] == nil && time.Now().Sub(*previousTime) > (500*time.Millisecond) {
-		*previousTime = time.Now()
-		h.sendOnBroadcast("logout", username)
-		fmt.Println("logout")
-	}
-	fmt.Println(h.usersTime[username].login, "-----", h.usersTime[username].logout)
-}
-
-func (h *Hub) sendOnBroadcast(event string, username string) {
-	msg, _ := lib.InterfaceToByte(map[string]interface{}{
-		"event":    event,
-		"username": username,
-	})
-	send := message{msg, username}
-	h.toEveryone(send)
-}
-
-func (h *Hub) handleRegister(s subscription, previousTime *time.Time) {
+func (h *Hub) handleRegister(s subscription) {
 	connections := h.users[s.username] // Get connections linked to this username
 	if connections == nil {            // No connection
 		connections = make(map[*connection]bool)
 		h.users[s.username] = connections
-
-		fmt.Println(time.Now().Sub(h.usersTime[s.username].login))
-		if h.usersTime[s.username].login == (time.Time{}) || time.Now().Sub(h.usersTime[s.username].logout) > (1000*time.Millisecond) {
-			io := h.usersTime[s.username]
-			io.login = time.Now()
-			h.usersTime[s.username] = io
-			h.sendOnBroadcast("login", s.username)
-		}
-		fmt.Println(h.usersTime[s.username].login, "-----", h.usersTime[s.username].logout)
+		go h.handleLogin(s.username)
 	}
 	h.users[s.username][s.conn] = true
 }
 
-func (h *Hub) handleUnregister(s subscription, previousTime *time.Time) {
+func (h *Hub) handleUnregister(s subscription) {
 	connections := h.users[s.username] // Get connections linked to this username
 	if connections != nil {            // Connection exists
 		if _, ok := connections[s.conn]; ok {
@@ -93,19 +62,18 @@ func (h *Hub) handleUnregister(s subscription, previousTime *time.Time) {
 			if len(connections) == 0 {
 				delete(h.users, s.username)
 			}
-			go h.handleLogout(s.username, previousTime) // username <> previousTime -> Error case too many
+			go h.handleLogout(s.username)
 		}
 	}
 }
 
 func (h *Hub) run() {
-	var previousLogin, previousLogout time.Time
 	for {
 		select {
 		case s := <-h.register: // Open websocket connection - maybe login
-			h.handleRegister(s, &previousLogin)
+			h.handleRegister(s)
 		case s := <-h.unregister: // Close websocket connection - maybe login
-			h.handleUnregister(s, &previousLogout)
+			h.handleUnregister(s)
 		case m := <-h.broadcast: // Who will receive the message
 			h.dispatch(m)
 		}
