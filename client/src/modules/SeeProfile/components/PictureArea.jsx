@@ -107,7 +107,7 @@ class PictureArea extends Component {
     } else if (this.state.picture) {
       pictureURL = "http://localhost:8080" + this.state.picture
     }
-    var length = this.state.pictureArrayLength
+    var length = this.state.pictureArrayLength;
     return (
       <div className="picture-area">
         <div className="picture-user-background" style={{ backgroundImage: "url(" + pictureURL + ")" }}></div>
@@ -144,12 +144,14 @@ class PictureArea extends Component {
             <span>&#9829;</span>
           </div>
           ) : (
-            <div className="profiles-linked-picture">
-              <span
-                role="img" aria-labelledby="Connected with"
-                title={'You are connected with ' + this.state.firstname + ' - Click here to take contact ;)' }
-              >&#x1f525;</span>
-            </div>
+            <a href={`/matches`}>
+              <div className="profiles-linked-picture">
+                <span
+                  role="img" aria-labelledby="Connected with"
+                  title={'You are connected with ' + this.state.firstname + ' - Click here to take contact ;)' }
+                >&#x1f525;</span>
+              </div>
+            </a>
           )
         ) : null}
       </div>

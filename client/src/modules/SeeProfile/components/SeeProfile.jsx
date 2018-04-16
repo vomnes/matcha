@@ -137,6 +137,7 @@ class SeeProfile extends Component {
       }
       this.handleWebsocket(msg);
     }
+    console.log(userData);
     var left;
     var right;
     if (this.state.previousProfile.picture_url) {
@@ -163,7 +164,7 @@ class SeeProfile extends Component {
             updateStateData={this.updateStateData}
             updateState={this.updateState}
             reportedAsFakeAccount={userData.reported_as_fake}
-            usersAreConnected={userData.usersAreConnected}
+            usersAreConnected={userData.users_linked}
             firstname={userData.firstname}
             username={userData.username}
             isMe={userData.isMe}

@@ -122,7 +122,6 @@ body {
   height: 25px;
   top: 25%;
   left: 5%;
-  cursor: pointer;
 }
 
 .notif-text {
@@ -151,6 +150,35 @@ body {
   right: 14.75%;
 }
 
-svg {
-  background-color: beige;
+.nav-top-responsive {
+  visibility: hidden;
+}
+
+@media (max-width: 505px) {
+  .nav-top {
+    visibility: hidden;
+  }
+  .nav-top-responsive {
+    visibility: visible;
+    position: absolute;
+    top: 5px;
+    @include position-center(50%);
+    max-width: 1000px;
+    width: 95%;
+  }
+  .header-button {
+    position: absolute;
+    width: 25px;
+    top: 8px;
+  }
+  #matches-notif-responsive {
+    position: absolute;
+    top: 8px;
+    left: 44vw;
+  }
+  #true-notif-responsive {
+    position: absolute;
+    top: 8px;
+    right: 18vw;
+  }
 }
