@@ -366,7 +366,9 @@ func TestLikeDelete(t *testing.T) {
 	if output != "" {
 		t.Error(output)
 	}
-	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{})
+	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{
+		"users_were_linked": false,
+	})
 	if strError != nil {
 		t.Errorf("%v", strError)
 	}
@@ -447,7 +449,9 @@ func TestLikeDeleteNoNeedUpdate(t *testing.T) {
 	if output != "" {
 		t.Error(output)
 	}
-	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{})
+	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{
+		"users_were_linked": false,
+	})
 	if strError != nil {
 		t.Errorf("%v", strError)
 	}
@@ -503,7 +507,9 @@ func TestLikeDeleteUnmatch(t *testing.T) {
 	if output != "" {
 		t.Error(output)
 	}
-	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{})
+	strError := tests.CompareResponseJSONCode(w, 200, map[string]interface{}{
+		"users_were_linked": true,
+	})
 	if strError != nil {
 		t.Errorf("%v", strError)
 	}

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"sync"
+
 	"github.com/jmoiron/sqlx"
 )
 
@@ -33,6 +35,9 @@ type Hub struct {
 
 	// usersTime handle user login logout
 	usersTime map[string]timeIO
+
+	// mutex allows to avoid race concurrency
+	mutex *sync.Mutex
 }
 
 func (h *Hub) handleRegister(s subscription) {

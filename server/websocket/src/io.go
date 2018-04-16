@@ -37,9 +37,9 @@ func (h *Hub) handleLogin(username string) {
 		io := h.usersTime[username]
 		io.login = time.Now()
 		io.isOnline = true
-		mutex.Lock()
+		h.mutex.Lock()
 		h.usersTime[username] = io
-		mutex.Unlock()
+		h.mutex.Unlock()
 		updateOnlineStatus(h.db, true, username)
 		h.sendOnBroadcast("login", username)
 	}
@@ -51,9 +51,9 @@ func (h *Hub) handleLogout(username string) {
 		io := h.usersTime[username]
 		io.logout = time.Now()
 		io.isOnline = false
-		mutex.Lock()
+		h.mutex.Lock()
 		h.usersTime[username] = io
-		mutex.Unlock()
+		h.mutex.Unlock()
 		updateOnlineStatus(h.db, false, username)
 		h.sendOnBroadcast("logout", username)
 	}

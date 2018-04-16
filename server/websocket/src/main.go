@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync"
 
 	"../../lib"
 
@@ -38,6 +39,7 @@ func main() {
 		users:      make(map[string]map[*connection]bool),
 		db:         db,
 		usersTime:  make(map[string]timeIO),
+		mutex:      &sync.Mutex{},
 	}
 	go hub.run()
 	router := handleWSRoutes()

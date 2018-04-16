@@ -97,23 +97,24 @@ func addLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB,
 	lib.RespondWithErrorHTTP(w, 406, "Profile already liked by the user")
 }
 
-func handleUpdateNeed(db *sqlx.DB, userID, targetUserID string) (bool, int, string) {
+func handleUpdateNeedConnected(db *sqlx.DB, userID, targetUserID string) (bool, bool, int, string) {
 	var likes []string
 	err := db.Select(&likes, `Select userid From Likes Where (userid = $1 AND liked_userID = $2) OR (userid = $2 AND liked_userID = $1)`, userID, targetUserID)
 	if err != nil {
 		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to likes user data in database " + err.Error()))
-		return false, 500, "Failed to gather likes data in the database"
+		return false, false, 500, "Failed to gather likes data in the database"
 	}
 	if !lib.StringInArray(userID, likes) {
-		return false, 0, ""
+		return false, false, 0, ""
 	}
 	if lib.StringInArray(targetUserID, likes) {
 		errCode, errContent := PushNotif(db, "unmatch", userID, targetUserID, false)
 		if errCode != 0 || errContent != "" {
-			return true, errCode, errContent
+			return true, true, errCode, errContent
 		}
+		return true, true, 0, ""
 	}
-	return true, 0, ""
+	return true, false, 0, ""
 }
 
 // Delete Like Method DELETE
@@ -122,7 +123,7 @@ func handleUpdateNeed(db *sqlx.DB, userID, targetUserID string) (bool, int, stri
 // Handle PushNotif unmatch
 // Return HTTP Code 200 Status OK
 func deleteLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB, userID, targetUserID string) {
-	needDeleteLike, errCode, errContent := handleUpdateNeed(db, userID, targetUserID)
+	needDeleteLike, wereConnected, errCode, errContent := handleUpdateNeedConnected(db, userID, targetUserID)
 	if errCode != 0 || errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
@@ -148,7 +149,9 @@ func deleteLike(w http.ResponseWriter, r *http.Request, db *sqlx.DB, userID, tar
 			return
 		}
 	}
-	lib.RespondEmptyHTTP(w, http.StatusOK)
+	lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{
+		"users_were_linked": wereConnected,
+	})
 }
 
 // Like is the route '/v1/users/{username}/like' with the method POST OR DELETE.

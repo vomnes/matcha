@@ -246,7 +246,14 @@ If the username doesn't match with any data
 Remove the like from the table Likes in the database
 Update target user rating
 Handle PushNotif unmatch
-Return HTTP Code 200 Status OK  
+Return HTTP Code 200 Status OK
+
+```
+JSON Content Response :
+  {
+    "users_were_linked":     bool,
+  }
+```  
 
 ___
 
