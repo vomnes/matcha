@@ -130,6 +130,7 @@ class PageLayout extends Component {
       newNotification: true,
       loggedProfileData: {},
       notifications: [],
+      isMobile: window.innerWidth > 505,
     }
     this.updateState = this.updateState.bind(this);
   }
@@ -147,7 +148,11 @@ class PageLayout extends Component {
     profile["total_new_notifications"] = 0;
     this.updateState("loggedProfileData", profile);
   }
+  updateHeader = () => {
+    this.updateState("isMobile", window.innerWidth > 505);
+  }
   componentDidMount() {
+    window.addEventListener("resize", this.updateHeader);
     this.props.myProfileData.then((data) => {
       this.updateState("loggedProfileData", data);
       console.log(data);
@@ -178,31 +183,32 @@ class PageLayout extends Component {
     return (
       <div className="general-layout">
         <div className="header">
-          {/* Normal Header */}
-          <div className="nav-top">
-            <a href='/home' className="logo"><span>Matcha</span></a>
-            <div className="header-left-side">
-              <a href='/browsing'><span>Browsing</span></a>
-              <a href='/matches'><span>Matches</span></a>
-              {this.state.loggedProfileData && this.state.loggedProfileData.total_new_messages && !window.location.href.endsWith("matches") ? (<span className="top-notif red-cercle-notif" id="matches-notif">{this.state.loggedProfileData && this.state.loggedProfileData.total_new_messages}</span>) : null}
-              <a href='/profile'><span>My Profile</span></a>
-              <span id="notif-btn" onClick={() => this.handleNotifications(this.updateState)}>Notifications</span>
-              {this.state.loggedProfileData && this.state.loggedProfileData.total_new_notifications ? (<span className="top-notif red-cercle-notif" id="true-notif">{this.state.loggedProfileData && this.state.loggedProfileData.total_new_notifications}</span>) : null}
-              <a href='/logout'><span>Logout</span></a>
+          {this.state.isMobile ? (
+            <div className="nav-top">
+              <a href='/home' className="logo"><span>Matcha</span></a>
+              <div className="header-left-side">
+                <a href='/browsing'><span>Browsing</span></a>
+                <a href='/matches'><span>Matches</span></a>
+                {this.state.loggedProfileData && this.state.loggedProfileData.total_new_messages && !window.location.href.endsWith("matches") ? (<span className="top-notif red-cercle-notif" id="matches-notif">{this.state.loggedProfileData && this.state.loggedProfileData.total_new_messages}</span>) : null}
+                <a href='/profile'><span>My Profile</span></a>
+                <span id="notif-btn" onClick={() => this.handleNotifications(this.updateState)}>Notifications</span>
+                {this.state.loggedProfileData && this.state.loggedProfileData.total_new_notifications ? (<span className="top-notif red-cercle-notif" id="true-notif">{this.state.loggedProfileData && this.state.loggedProfileData.total_new_notifications}</span>) : null}
+                <a href='/logout'><span>Logout</span></a>
+              </div>
+              {this.state.notificationsOpen ? (<div id="notif-arrow"></div>) : null}
             </div>
-            {this.state.notificationsOpen ? (<div id="notif-arrow"></div>) : null}
-          </div>
-          {/* Responsive Header */}
-          <div className="nav-top-responsive">
-            <a href='/home' className="logo"><span>Matcha</span></a>
-            <a href='/browsing'><img alt="Browsing button" title="browsing" src={SearchIcon} className="header-button" style={{ left: "25vw" }}/></a>
-            <a href='/matches'><span><img alt="Matches button" title="matches" src={MatchIcon} className="header-button" style={{ left: "40vw" }}/></span></a>
-            {this.state.loggedProfileData && this.state.loggedProfileData.total_new_messages && !window.location.href.endsWith("matches") ? (<span className="top-notif red-cercle-notif" id="matches-notif-responsive">{this.state.loggedProfileData && this.state.loggedProfileData.total_new_messages}</span>) : null}
-            <a href='/profile'><span><img alt="My profile button" title="profile" src={ProfileIcon} className="header-button" style={{ left: "55vw" }}/></span></a>
-            <img alt="Notification list button" title="notifications" src={NotificationIcon} className="header-button" style={{ left: "70vw" }}/>
-            {this.state.loggedProfileData && this.state.loggedProfileData.total_new_notifications ? (<span className="top-notif red-cercle-notif" id="true-notif-responsive">{this.state.loggedProfileData && this.state.loggedProfileData.total_new_notifications}</span>) : null}
-            <a href='/logout'><img alt="Logout button" title="logout" src={LogoutIcon} className="header-button" style={{ right: "5vw" }}/></a>
-          </div>
+          ) : (
+            <div className="nav-top-responsive">
+              <a href='/home' className="logo"><span>Matcha</span></a>
+              <a href='/browsing'><img alt="Browsing button" title="browsing" src={SearchIcon} className="header-button" style={{ left: "25vw" }}/></a>
+              <a href='/matches'><span><img alt="Matches button" title="matches" src={MatchIcon} className="header-button" style={{ left: "40vw" }}/></span></a>
+              {this.state.loggedProfileData && this.state.loggedProfileData.total_new_messages && !window.location.href.endsWith("matches") ? (<span className="top-notif red-cercle-notif" id="matches-notif-responsive">{this.state.loggedProfileData && this.state.loggedProfileData.total_new_messages}</span>) : null}
+              <a href='/profile'><span><img alt="My profile button" title="profile" src={ProfileIcon} className="header-button" style={{ left: "55vw" }}/></span></a>
+              <img alt="Notification list button" title="notifications" src={NotificationIcon} className="header-button" style={{ left: "70vw" }}/>
+              {this.state.loggedProfileData && this.state.loggedProfileData.total_new_notifications ? (<span className="top-notif red-cercle-notif" id="true-notif-responsive">{this.state.loggedProfileData && this.state.loggedProfileData.total_new_notifications}</span>) : null}
+              <a href='/logout'><img alt="Logout button" title="logout" src={LogoutIcon} className="header-button" style={{ right: "5vw" }}/></a>
+            </div>
+          )}
         </div>
         <div className="content">
           <NotifList isOpen={this.state.notificationsOpen} notifications={this.state.notifications}/>

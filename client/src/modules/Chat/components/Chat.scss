@@ -86,3 +86,29 @@
   width: 100%;
   padding-top: 1.5px;
 }
+
+@media (max-width: 720px) {
+  .matches-list-top {
+    visibility: hidden;
+    display: inline;
+  }
+  .matches-list-title {
+    visibility: hidden;
+    display: inline;
+  }
+  #matches-list-main {
+    position: absolute;
+    top: -25px;
+  }
+  .match-element-time {
+    visibility: hidden;
+    display: inline;
+  }
+  .match-element-lastmsg {
+    visibility: hidden;
+    display: inline;
+  }
+  #matches-list {
+    left: -5px;
+  }
+}

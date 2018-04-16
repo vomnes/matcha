@@ -67,3 +67,22 @@
   color: white;
   z-index: 1;
 }
+
+@media (max-width: 580px) {
+  .match-element-list {
+    visibility: hidden;
+    display: inline;
+  }
+  .picture-list {
+    @include position-center(50%);
+  }
+  .match-element {
+    width: 90%;
+    margin-left: 0;
+    left: 5px;
+  }
+  #matches-list-main {
+    height: 99%;
+    overflow-x: hidden;
+  }
+}

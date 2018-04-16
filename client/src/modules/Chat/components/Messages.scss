@@ -113,3 +113,15 @@
   background: white;
   border-radius: 5px;
 }
+
+@media (max-width: 720px) {
+  .msg {
+    max-width: 65%;
+  }
+}
+
+@media (max-width: 550px) {
+  .msg {
+    max-width: 45%;
+  }
+}
