@@ -5,6 +5,7 @@ import Modal from '../../../components/Modal';
 import PictureArea from './PictureArea.jsx'
 import DataArea from './DataArea.jsx'
 import api from '../../../library/api'
+import token from '../../../library/utils/jwt.js'
 import { Redirect } from 'react-router-dom';
 
 var moment = require('moment');
@@ -53,6 +54,12 @@ const SideProfile = (props) => {
       </div>
     </div>
   );
+}
+
+const wsSend = (conn, object) => {
+  conn.onopen = () => {
+    conn.send(JSON.stringify(object));
+  }
 }
 
 class SeeProfile extends Component {
@@ -111,6 +118,10 @@ class SeeProfile extends Component {
     this.updateStateData("nextProfile", {});
     getUserData(username, this.updateStateData);
     targetedMatch(this.state.searchparameters, username, this.updateStateData);
+    wsSend(this.state.wsConn, {
+      "event": "view",
+      "target": username,
+    });
     this.props.match.params.username = username;
   }
   handleWebsocket = (msg) => {
@@ -125,11 +136,15 @@ class SeeProfile extends Component {
   componentDidMount() {
     getUserData(this.props.match.params.username, this.updateStateData);
     targetedMatch(this.props.match.params.searchparameters, this.props.match.params.username, this.updateStateData);
-  }
-
-  render() {
-    let userData = Object.assign({}, this.state.data);
-    this.props.wsConn.onmessage = (e) => {
+    var wsConn = new WebSocket(`ws://localhost:8081/ws/${localStorage.getItem(`matcha_token`)}`);
+    const me = token.parseJwt(localStorage.getItem(`matcha_token`))
+    if (me.username !== this.props.match.params.username) {
+      wsSend(wsConn, {
+        "event": "view",
+        "target": this.props.match.params.username,
+      });
+    }
+    wsConn.onmessage = (e) => {
       try {
         var msg = JSON.parse(e.data);
       } catch (e) {
@@ -137,7 +152,10 @@ class SeeProfile extends Component {
       }
       this.handleWebsocket(msg);
     }
-    console.log(userData);
+  }
+
+  render() {
+    let userData = Object.assign({}, this.state.data);
     var left;
     var right;
     if (this.state.previousProfile.picture_url) {

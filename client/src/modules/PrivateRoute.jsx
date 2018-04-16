@@ -31,7 +31,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
           {...rest}
           render={(props) => (
             <PageLayout wsConn={wsConn} myProfileData={myProfileData}>
-              <Component wsConn={wsConn} myProfileData={myProfileData} {...props}/>
+              <Component myProfileData={myProfileData} {...props}/>
             </PageLayout>
           )}
         />

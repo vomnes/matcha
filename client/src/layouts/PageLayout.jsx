@@ -155,7 +155,6 @@ class PageLayout extends Component {
     window.addEventListener("resize", this.updateHeader);
     this.props.myProfileData.then((data) => {
       this.updateState("loggedProfileData", data);
-      console.log(data);
     });
   }
   handleWebsocket = (msg) => {

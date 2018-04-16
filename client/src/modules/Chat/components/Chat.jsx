@@ -84,13 +84,23 @@ class Chat extends Component {
   }
   componentDidMount() {
     GetListMatches(this.updateState);
+    var wsConn = new WebSocket(`ws://localhost:8081/ws/${localStorage.getItem(`matcha_token`)}`);
     this.props.myProfileData.then((data) => {
       this.updateState("loggedProfileData", data);
     });
+    wsConn.onmessage = (e) => {
+      try {
+        var msg = JSON.parse(e.data);
+      } catch (e) {
+        return;
+      }
+      this.handleWebsocket(msg);
+    }
+    this.updateState('wsConn', wsConn);
   }
   handleSubmit = (e) => {
     if (this.state.message !== "") {
-      wsSend(this.props.wsConn, {
+      wsSend(this.state.wsConn, {
         "event": "message",
         "target": this.state.selectedProfile,
         "data": this.state.message,
@@ -115,7 +125,7 @@ class Chat extends Component {
     if (e.target.value.length > 255) {
       return;
     }
-    wsSend(this.props.wsConn, {
+    wsSend(this.state.wsConn, {
       "event": "isTyping",
       "target": this.state.selectedProfile,
     });
@@ -184,14 +194,6 @@ class Chat extends Component {
     }
   }
   render () {
-    this.props.wsConn.onmessage = (e) => {
-      try {
-        var msg = JSON.parse(e.data);
-      } catch (e) {
-        return;
-      }
-      this.handleWebsocket(msg);
-    }
     return (
       <div>
         <div id="matches-list" style={{ height: (window.innerHeight - 75) + "px" }}>
