@@ -79,7 +79,7 @@ class Chat extends Component {
       }
     })
     this.updateState("selectedProfile", username);
-    this.updateProfile(0, username);
+    this.updateProfile({total_unread_messages: 0, username: username});
     GetListMessages(username, this.updateState);
   }
   componentDidMount() {
@@ -134,15 +134,20 @@ class Chat extends Component {
     })
     this.updateState('messages', this.state.messages);
   }
-  updateProfile(total_unread_messages, username, content) {
+  updateProfile({total_unread_messages, online, username, content}) {
     var data = this.state.listMatches;
     var len = data.length;
     for (var i = 0; i < len; i++) {
       if (data[i].username === username) {
-        if (total_unread_messages === 0) {
-          data[i].total_unread_messages = 0;
-        } else {
-          data[i].total_unread_messages += 1;
+        if (online !== undefined) {
+          data[i].online = online;
+        }
+        if (total_unread_messages !== undefined) {
+          if (total_unread_messages === 0) {
+            data[i].total_unread_messages = 0;
+          } else {
+            data[i].total_unread_messages += 1;
+          }
         }
         if (content !== undefined) {
           data[i].last_message_content = content;
@@ -162,7 +167,7 @@ class Chat extends Component {
           picture_url: data.picture_url,
         });
       } else {
-        this.updateProfile(1, msg.data.from, msg.data.content);
+        this.updateProfile({total_unread_messages: 1, username: msg.data.from, content: msg.data.content});
       }
       console.log(`New message from ${msg.data.from} - Content: ${msg.data.content}`);
     }
@@ -173,6 +178,9 @@ class Chat extends Component {
           this.updateState('isTyping', false);
         }, 2000);
       }
+    }
+    if (msg.event === "login" || msg.event === "logout") {
+      this.updateProfile({online: msg.event === "login" ? true : false, username: msg.username});
     }
   }
   render () {

@@ -196,6 +196,7 @@ JSON Content Response :
     "users_linked":     bool,
     "reported_as_fake": bool,
     "online":           bool,
+    "logout_at":        time.Time,
     "tags": []interface{
       "shared":   sharedTags,
       "personal": notSharedTags,

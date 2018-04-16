@@ -7,6 +7,8 @@ import DataArea from './DataArea.jsx'
 import api from '../../../library/api'
 import { Redirect } from 'react-router-dom';
 
+var moment = require('moment');
+
 const getUserData = async (username, updateState) => {
   let res = await api.getuser(username);
   if (res) {
@@ -111,6 +113,14 @@ class SeeProfile extends Component {
     targetedMatch(this.state.searchparameters, username, this.updateStateData);
     this.props.match.params.username = username;
   }
+  handleWebsocket = (msg) => {
+    if ((msg.event === "login" || msg.event === "logout") && this.state.data.username === msg.username) {
+      var profile = this.state.data
+      profile['online'] = msg.event === "login" ? true : false;
+      profile['logout_at'] = msg.event === "login" ? '' : moment();
+      this.updateStateData('data', profile);
+    }
+  }
 
   componentDidMount() {
     getUserData(this.props.match.params.username, this.updateStateData);
@@ -119,6 +129,14 @@ class SeeProfile extends Component {
 
   render() {
     let userData = Object.assign({}, this.state.data);
+    this.props.wsConn.onmessage = (e) => {
+      try {
+        var msg = JSON.parse(e.data);
+      } catch (e) {
+        return;
+      }
+      this.handleWebsocket(msg);
+    }
     var left;
     var right;
     if (this.state.previousProfile.picture_url) {

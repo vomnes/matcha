@@ -1,8 +1,6 @@
 package main
 
 import (
-	"time"
-
 	"github.com/jmoiron/sqlx"
 )
 
@@ -14,12 +12,6 @@ type message struct {
 type subscription struct {
 	conn     *connection
 	username string
-}
-
-type timeIO struct {
-	login   time.Time
-	logout  time.Time
-	isLogin bool
 }
 
 // Hub maintains the set of active clients and broadcasts messages to the clients.

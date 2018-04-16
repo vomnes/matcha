@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"sort"
+	"time"
 
 	"../../../../lib"
 	"github.com/gorilla/mux"
@@ -205,6 +206,10 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	} else {
 		isUser = true
 	}
+	var logoutAt time.Time
+	if !targetUserData.Online && targetUserData.OnlineStatusUpdateDate != nil {
+		logoutAt = *targetUserData.OnlineStatusUpdateDate
+	}
 	lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{
 		"username":         targetUsername,
 		"firstname":        targetUserData.Firstname,
@@ -220,6 +225,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		"users_linked":     areConnected,
 		"reported_as_fake": isReportedAsFake,
 		"online":           targetUserData.Online,
+		"logout_at":        logoutAt,
 		"tags": map[string]interface{}{
 			"shared":   sharedTags,
 			"personal": notSharedTags,

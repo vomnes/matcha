@@ -88,8 +88,8 @@ func insertUser(db *sqlx.DB, picture1, lastname, firstname, genre, interesting_i
 		(username, email, lastname, firstname, password,
 		picture_url_1, picture_url_2,
 		biography, birthday, genre, interesting_in, city, zip, country, latitude, longitude,
-		geolocalisation_allowed, online, rating)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
+		geolocalisation_allowed, rating)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
 		RETURNING id`)
 	defer stmt.Close()
 	if err != nil {
@@ -99,7 +99,7 @@ func insertUser(db *sqlx.DB, picture1, lastname, firstname, genre, interesting_i
 		picture1, "",
 		fake.Sentences(), time.Date(fake.Year(1985, 2000), time.Month(fake.MonthNum()), fake.Day(), 0, 0, 0, 0, time.UTC), genre, interesting_in,
 		fake.City(), fake.Zip(), fake.Country(), latitude, longitude,
-		true, true, rand.Float64()+float64(rand.Intn(4)))
+		true, rand.Float64()+float64(rand.Intn(4)))
 	var id string
 	err = row.Scan(&id)
 	if err != nil {

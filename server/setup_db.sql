@@ -31,6 +31,7 @@ CREATE TABLE Users (
   longitude DECIMAL(20,6) DEFAULT NULL,
   geolocalisation_allowed BOOLEAN NOT NULL DEFAULT FALSE,
   online BOOLEAN NOT NULL DEFAULT FALSE,
+  online_status_update_date timestamp with time zone DEFAULT NULL,
   rating DECIMAL(9,6) DEFAULT 2.5
 );
 
@@ -150,6 +151,7 @@ CREATE TABLE Users (
   longitude DECIMAL(9,6) DEFAULT NULL,
   geolocalisation_allowed BOOLEAN NOT NULL DEFAULT FALSE,
   online BOOLEAN NOT NULL DEFAULT FALSE,
+  online_status_update_date timestamp with time zone DEFAULT NULL,
   rating DECIMAL(9,6) DEFAULT 2.5
 );
 

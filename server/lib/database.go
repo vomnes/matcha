@@ -30,6 +30,7 @@ type User struct {
 	Longitude              *float64   `db:"longitude"`
 	GeolocalisationAllowed bool       `db:"geolocalisation_allowed"`
 	Online                 bool       `db:"online"`
+	OnlineStatusUpdateDate *time.Time `db:"online_status_update_date"`
 	Rating                 float64    `db:"rating"`
 }
 

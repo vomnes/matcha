@@ -178,10 +178,10 @@ class PageLayout extends Component {
             <div className="header-left-side">
               <a href='/browsing' className="logout"><span>Browsing</span></a>
               <a href='/matches' className="logout"><span>Matches</span></a>
-              {this.state.loggedProfileData.total_new_messages && !window.location.href.endsWith("matches") ? (<span className="top-notif red-cercle-notif" id="matches-notif">{this.state.loggedProfileData.total_new_messages}</span>) : null}
+              {this.state.loggedProfileData && this.state.loggedProfileData.total_new_messages && !window.location.href.endsWith("matches") ? (<span className="top-notif red-cercle-notif" id="matches-notif">{this.state.loggedProfileData && this.state.loggedProfileData.total_new_messages}</span>) : null}
               <a href='/profile' className="logout"><span>My Profile</span></a>
               <span id="notif-btn" className="logout" onClick={() => this.handleNotifications(this.updateState)}>Notifications</span>
-              {this.state.loggedProfileData.total_new_notifications ? (<span className="top-notif red-cercle-notif" id="true-notif">{this.state.loggedProfileData.total_new_notifications}</span>) : null}
+              {this.state.loggedProfileData && this.state.loggedProfileData.total_new_notifications ? (<span className="top-notif red-cercle-notif" id="true-notif">{this.state.loggedProfileData && this.state.loggedProfileData.total_new_notifications}</span>) : null}
               <a href='/logout' className="logout"><span>Logout</span></a>
             </div>
             {this.state.notificationsOpen ? (<div id="notif-arrow"></div>) : null}

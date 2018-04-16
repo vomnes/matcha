@@ -33,7 +33,7 @@ func checkUserSecret(inputData loginData, db *sqlx.DB) (lib.User, int, string) {
 	var u lib.User
 	err := db.Get(&u, "SELECT * FROM Users WHERE username = $1", inputData.Username)
 	if err != nil && err != sql.ErrNoRows {
-		log.Fatal(lib.PrettyError("[DB REQUEST - SELECT] Failed to get user data " + err.Error()))
+		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to get user data " + err.Error()))
 		return lib.User{}, 500, "User data collection failed"
 	}
 	if err == sql.ErrNoRows || u == (lib.User{}) {

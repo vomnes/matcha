@@ -88,6 +88,7 @@ func TestGetUser(t *testing.T) {
 		"liked":            true,
 		"users_linked":     true,
 		"online":           true,
+		"logout_at":        "0001-01-01T00:00:00Z",
 		"rating":           2.5,
 		"reported_as_fake": false,
 		"tags": map[string]interface{}{
@@ -119,32 +120,34 @@ func TestGetUser(t *testing.T) {
 		t.Error(compare)
 	}
 }
-
-func TestGetUserLikedNoSharedTagsReportedAsFakeAgeNil(t *testing.T) {
+func TestGetUserLikedNoSharedTagsReportedAsFakeAgeNilOnlineUpdateDateNil(t *testing.T) {
 	tests.DbClean()
 	username := "test_" + lib.GetRandomString(43)
 	targetUsername := "target_test_" + lib.GetRandomString(43)
 	lat := 1.4
 	lng := 56.0
+	var logoutAt *time.Time
+	logoutAt = nil
 	targetUser := tests.InsertUser(lib.User{
-		Username:      targetUsername,
-		Email:         "MyEmail",
-		Lastname:      "MyLastname",
-		Firstname:     "MyFirstname",
-		PictureURL_1:  "MyURL1",
-		PictureURL_2:  "",
-		PictureURL_3:  "MyURL3",
-		PictureURL_4:  "",
-		PictureURL_5:  "MyURL5",
-		Biography:     "This is my story",
-		Genre:         "example_genre",
-		InterestingIn: "example_interesting_in",
-		Latitude:      &lat,
-		Longitude:     &lng,
-		City:          "myCity",
-		ZIP:           "MYZIP",
-		Country:       "myCountry",
-		Online:        false,
+		Username:               targetUsername,
+		Email:                  "MyEmail",
+		Lastname:               "MyLastname",
+		Firstname:              "MyFirstname",
+		PictureURL_1:           "MyURL1",
+		PictureURL_2:           "",
+		PictureURL_3:           "MyURL3",
+		PictureURL_4:           "",
+		PictureURL_5:           "MyURL5",
+		Biography:              "This is my story",
+		Genre:                  "example_genre",
+		InterestingIn:          "example_interesting_in",
+		Latitude:               &lat,
+		Longitude:              &lng,
+		City:                   "myCity",
+		ZIP:                    "MYZIP",
+		Country:                "myCountry",
+		Online:                 false,
+		OnlineStatusUpdateDate: logoutAt,
 	}, tests.DB)
 	userData := tests.InsertUser(lib.User{
 		Username: targetUsername,
@@ -194,6 +197,7 @@ func TestGetUserLikedNoSharedTagsReportedAsFakeAgeNil(t *testing.T) {
 		"liked":            true,
 		"users_linked":     false,
 		"online":           false,
+		"logout_at":        "0001-01-01T00:00:00Z",
 		"rating":           2.5,
 		"reported_as_fake": true,
 		"tags": map[string]interface{}{
@@ -230,28 +234,30 @@ func TestGetUserNoLikedSharedTagsOnePictures(t *testing.T) {
 	username := "test_" + lib.GetRandomString(43)
 	targetUsername := "target_test_" + lib.GetRandomString(43)
 	birthdayTime := time.Date(1955, 1, 6, 0, 0, 0, 0, time.UTC)
+	logoutAt := time.Date(2018, 1, 6, 0, 0, 0, 0, time.UTC)
 	lat := 1.4
 	lng := 56.0
 	targetUser := tests.InsertUser(lib.User{
-		Username:      targetUsername,
-		Email:         "MyEmail",
-		Lastname:      "MyLastname",
-		Firstname:     "MyFirstname",
-		PictureURL_1:  "MyURL1",
-		PictureURL_2:  "",
-		PictureURL_3:  "",
-		PictureURL_4:  "",
-		PictureURL_5:  "",
-		Biography:     "This is my story",
-		Birthday:      &birthdayTime,
-		Genre:         "example_genre",
-		InterestingIn: "example_interesting_in",
-		Latitude:      &lat,
-		Longitude:     &lng,
-		City:          "myCity",
-		ZIP:           "MYZIP",
-		Country:       "myCountry",
-		Online:        false,
+		Username:               targetUsername,
+		Email:                  "MyEmail",
+		Lastname:               "MyLastname",
+		Firstname:              "MyFirstname",
+		PictureURL_1:           "MyURL1",
+		PictureURL_2:           "",
+		PictureURL_3:           "",
+		PictureURL_4:           "",
+		PictureURL_5:           "",
+		Biography:              "This is my story",
+		Birthday:               &birthdayTime,
+		Genre:                  "example_genre",
+		InterestingIn:          "example_interesting_in",
+		Latitude:               &lat,
+		Longitude:              &lng,
+		City:                   "myCity",
+		ZIP:                    "MYZIP",
+		Country:                "myCountry",
+		Online:                 false,
+		OnlineStatusUpdateDate: &logoutAt,
 	}, tests.DB)
 	userData := tests.InsertUser(lib.User{
 		Username: targetUsername,
@@ -304,6 +310,7 @@ func TestGetUserNoLikedSharedTagsOnePictures(t *testing.T) {
 		"liked":            false,
 		"users_linked":     false,
 		"online":           false,
+		"logout_at":        "2018-01-06T01:00:00+01:00",
 		"rating":           2.5,
 		"reported_as_fake": false,
 		"tags": map[string]interface{}{
@@ -480,6 +487,7 @@ func TestGetUserMe(t *testing.T) {
 		"liked":            true,
 		"users_linked":     false,
 		"online":           true,
+		"logout_at":        "0001-01-01T00:00:00Z",
 		"rating":           2.5,
 		"reported_as_fake": false,
 		"tags": map[string]interface{}{
