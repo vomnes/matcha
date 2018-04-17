@@ -54,7 +54,6 @@ func (h *Hub) toEveryone(m message) {
 
 func handleEvents(db *sqlx.DB, receivedMessage messageDecoded, senderUsername string) (bool, []byte) {
 	availableEvents := []string{"view", "like", "match", "unmatch", "message", "isTyping"}
-	fmt.Println("brut", receivedMessage)
 	if receivedMessage.Event == "message" {
 		// Update database message - Insert notification
 		err := messageInDB(db, senderUsername, receivedMessage.Target, receivedMessage.Data)

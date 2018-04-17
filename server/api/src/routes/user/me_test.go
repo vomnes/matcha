@@ -37,6 +37,15 @@ func TestGetMe(t *testing.T) {
 		GeolocalisationAllowed: false,
 		Online:                 true,
 	}, tests.DB)
+	u1 := tests.InsertUser(lib.User{
+		Username: "u1_" + lib.GetRandomString(43),
+	}, tests.DB)
+	u2 := tests.InsertUser(lib.User{
+		Username: "u2_" + lib.GetRandomString(43),
+	}, tests.DB)
+	u3 := tests.InsertUser(lib.User{
+		Username: "u3_" + lib.GetRandomString(43),
+	}, tests.DB)
 	/* Insert Notifications - IsUnread: 3*/
 	_ = tests.InsertNotification(lib.Notification{TypeID: "3", UserID: "4", TargetUserID: ME.ID, IsRead: true}, tests.DB)
 	_ = tests.InsertNotification(lib.Notification{TypeID: "1", UserID: "2", TargetUserID: ME.ID, IsRead: false}, tests.DB)
@@ -50,6 +59,11 @@ func TestGetMe(t *testing.T) {
 	_ = tests.InsertMessage(lib.Message{SenderID: "5", ReceiverID: ME.ID, IsRead: false}, tests.DB)
 	_ = tests.InsertMessage(lib.Message{SenderID: "6", ReceiverID: ME.ID, IsRead: false}, tests.DB)
 	_ = tests.InsertMessage(lib.Message{SenderID: "10", ReceiverID: ME.ID, IsRead: false}, tests.DB)
+	/* Report as fake */
+	_ = tests.InsertFakeReport(lib.FakeReport{UserID: ME.ID, TargetUserID: u1.ID}, tests.DB)
+	_ = tests.InsertFakeReport(lib.FakeReport{UserID: ME.ID, TargetUserID: u2.ID}, tests.DB)
+	_ = tests.InsertFakeReport(lib.FakeReport{UserID: ME.ID, TargetUserID: u3.ID}, tests.DB)
+	_ = tests.InsertFakeReport(lib.FakeReport{UserID: u3.ID, TargetUserID: ME.ID}, tests.DB)
 	context := tests.ContextData{
 		DB:       tests.DB,
 		Username: username,
@@ -73,8 +87,9 @@ func TestGetMe(t *testing.T) {
 		"age":             63,
 		"lat":             &lat,
 		"lng":             &lng,
-		"total_new_notifications": 3,
-		"total_new_messages":      4,
+		"total_new_notifications":    3,
+		"total_new_messages":         4,
+		"reported_as_fake_usernames": []string{u1.Username, u2.Username, u3.Username},
 	}
 	strError := tests.CompareResponseJSONCode(w, 200, expectedJSONResponse)
 	if strError != nil {

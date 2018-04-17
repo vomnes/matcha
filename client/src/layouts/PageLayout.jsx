@@ -162,8 +162,12 @@ class PageLayout extends Component {
     if (msg.event === "message") {
       profile["total_new_messages"] += 1;
     } else if (msg.event !== "isTyping" && msg.event !== "login" && msg.event !== "logout") {
-      profile["total_new_notifications"] += 1;
-      this.updateState("notificationsOpen", false);
+      if (profile.username !== undefined) {
+        if (profile.reported_as_fake_usernames == null || (profile.reported_as_fake_usernames.indexOf(msg.from) > -1) === false) {
+          profile["total_new_notifications"] += 1;
+          this.updateState("notificationsOpen", false);
+        }
+      }
     }
     this.updateState("loggedProfileData", profile);
   }

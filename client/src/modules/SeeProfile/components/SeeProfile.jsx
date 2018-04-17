@@ -144,7 +144,6 @@ class SeeProfile extends Component {
     var wsConn = new WebSocket(`ws://localhost:8081/ws/${localStorage.getItem(`matcha_token`)}`);
     const me = token.parseJwt(localStorage.getItem(`matcha_token`))
     if (me.username !== this.props.match.params.username) {
-      console.log("@#@", wsConn);
       wsSend(wsConn, {
         "event": "view",
         "target": this.props.match.params.username,
