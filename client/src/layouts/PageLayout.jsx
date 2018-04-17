@@ -37,13 +37,13 @@ const NotifElement = (props) => {
         }
         content = `${props.fullname} has liked your profile`;
         break;
-    case "unlike":
+    case "unmatch":
         if (props.new) {
           icon = BrokenHeartIconRed;
         } else {
           icon = BrokenHeartIcon;
         }
-        content = `${props.fullname} has unliked your profile`;
+        content = `${props.fullname} has broken your match`;
         break;
     case "match":
         if (props.new) {
@@ -203,9 +203,10 @@ class PageLayout extends Component {
               <a href='/matches'><span><img alt="Matches button" title="matches" src={MatchIcon} className="header-button" style={{ left: "40vw" }}/></span></a>
               {this.state.loggedProfileData && this.state.loggedProfileData.total_new_messages && !window.location.href.endsWith("matches") ? (<span className="top-notif red-cercle-notif" id="matches-notif-responsive">{this.state.loggedProfileData && this.state.loggedProfileData.total_new_messages}</span>) : null}
               <a href='/profile'><span><img alt="My profile button" title="profile" src={ProfileIcon} className="header-button" style={{ left: "55vw" }}/></span></a>
-              <img alt="Notification list button" title="notifications" src={NotificationIcon} className="header-button" style={{ left: "70vw" }}/>
+              <img alt="Notification list button" title="notifications" src={NotificationIcon} className="header-button" onClick={() => this.handleNotifications(this.updateState)} style={{ left: "70vw" }}/>
               {this.state.loggedProfileData && this.state.loggedProfileData.total_new_notifications ? (<span className="top-notif red-cercle-notif" id="true-notif-responsive">{this.state.loggedProfileData && this.state.loggedProfileData.total_new_notifications}</span>) : null}
               <a href='/logout'><img alt="Logout button" title="logout" src={LogoutIcon} className="header-button" style={{ right: "5vw" }}/></a>
+              {this.state.notificationsOpen ? (<div id="notif-arrow"></div>) : null}
             </div>
           )}
         </div>

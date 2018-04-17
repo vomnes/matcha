@@ -2,31 +2,37 @@ import React, { Component } from 'react';
 import './PictureArea.css';
 import api from '../../../library/api'
 
-const like = async (isLiked, method, username, updateStateHere, updateState) => {
+const like = async (isLiked, method, username, updateStateHere, updateState, handleWebsocketSend) => {
   if (method === `POST` && isLiked) {
     return;
   }
   let res = await api.like(method, username);
-  if (res.status >= 400) {
-    const response = await res.json();
-    if (res.status >= 500) {
-      throw new Error("Bad response from server - Like has failed - ", response.error);
-    } else if (res.status >= 400) {
-      updateState('newError', response.error);
-      return;
-    }
-  }
-  var type = "liked"
-  if (method === `DELETE`) {
-    type = "unliked"
-    updateStateHere("liked", false);
-    updateStateHere("usersAreConnected", false);
+  const response = await res.json();
+  if (res.status >= 500) {
+    throw new Error("Bad response from server - Like has failed - ", response.error);
+  } else if (res.status >= 400) {
+    updateState('newError', response.error);
+    return;
   } else {
-    updateStateHere("liked", true);
-    const response = await res.json();
-    updateStateHere("usersAreConnected", response.users_linked);
+    var type = "liked"
+    if (method === `DELETE`) {
+      type = "unliked"
+      updateStateHere("liked", false);
+      updateStateHere("usersAreConnected", false);
+      if (response.users_were_linked) {
+        handleWebsocketSend("unmatch", username);
+      }
+    } else {
+      updateStateHere("liked", true);
+      updateStateHere("usersAreConnected", response.users_linked);
+      if (response.users_linked) {
+        handleWebsocketSend("match", username);
+      } else {
+        handleWebsocketSend("like", username);
+      }
+    }
+    updateState('newSuccess', `You have just ${type} ${username}'s profile`);
   }
-  updateState('newError', `You have just ${type} ${username}'s profile`);
 }
 
 const fake = async (method, username, updateStateHere, updateState) => {
@@ -121,7 +127,7 @@ class PictureArea extends Component {
                   <span onClick={() => fake(`DELETE`, this.state.username, this.updateState, this.props.updateState)}>Invalidate fake account report</span> :
                   <span onClick={() => fake(`POST`, this.state.username, this.updateState, this.props.updateState)}>Report as a fake account</span>
                 }<br />
-                {this.state.liked ? <span onClick={() => like(null, `DELETE`, this.state.username, this.updateState, this.props.updateState)}>Unlike profile</span> : null}
+                {this.state.liked ? <span onClick={() => like(null, `DELETE`, this.state.username, this.updateState, this.props.updateState, this.props.handleWebsocketSend)}>Unlike profile</span> : null}
             </div>
           </div>
         ) : null }
@@ -135,7 +141,7 @@ class PictureArea extends Component {
         {!this.state.isMe ? (
           !this.state.usersAreConnected ? (
           <div title={(this.state.liked ? "You like this profile" :  "Like profile")} className="btn-like"
-            onClick={() => like(this.state.liked, `POST`, this.state.username, this.updateState, this.props.updateState)}
+            onClick={() => like(this.state.liked, `POST`, this.state.username, this.updateState, this.props.updateState, this.props.handleWebsocketSend)}
             style={{
               background: (this.state.liked ? "white" :  "#F80759"),
               color: (this.state.liked ? "#F80759" :  "white"),

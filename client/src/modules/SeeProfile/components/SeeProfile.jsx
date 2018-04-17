@@ -132,13 +132,19 @@ class SeeProfile extends Component {
       this.updateStateData('data', profile);
     }
   }
-
+  handleWebsocketSend = (event, username) => {
+    this.state.wsConn.send(JSON.stringify({
+      "event": event,
+      "target": username,
+    }));
+  }
   componentDidMount() {
     getUserData(this.props.match.params.username, this.updateStateData);
     targetedMatch(this.props.match.params.searchparameters, this.props.match.params.username, this.updateStateData);
     var wsConn = new WebSocket(`ws://localhost:8081/ws/${localStorage.getItem(`matcha_token`)}`);
     const me = token.parseJwt(localStorage.getItem(`matcha_token`))
     if (me.username !== this.props.match.params.username) {
+      console.log("@#@", wsConn);
       wsSend(wsConn, {
         "event": "view",
         "target": this.props.match.params.username,
@@ -152,6 +158,7 @@ class SeeProfile extends Component {
       }
       this.handleWebsocket(msg);
     }
+    this.updateStateData('wsConn', wsConn);
   }
 
   render() {
@@ -186,6 +193,7 @@ class SeeProfile extends Component {
             firstname={userData.firstname}
             username={userData.username}
             isMe={userData.isMe}
+            handleWebsocketSend={this.handleWebsocketSend}
           />
           {right}
           <DataArea username={this.props.match.params.username} data={this.state.data}/>
