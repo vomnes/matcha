@@ -10,12 +10,16 @@ const PositionMark = (props) => {
     props.updateState('selectProfile', props.username);
     document.getElementById(props.username).scrollIntoView({ behavior: "smooth", inline: "center" });
   }
+  let pictureURL = props.picture ? `http://localhost:8080${props.picture}` : null
+  if (props.picture && props.picture.includes('images.unsplash.com/photo-')) {
+    pictureURL = props.picture.replace("h=1000&q=10", "h=40&q=100");
+  }
   if (props.picture !== undefined) {
     return (
       <div title={`See ${props.firstname} ${props.lastname}`} className="map-mark" onClick={selectProfile}>
         <img alt="Location pin" src={Pin} className="map-pin"/>
         <div className="picture-pin">
-          <div className="picture-pin-background" style={{ backgroundImage: "url(" + props.picture.replace("h=1000&q=10", "h=40&q=100") + ")" }}></div>
+          <div className="picture-pin-background" style={{ backgroundImage: "url(" + pictureURL + ")" }}></div>
         </div>
       </div>
     )

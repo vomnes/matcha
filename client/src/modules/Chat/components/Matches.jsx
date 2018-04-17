@@ -30,13 +30,17 @@ const MatchItem = (props) => {
   if (props.total_unread_messages) {
     matchStyle["background"] = "#eaeaea";
   }
+  let url = props.urlPicture ? `http://localhost:8080${props.urlPicture}` : null
+  if (props.urlPicture && props.urlPicture.includes('images.unsplash.com/photo-')) {
+    url = props.urlPicture;
+  }
   return (
     <div>
       <div className="match-element" id={props.username} style={matchStyle} onClick={() => props.updateSelectedProfile(props.username)}>
         {props.isOnline ? (<span className="online-dot" title={`${props.name} is online`}>&bull;</span>) : null}
         <div className="picture-list center">
           <a href={`/profile/${props.username}` + (props.optionsBase64 ? '/' + props.optionsBase64 : '')} title={`Click to see ${props.name}'s profile`}>
-            <div className="picture-list-background" style={{ backgroundImage: "url(" + props.picture + ")" }}></div>
+            <div className="picture-list-background" style={{ backgroundImage: "url(" + url + ")" }}></div>
           </a>
         </div>
         <span className="match-element-list">{props.name}</span>

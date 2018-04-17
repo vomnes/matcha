@@ -2,12 +2,13 @@
 @import '../../design/style/variables.scss';
 
 .modal-popup {
-  position: sticky;
+  position: absolute;
   text-align: center;
   padding: 20px;
   color:  white;
   z-index: 999;
   bottom: 0px;
+  @include position-center(50%);
 }
 
 .error-color {

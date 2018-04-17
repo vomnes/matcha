@@ -84,6 +84,7 @@ func TestGetMe(t *testing.T) {
 		"firstname":       "MyFirstname",
 		"lastname":        "MyLastname",
 		"profile_picture": "MyURL1",
+		"birthday":        "1955-01-06T00:00:00Z",
 		"age":             63,
 		"lat":             &lat,
 		"lng":             &lng,

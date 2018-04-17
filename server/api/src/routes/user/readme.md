@@ -150,6 +150,7 @@ JSON Content Response :
     "username":                   string,
     "firstname":                  string,
     "lastname":                   string,
+    "birthday":                   time.Time,
     "age":                        int,
     "profile_picture":            string,
     "lat":                        float64,

@@ -4,29 +4,30 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"time"
 
 	"../../../../lib"
 	"github.com/jmoiron/sqlx"
 )
 
 type me struct {
-	Username              string   `db:"username" json:"username"`
-	Firstname             string   `db:"firstname" json:"firstname"`
-	Lastname              string   `db:"lastname" json:"lastname"`
-	Age                   int      `db:"age" json:"age"`
-	ProfilePicture        string   `db:"profile_picture" json:"profile_picture"`
-	Latitude              float64  `db:"latitude" json:"lat"`
-	Longitude             float64  `db:"longitude" json:"lng"`
-	TotalNewNotifications int      `db:"total_new_notifications" json:"total_new_notifications"`
-	TotalNewMessages      int      `db:"total_new_messages" json:"total_new_messages"`
-	BlockedUsernames      []string `json:"reported_as_fake_usernames"`
+	Username              string     `db:"username" json:"username"`
+	Firstname             string     `db:"firstname" json:"firstname"`
+	Lastname              string     `db:"lastname" json:"lastname"`
+	Birthday              *time.Time `db:"birthday" json:"birthday"`
+	Age                   int        `json:"age"`
+	ProfilePicture        string     `db:"profile_picture" json:"profile_picture"`
+	Latitude              float64    `db:"latitude" json:"lat"`
+	Longitude             float64    `db:"longitude" json:"lng"`
+	TotalNewNotifications int        `db:"total_new_notifications" json:"total_new_notifications"`
+	TotalNewMessages      int        `db:"total_new_messages" json:"total_new_messages"`
+	BlockedUsernames      []string   `json:"reported_as_fake_usernames"`
 }
 
 func getMeData(db *sqlx.DB, userID, username string) (me, int, string) {
 	var user me
 	err := db.Get(&user, `SELECT
-		username, firstname, lastname,
-		date_part('year',age(now(), birthday)) as age,
+		username, firstname, lastname, birthday,
 		picture_url_1 as profile_picture,
 		latitude, longitude,
 		(Select count(id) from Notifications Where target_userid = $1 AND is_read = false)
@@ -41,6 +42,7 @@ func getMeData(db *sqlx.DB, userID, username string) (me, int, string) {
 		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Failed to collect user data in database " + err.Error()))
 		return me{}, 500, "Failed to gather data in the database"
 	}
+	user.Age = lib.GetAge(user.Birthday)
 	return user, 0, ""
 }
 

@@ -80,6 +80,10 @@ class EditPicture extends Component {
     e.preventDefault();
   }
   render() {
+    let url = this.props.urlPicture ? `http://localhost:8080${this.props.urlPicture}` : null
+    if (this.props.urlPicture && this.props.urlPicture.includes('images.unsplash.com/photo-')) {
+      url = this.props.urlPicture;
+    }
     return (
       <div className={"profile-picture-" + this.props.className} onMouseEnter={this.showEditPicture} onMouseLeave={this.hideEditPicture}>
         <ButtonEdit
@@ -97,31 +101,24 @@ class EditPicture extends Component {
           name="userfile"
           style={{display:"none"}} type="file" accept=".jpg, .jpeg, .png"/>
         <NoPicture
-          url={this.props.urlPicture}
+          url={url}
           uploadPicture={this.uploadPicture}
         />
-        <div className="picture-background-profile" style={{ backgroundImage: "url(" + this.props.urlPicture + ")" }}></div>
+        <div className="picture-background-profile" style={{ backgroundImage: "url(" + url + ")" }}></div>
       </div>
     )
   }
 }
 
 const Pictures = (props) => {
-  let url = "http://localhost:8080"
-  var url1 = props.profilePictures[0]
-  if (url1 === undefined) {
-    url1 = ''
-  } else if (!url1.includes('images.unsplash.com/photo-')) {
-    url1 = "http://localhost:8080" + url1
-  }
  return (
    <div className="pictures">
-     <EditPicture className="one" number="1" urlPicture={url1} updatePicture={props.updatePicture} updateState={props.updateState}/>
+     <EditPicture className="one" number="1" urlPicture={props.profilePictures[0]} updatePicture={props.updatePicture} updateState={props.updateState}/>
      <div className="picture-sub-area">
-       <EditPicture className="two" number="2" urlPicture={props.profilePictures[1] ? (url + props.profilePictures[1]) : null} deleteAvailable="true" deletePicture={props.clickDeletePicture} updatePicture={props.updatePicture} updateState={props.updateState}/>
-       <EditPicture className="three" number="3" urlPicture={props.profilePictures[2] ? (url + props.profilePictures[2]) : null} deleteAvailable="true" deletePicture={props.clickDeletePicture} updatePicture={props.updatePicture} updateState={props.updateState}/>
-       <EditPicture className="four" number="4" urlPicture={props.profilePictures[3] ? (url + props.profilePictures[3]) : null} deleteAvailable="true" deletePicture={props.clickDeletePicture} updatePicture={props.updatePicture} updateState={props.updateState}/>
-       <EditPicture className="five" number="5" urlPicture={props.profilePictures[4] ? (url + props.profilePictures[4]) : null} deleteAvailable="true" deletePicture={props.clickDeletePicture} updatePicture={props.updatePicture} updateState={props.updateState}/>
+       <EditPicture className="two" number="2" urlPicture={props.profilePictures[1]} deleteAvailable="true" deletePicture={props.clickDeletePicture} updatePicture={props.updatePicture} updateState={props.updateState}/>
+       <EditPicture className="three" number="3" urlPicture={props.profilePictures[2]} deleteAvailable="true" deletePicture={props.clickDeletePicture} updatePicture={props.updatePicture} updateState={props.updateState}/>
+       <EditPicture className="four" number="4" urlPicture={props.profilePictures[3]} deleteAvailable="true" deletePicture={props.clickDeletePicture} updatePicture={props.updatePicture} updateState={props.updateState}/>
+       <EditPicture className="five" number="5" urlPicture={props.profilePictures[4]} deleteAvailable="true" deletePicture={props.clickDeletePicture} updatePicture={props.updatePicture} updateState={props.updateState}/>
      </div>
    </div>
  )
