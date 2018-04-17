@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './PictureArea.css';
 import api from '../../../library/api'
+import utils from '../../../library/utils/pictures.js'
 
 const like = async (isLiked, method, username, updateStateHere, updateState, handleWebsocketSend) => {
   if (method === `POST` && isLiked) {
@@ -107,14 +108,10 @@ class PictureArea extends Component {
   }
   render() {
     const index =  this.state.index;
-    let pictureURL = this.state.picture ? `http://localhost:8080${this.state.picture}` : null
-    if (this.state.picture && this.state.picture.includes('images.unsplash.com/photo-')) {
-      pictureURL = this.state.picture;
-    }
     var length = this.state.pictureArrayLength;
     return (
       <div className="picture-area">
-        <div className="picture-user-background" style={{ backgroundImage: "url(" + pictureURL + ")" }}></div>
+        <div className="picture-user-background" style={{ backgroundImage: "url(" + utils.pictureURLFormated(this.state.picture) + ")" }}></div>
         {!this.state.isMe ? (
           <div>
             <div className="more-information" title={ 'See ' + (this.state.moreInformationOpen ? "less" :  "more") + ' options' }>

@@ -28,7 +28,7 @@ const GetListMatches = async (updateState) => {
 }
 
 const GetListMessages = async (username, updateState) => {
-  let res = await api.getMessages(username);
+  let res = await api.messages(`GET`, username);
   if (res) {
     const response = await res.json();
     if (res.status >= 500) {
@@ -43,6 +43,19 @@ const GetListMessages = async (username, updateState) => {
       }
       return;
     }
+  }
+}
+
+const MarkAsReadMessages = async (username) => {
+  let res = await api.messages(`POST`, username);
+  if (res) {
+    const response = await res.json();
+    if (res.status >= 500) {
+      throw new Error("Bad response from server - GetMe has failed");
+    } else if (res.status >= 400) {
+      console.log(response.error);
+    }
+    return;
   }
 }
 
@@ -176,10 +189,10 @@ class Chat extends Component {
           lastname: data.lastname,
           picture_url: data.picture_url,
         });
+        MarkAsReadMessages(msg.data.from);
       } else {
         this.updateProfile({total_unread_messages: 1, username: msg.data.from, content: msg.data.content});
       }
-      console.log(`New message from ${msg.data.from} - Content: ${msg.data.content}`);
     }
     if (msg.event === "isTyping") {
       if (msg.from === this.state.selectedProfile && !this.state.isTyping) {

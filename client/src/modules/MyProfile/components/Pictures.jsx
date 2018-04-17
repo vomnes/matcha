@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './Picture.css';
 import api from '../../../library/api'
+import utils from '../../../library/utils/pictures.js'
 
 const getPicture = async (args, updatePicture, updateState) => {
   let res = await api.editpicture(args);
@@ -80,10 +81,6 @@ class EditPicture extends Component {
     e.preventDefault();
   }
   render() {
-    let url = this.props.urlPicture ? `http://localhost:8080${this.props.urlPicture}` : null
-    if (this.props.urlPicture && this.props.urlPicture.includes('images.unsplash.com/photo-')) {
-      url = this.props.urlPicture;
-    }
     return (
       <div className={"profile-picture-" + this.props.className} onMouseEnter={this.showEditPicture} onMouseLeave={this.hideEditPicture}>
         <ButtonEdit
@@ -101,10 +98,10 @@ class EditPicture extends Component {
           name="userfile"
           style={{display:"none"}} type="file" accept=".jpg, .jpeg, .png"/>
         <NoPicture
-          url={url}
+          url={this.props.urlPicture}
           uploadPicture={this.uploadPicture}
         />
-        <div className="picture-background-profile" style={{ backgroundImage: "url(" + url + ")" }}></div>
+        <div className="picture-background-profile" style={{ backgroundImage: "url(" + utils.pictureURLFormated(this.props.urlPicture) + ")" }}></div>
       </div>
     )
   }

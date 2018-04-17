@@ -7,6 +7,7 @@ import UpBlack from '../../../design/icons/caret-arrow-up-black.svg'
 import UpRed from '../../../design/icons/caret-arrow-up-red.svg'
 import DownBlack from '../../../design/icons/sort-down-black.svg'
 import DownRed from '../../../design/icons/sort-down-red.svg'
+import utils from '../../../library/utils/pictures.js'
 
 const Item = (props) => {
   return (
@@ -14,7 +15,7 @@ const Item = (props) => {
       <a href={`/profile/${props.username}` + (props.optionsBase64 ? '/' + props.optionsBase64 : '')} title={`Click to see ${props.firstname}'s profile`}>
         <div className="profile-element" id={props.username} style={ props.isSelectedOnMap ? { backgroundColor: "#EAEAEA" } : null }>
           <div className="picture-list">
-            <div className="picture-list-background" style={{ backgroundImage: "url(" + props.picture + ")" }}></div>
+            <div className="picture-list-background" style={{ backgroundImage: "url(" + utils.pictureURLFormated(props.picture) + ")" }}></div>
           </div>
           <span className="name-list">{props.name}</span>
           <span className="age-list">{props.age} year old</span>

@@ -1,12 +1,12 @@
 import fetch from 'isomorphic-fetch';
 
-const getMessages = (username, conf) => {
+const messages = (method, username, conf) => {
   let token = localStorage.getItem('matcha_token');
   return fetch (
     `${conf.BACK_URL}/v1/chat/messages/${username}`,
     {
       credentials: 'include',
-      method: `GET`,
+      method: method,
       headers: {
         'Authorization': 'Bearer ' + token,
       },
@@ -14,4 +14,4 @@ const getMessages = (username, conf) => {
   );
 };
 
-export default getMessages;
+export default messages;

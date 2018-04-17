@@ -1,5 +1,6 @@
 import React from 'react';
 import './Messages.css';
+import utils from '../../../library/utils/pictures.js'
 
 var moment = require('moment');
 
@@ -17,7 +18,7 @@ const MsgItem = (props) => {
     <div className="msg-element">
       <div className="msg">
         <div className="picture-msg-list" style={pictureStyle}>
-          <div className="picture-list-background" style={{ backgroundImage: "url(" + props.picture + ")" }}></div>
+          <div className="picture-list-background" style={{ backgroundImage: "url(" + utils.pictureURLFormated(props.picture) + ")" }}></div>
         </div>
         <span className="msg-header" style={msgHeaderStyle}>{props.firstname} {props.lastname} - {moment(props.received_at).format('LT')}</span>
         <div className="msg-content" style={{ textAlign: props.side }}>
@@ -69,7 +70,7 @@ const MsgArea = (props) => {
       <div id="no-msg">
         <a href={`/profile/${props.selectedProfileData.username}`} title={`Click to see ${props.selectedProfileData.firstname}'s profile`}>
           <div id="picture-no-msg" style={null}>
-            <div className="picture-list-background" style={{ backgroundImage: `url(${props.selectedProfileData.picture_url})` }}></div>
+            <div className="picture-list-background" style={{ backgroundImage: `url(${utils.pictureURLFormated(props.selectedProfileData.picture_url)})` }}></div>
           </div>
         </a>
         <div id="text-no-msg">

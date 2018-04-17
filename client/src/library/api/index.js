@@ -17,7 +17,7 @@ import match from './match';
 import existingTags from './existingtags';
 import targetedmatch from './targetedmatch';
 import listMatches from './listmatches';
-import getMessages from './getmessages';
+import messages from './messages';
 import getNotifications from './getnotifications';
 
 const apiConf = {
@@ -44,6 +44,6 @@ export default {
   targetedmatch: (options, username) => targetedmatch(options, username, apiConf),
   existingTags: () => existingTags(apiConf),
   listMatches: () => listMatches(apiConf),
-  getMessages: (username) => getMessages(username, apiConf),
+  messages: (method, username) => messages(method, username, apiConf),
   getNotifications: () => getNotifications(apiConf),
 }

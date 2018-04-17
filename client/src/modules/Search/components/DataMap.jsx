@@ -4,22 +4,19 @@ import './DataMap.css';
 import Pin from '../../../design/icons/maps-and-flags-red.svg';
 import MyPin from '../../../design/icons/maps-and-flags-blue.svg';
 import mapStyle from './styleMap.js';
+import utils from '../../../library/utils/pictures.js'
 
 const PositionMark = (props) => {
   const selectProfile = () => {
     props.updateState('selectProfile', props.username);
     document.getElementById(props.username).scrollIntoView({ behavior: "smooth", inline: "center" });
   }
-  let pictureURL = props.picture ? `http://localhost:8080${props.picture}` : null
-  if (props.picture && props.picture.includes('images.unsplash.com/photo-')) {
-    pictureURL = props.picture.replace("h=1000&q=10", "h=40&q=100");
-  }
   if (props.picture !== undefined) {
     return (
       <div title={`See ${props.firstname} ${props.lastname}`} className="map-mark" onClick={selectProfile}>
         <img alt="Location pin" src={Pin} className="map-pin"/>
         <div className="picture-pin">
-          <div className="picture-pin-background" style={{ backgroundImage: "url(" + pictureURL + ")" }}></div>
+          <div className="picture-pin-background" style={{ backgroundImage: "url(" + utils.pictureURLFormated(props.picture) + ")" }}></div>
         </div>
       </div>
     )

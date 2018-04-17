@@ -7,6 +7,7 @@ import DataArea from './DataArea.jsx'
 import api from '../../../library/api'
 import token from '../../../library/utils/jwt.js'
 import { Redirect } from 'react-router-dom';
+import utils from '../../../library/utils/pictures.js'
 
 var moment = require('moment');
 
@@ -49,7 +50,7 @@ const targetedMatch = async (optionsBase64, username, updateState) => {
 const SideProfile = (props) => {
   return (
     <div className={`${props.order}-profile`} title={`See ${props.firstname} ${props.lastname}'s profile`} onClick={() => props.getSideProfile(props.username)}>
-      <div className="picture-user-background" style={{ backgroundImage: "url(" + props.picture_url + ")" }}>
+      <div className="picture-user-background" style={{ backgroundImage: "url(" + utils.pictureURLFormated(props.picture_url) + ")" }}>
         <span className="side-fullname">{`${props.firstname} ${props.lastname}`}</span>
       </div>
     </div>

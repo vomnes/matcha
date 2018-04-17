@@ -15,6 +15,7 @@ import NotificationIcon from '../design/icons/notifications-button.svg'
 import ProfileIcon from '../design/icons/man-user.svg'
 import LogoutIcon from '../design/icons/logout.svg'
 import api from '../library/api'
+import utils from '../library/utils/pictures.js'
 
 var moment = require('moment');
 
@@ -67,7 +68,7 @@ const NotifElement = (props) => {
   }
   return (
     <div className="notif-element">
-      <div className="picture-notif-background" style={{ backgroundImage: `url(${props.picture})` }}></div>
+      <div className="picture-notif-background" style={{ backgroundImage: `url(${utils.pictureURLFormated(props.picture)})` }}></div>
       <div className="white-notif-background"></div>
       <div className="notif-logo">
         <img alt="View profile" src={icon} style={{ fill: "#434343", width: "100%", opacity: "0.7" }}/>
