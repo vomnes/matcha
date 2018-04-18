@@ -19,7 +19,6 @@ const GetListMatches = async (updateState) => {
       if (response.data === "No matches") {
         updateState("listMatches", []);
       } else {
-        console.log(response);
         updateState("listMatches", response);
       }
       return;

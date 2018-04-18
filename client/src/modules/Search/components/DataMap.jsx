@@ -16,7 +16,7 @@ const PositionMark = (props) => {
       <div title={`See ${props.firstname} ${props.lastname}`} className="map-mark" onClick={selectProfile}>
         <img alt="Location pin" src={Pin} className="map-pin"/>
         <div className="picture-pin">
-          <div className="picture-pin-background" style={{ backgroundImage: "url(" + utils.pictureURLFormated(props.picture) + ")" }}></div>
+          <div className="picture-pin-background" style={{ backgroundImage: "url(" + utils.pictureURLFormated(props.picture, "h=40&q=100") + ")" }}></div>
         </div>
       </div>
     )

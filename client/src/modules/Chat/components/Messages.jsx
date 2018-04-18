@@ -1,8 +1,7 @@
 import React from 'react';
 import './Messages.css';
-import utils from '../../../library/utils/pictures.js'
-
-var moment = require('moment');
+import utils from '../../../library/utils/pictures.js';
+import moment from 'moment';
 
 const MsgItem = (props) => {
   var pictureStyle = null;
@@ -34,7 +33,18 @@ const MsgArea = (props) => {
   var msgScroll;
   var messages = [];
   var index = 0;
+  var date;
   props.listMsg.forEach((message) => {
+    let currentMessageDate = moment(message.received_at).format('L');
+    if (date !== currentMessageDate) {
+      messages.push(
+        <div key={index} className="day">
+          <span>{moment(message.received_at).isSame(moment(), 'day')  ? "Today" : moment(message.received_at).format('dddd DD MMMM, YYYY')}</span>
+        </div>
+      )
+      index += 1;
+    }
+    date = currentMessageDate;
     messages.push(
       <MsgItem
         key={index} index={index}
@@ -52,15 +62,7 @@ const MsgArea = (props) => {
     msgScroll = { overflowY: "scroll", overflowX: "hidden" };
     dataMessage = (
       <div>
-        {/* {window.onload = () => {document.getElementById("list-msg-area").scrollTop = document.getElementById("list-msg-area").scrollHeight;}} */}
         <div id="msg-array">
-          {/* <div className="day">
-            <span>Monday 15 December</span>
-          </div> */}
-
-          {/* <div className="day">
-            <span>Today</span>
-          </div> */}
           {messages}
         </div>
       </div>

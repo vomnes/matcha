@@ -116,7 +116,6 @@ const GetListNotifications = async (updateState) => {
       if (response.data === "No notifications") {
         updateState("notifications", []);
       } else {
-        console.log(response);
         updateState("notifications", response);
       }
     }

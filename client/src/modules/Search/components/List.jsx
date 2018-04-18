@@ -15,7 +15,7 @@ const Item = (props) => {
       <a href={`/profile/${props.username}` + (props.optionsBase64 ? '/' + props.optionsBase64 : '')} title={`Click to see ${props.firstname}'s profile`}>
         <div className="profile-element" id={props.username} style={ props.isSelectedOnMap ? { backgroundColor: "#EAEAEA" } : null }>
           <div className="picture-list">
-            <div className="picture-list-background" style={{ backgroundImage: "url(" + utils.pictureURLFormated(props.picture) + ")" }}></div>
+            <div className="picture-list-background" style={{ backgroundImage: "url(" + utils.pictureURLFormated(props.picture, "h=100&q=100") + ")" }}></div>
           </div>
           <span className="name-list">{props.name}</span>
           <span className="age-list">{props.age} year old</span>

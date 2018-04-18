@@ -324,9 +324,9 @@ class Browsing extends Component {
               appendTag={this.appendTag}
               tags={this.state.tags}
             />
-            <div className="update-btn" id="filter-btn-big" title="Update data with filter">
+            <div className="update-btn" id="filter-btn-big" title="Update data with filter" onClick={this.props.searchProfiles}>
               <img alt="Filter logo" title="Update data with filter" src={FilterLogo} className="filter-logo"/>
-              <span className="filter-text" onClick={this.props.searchProfiles}>Update</span>
+              <span className="filter-text">Update</span>
             </div>
           </div>
         </div>
