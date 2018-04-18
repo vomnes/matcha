@@ -135,7 +135,7 @@ func TestMessageInDBEmptyReceiverUsername(t *testing.T) {
 		Username: senderUsername,
 	}, tests.DB)
 	err := messageInDB(tests.DB, senderUsername, receiverUsername, "content")
-	if err.Error() != "ReceiverID can't be empty" {
+	if err.Error() != "ReceiverID doesn't exists in the database - can't be empty" {
 		t.Errorf("Must return an error because receiverID is empty not '%s'\n", err.Error())
 	}
 	var messages []lib.Message
@@ -168,7 +168,7 @@ func TestMessageInDBEmptySenderUsername(t *testing.T) {
 		Username: receiverUsername,
 	}, tests.DB)
 	err := messageInDB(tests.DB, senderUsername, receiverUsername, "content")
-	if err.Error() != "SenderID can't be empty" {
+	if err.Error() != "SenderID doesn't exists in the database - can't be empty" {
 		t.Errorf("Must return an error because senderID is empty not '%s'\n", err.Error())
 	}
 	var messages []lib.Message

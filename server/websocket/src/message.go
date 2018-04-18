@@ -25,10 +25,10 @@ func getUserIDFromUsername(db *sqlx.DB, senderUsername, receiverUsername string)
 		}
 	}
 	if senderID == "" {
-		return "", "", errors.New("SenderID can't be empty")
+		return "", "", errors.New("SenderID doesn't exists in the database - can't be empty")
 	}
 	if receiverID == "" {
-		return "", "", errors.New("ReceiverID can't be empty")
+		return "", "", errors.New("ReceiverID doesn't exists in the database - can't be empty")
 	}
 	return senderID, receiverID, nil
 }

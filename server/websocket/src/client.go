@@ -7,6 +7,7 @@ import (
 
 	"../../lib"
 
+	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 )
 
@@ -133,14 +134,15 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	/* ======== Get data ======== */
-	username, ok := r.Context().Value(lib.Username).(string)
-	if !ok {
-		errorWS(ws, "Failed to collect user username")
+	vars := mux.Vars(r)
+	claims, err := lib.AnalyseJWT(vars["jwt"])
+	if err != nil || claims["username"].(string) == "" {
+		errorWS(ws, "Failed to collect jwt data")
 		return
 	}
 	/* ========================== */
 	c := &connection{ws: ws, send: make(chan []byte, 255)}
-	s := subscription{conn: c, username: username}
+	s := subscription{conn: c, username: claims["username"].(string)}
 	hub.register <- s
 	go s.writePump()
 	s.readPump()

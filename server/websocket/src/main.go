@@ -43,9 +43,8 @@ func main() {
 	}
 	go hub.run()
 	router := handleWSRoutes()
-	enhancedRouter := enhanceHandlers(router, db)
 	fmt.Printf("Websocket - listen and serve: ws://localhost:%s/ws/{jwt}\n", *addr)
-	err := http.ListenAndServe(":"+*addr, enhancedRouter)
+	err := http.ListenAndServe(":"+*addr, router)
 	if err != nil {
 		log.Println(lib.PrettyError("[WEBSOCKET] ListenAndServe - " + err.Error()))
 	}

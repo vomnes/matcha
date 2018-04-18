@@ -58,6 +58,7 @@ func handleEvents(db *sqlx.DB, receivedMessage messageDecoded, senderUsername st
 		// Update database message - Insert notification
 		err := messageInDB(db, senderUsername, receivedMessage.Target, receivedMessage.Data)
 		if err != nil {
+			log.Println(lib.PrettyError("[WEBSOCKET] Message in DB - " + err.Error()))
 			return false, []byte{}
 		}
 		data, _ := lib.InterfaceToByte(map[string]interface{}{
@@ -92,7 +93,7 @@ func (h *Hub) dispatch(m message) {
 		}
 		m.data = data
 		h.toTarget(m, msgDecoded.Target)
-	} else {
+	} else if msgDecoded.Event == "login" || msgDecoded.Event == "logout" {
 		h.toEveryone(m)
 	}
 }
