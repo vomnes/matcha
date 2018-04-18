@@ -48,7 +48,7 @@ const GetListMessages = async (username, updateState) => {
 
 const MarkAsReadMessages = async (username) => {
   let res = await api.messages(`POST`, username);
-  if (res) {
+  if (res && res.status > 400) {
     const response = await res.json();
     if (res.status >= 500) {
       throw new Error("Bad response from server - GetMe has failed");
@@ -229,6 +229,7 @@ class Chat extends Component {
                     <button id="new-msg-submit" title="Send message"><img alt="Submit message" src={SendButton} style={{position: "absolute", top: "25%", left: "0px", width: "100%"}}/></button>
                 </form>
               ) : null}
+              <div id="end-ref"></div>
             </div>
           </div>
         ) : null}

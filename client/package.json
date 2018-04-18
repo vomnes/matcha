@@ -11,6 +11,7 @@
     "multi-slider": "^4.1.0",
     "node-sass-chokidar": "0.0.3",
     "npm": "^5.8.0",
+    "query-string": "^6.0.0",
     "rc-slider": "^8.6.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",

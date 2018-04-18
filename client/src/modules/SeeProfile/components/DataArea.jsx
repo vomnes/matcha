@@ -11,10 +11,10 @@ var moment = require('moment');
 
 const ShowTags = (props) => {
   var index = 0;
-  var matchedTags = [];
+  var sharedTags = [];
   var otherTags = [];
-  props.matchedTags.forEach(function (tag) {
-    matchedTags.push(<span key={index} className="picture-tag matched-tag">#{tag}</span>);
+  props.sharedTags.forEach(function (tag) {
+    sharedTags.push(<span key={index} className="picture-tag matched-tag">#{tag}</span>);
     index += 1;
   });
   props.otherTags.forEach(function (tag) {
@@ -23,15 +23,15 @@ const ShowTags = (props) => {
   });
   return (
     <div >
-      {matchedTags.length ? (
+      {props.sharedTags.length ? (
         <div>
           <span className="tag-title">I like as you</span>
           <div id="data-tags">
-            {matchedTags}
+            {sharedTags}
           </div>
         </div>
       ) : null}
-      {otherTags.length ? (
+      {props.otherTags.length ? (
         <div>
           <span className="tag-title">I like</span>
           <div id="data-tags">
@@ -84,7 +84,7 @@ class DataArea extends Component {
             <span>{online}</span><br />
           </div>
           <div className="limit" style={{ width: "10%" }}></div>
-          <ShowTags matchedTags={(u && u.tags && u.tags.matched) || []} otherTags={(u && u.tags && u.tags.personal) || []}/>
+          <ShowTags sharedTags={(u && u.tags && u.tags.shared) || []} otherTags={(u && u.tags && u.tags.personal) || []}/>
         </div>
       </div>
     )

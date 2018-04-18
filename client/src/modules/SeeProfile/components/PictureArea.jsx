@@ -94,7 +94,7 @@ class PictureArea extends Component {
     });
   }
   componentWillReceiveProps(nextProps) {
-    if (this.state.username !== nextProps.username) {
+    if (this.state.username !== nextProps.username || this.state.picture !== nextProps.picture) {
       this.updateState('pictureArrayLength', nextProps.pictureArrayLength);
       this.updateState('index', nextProps.index);
       this.updateState('picture', nextProps.picture);

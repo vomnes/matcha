@@ -7,6 +7,8 @@ import ConfirmModal from '../../../components/ConfirmModal'
 import Modal from '../../../components/Modal'
 import api from '../../../library/api'
 
+const queryString = require('query-string');
+
 const getProfileData = async (ip, updateState, setStateGenre) => {
   let res = await api.getprofile(ip);
   if (res) {
@@ -263,9 +265,23 @@ class MyProfile extends Component {
       && this.state.new_password === this.state.new_rePassword) {
         updatePasswordBtn = <input className="submit-profile" type="submit" value="Update" title="Update password"/>
     }
+    const params = queryString.parse(this.props.location.search);
+    var emptyPicture = null;
+    var emptyAge = null;
+    if (params.empty) {
+      const empty = params.empty.split("|");
+      if (empty.includes("picture")) {
+        emptyPicture = "You must set your profile picture.";
+      }
+      if (empty.includes("age")) {
+        emptyAge = "You must set your birthday.";
+      }
+    }
     return (
       <div>
         <h1 className="top-title">Your profile</h1>
+        <p style={{ textAlign: "center", fontSize: "12.5px" }}>{emptyPicture}</p>
+        <p style={{ textAlign: "center", fontSize: "12.5px" }}>{emptyAge}</p>
         <Pictures
           profilePictures={profilePictures}
           clickDeletePicture={this.clickDeletePicture}

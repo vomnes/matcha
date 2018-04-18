@@ -157,11 +157,21 @@ class PageLayout extends Component {
     this.props.myProfileData.then((data) => {
       this.updateState("loggedProfileData", data);
     });
+    this.props.wsConn.onmessage = (e) => {
+      try {
+        var msg = JSON.parse(e.data);
+      } catch (e) {
+        return;
+      }
+      this.handleWebsocket(msg);
+    }
   }
   handleWebsocket = (msg) => {
     var profile = this.state.loggedProfileData;
     if (msg.event === "message") {
       profile["total_new_messages"] += 1;
+      console.log("Once", moment());
+      console.log(profile["total_new_messages"], msg);
     } else if (msg.event !== "isTyping" && msg.event !== "login" && msg.event !== "logout") {
       if (profile.username !== undefined) {
         if (profile.reported_as_fake_usernames == null || (profile.reported_as_fake_usernames.indexOf(msg.from) > -1) === false) {
@@ -176,14 +186,6 @@ class PageLayout extends Component {
     const {
       children,
     } = this.props;
-    this.props.wsConn.onmessage = (e) => {
-      try {
-        var msg = JSON.parse(e.data);
-      } catch (e) {
-        return;
-      }
-      this.handleWebsocket(msg);
-    }
     return (
       <div className="general-layout">
         <div className="header">

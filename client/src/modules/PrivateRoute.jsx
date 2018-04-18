@@ -41,7 +41,7 @@ class PrivateRoute extends Component {
         window.location.replace(`/login`);
       } else {
         if (data.redirect && data.redirect.length) {
-          if (!window.location.href.includes("/profile")) {
+          if (this.props.location.pathname !== "/profile") {
             window.location.replace(`/profile?empty=${data.redirect.join('|')}`);
           }
         } else {
