@@ -388,7 +388,7 @@ func TestWSMessageTargetWrongFormat(t *testing.T) {
 		if string(d) != `` {
 			t.Error("No message must be received - " + string(d))
 		}
-		// Target must receive it
+		// Target must not receive the message
 		ws2.SetReadDeadline(time.Now().Add(250 * time.Millisecond))
 		_, d, err = ws2.ReadMessage()
 		if err != nil && !strings.Contains(err.Error(), "i/o timeout") {
@@ -397,7 +397,7 @@ func TestWSMessageTargetWrongFormat(t *testing.T) {
 		if string(d) != "" {
 			t.Error("No message must be received - " + string(d))
 		}
-		// Random user must not receive this message
+		// Random user must not receive the message
 		ws3.SetReadDeadline(time.Now().Add(250 * time.Millisecond))
 		_, d, err = ws3.ReadMessage()
 		if err != nil && !strings.Contains(err.Error(), "i/o timeout") {
@@ -474,7 +474,7 @@ func TestWSMessageTargetUnknownEvent(t *testing.T) {
 		if string(d) != `` {
 			t.Error("No message must be received - " + string(d))
 		}
-		// Target must receive it
+		// Target must not receive the message
 		ws2.SetReadDeadline(time.Now().Add(250 * time.Millisecond))
 		_, d, err = ws2.ReadMessage()
 		if err != nil && !strings.Contains(err.Error(), "i/o timeout") {
@@ -483,7 +483,7 @@ func TestWSMessageTargetUnknownEvent(t *testing.T) {
 		if string(d) != "" {
 			t.Error("No message must be received - " + string(d))
 		}
-		// Random user must not receive this message
+		// Random user must not receive the message
 		ws3.SetReadDeadline(time.Now().Add(250 * time.Millisecond))
 		_, d, err = ws3.ReadMessage()
 		if err != nil && !strings.Contains(err.Error(), "i/o timeout") {
