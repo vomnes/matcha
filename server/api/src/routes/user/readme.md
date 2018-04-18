@@ -142,6 +142,16 @@ Collect the data concerning the user in the table Users of the database, total_n
 If the user doesn't exists  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: User[<username>] doesn't exists"  
 Get list reported as fake usernames  
+Create redirect array with the name of the profile variables (age, picture)  
+If this array is not empty return this array
+
+```
+JSON Content Response :
+  {
+    "redirect":    []string,
+  }
+```
+
 Return HTTP Code 200 Status OK - JSON Content User data  
 
 ```

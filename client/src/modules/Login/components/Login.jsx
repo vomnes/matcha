@@ -78,7 +78,7 @@ class Login extends Component {
     event.preventDefault();
   }
   redirectHome() {
-    this.props.history.push("/home");
+    this.props.history.push("/profile");
   }
   handleSubmit(e) {
     this.setState({

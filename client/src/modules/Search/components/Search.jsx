@@ -138,7 +138,6 @@ class Search extends Component {
     this.updateState('optionsBase64', objJSONBase64);
     GetMatch(this.updateState, objJSONBase64, this.state.profiles);
   }
-
   componentDidMount() {
     GetMe(this.updateState);
     GetMatch(this.updateState);
@@ -147,7 +146,7 @@ class Search extends Component {
   render() {
     return (
       <div>
-        <Browsing existingTags={this.state.existingTags}age={this.state.me.age} updateState={this.updateState} searchProfiles={this.searchProfiles}/>
+        <Browsing existingTags={this.state.existingTags} age={this.state.me.age} updateState={this.updateState} searchProfiles={this.searchProfiles}/>
         <div id="result-area" style={{ position: "relative", marginTop: "10px" }}>
           <DataMap lat={this.state.me.lat} lng={this.state.me.lng} profiles={this.state.profiles} updateState={this.updateState}/>
           <List profiles={this.state.profiles}

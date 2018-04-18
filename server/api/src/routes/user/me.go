@@ -17,8 +17,8 @@ type me struct {
 	Birthday              *time.Time `db:"birthday" json:"birthday"`
 	Age                   int        `json:"age"`
 	ProfilePicture        string     `db:"profile_picture" json:"profile_picture"`
-	Latitude              float64    `db:"latitude" json:"lat"`
-	Longitude             float64    `db:"longitude" json:"lng"`
+	Latitude              *float64   `db:"latitude" json:"lat"`
+	Longitude             *float64   `db:"longitude" json:"lng"`
 	TotalNewNotifications int        `db:"total_new_notifications" json:"total_new_notifications"`
 	TotalNewMessages      int        `db:"total_new_messages" json:"total_new_messages"`
 	BlockedUsernames      []string   `json:"reported_as_fake_usernames"`
@@ -56,13 +56,25 @@ func getListFakeUsers(db *sqlx.DB, userID string) ([]string, int, string) {
 	return usernames, 0, ""
 }
 
+func checkEmptyData(user me) []string {
+	var emptyDataArray []string
+	if user.Age == 0 {
+		emptyDataArray = append(emptyDataArray, "age")
+	}
+	if user.ProfilePicture == "" {
+		emptyDataArray = append(emptyDataArray, "picture")
+	}
+	return emptyDataArray
+}
+
 // GetMe is the route '/v1/users/data/me' with the method GET.
 // Collect the data concerning the user in the table Users of the database
 // total_new_notifications and total_new_messages
 // If the user doesn't exists
 // 		-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: User[<username>] doesn't exists"
 // Get list reported as fake usernames
-// Return HTTP Code 200 Status OK - JSON Content Me
+// Create redirect array with the name of the profile variables (age, picture)
+// Return HTTP Code 200 Status OK - JSON Content Me or redirect array
 func GetMe(w http.ResponseWriter, r *http.Request) {
 	db, username, userID, errCode, errContent, ok := lib.GetBasics(r, []string{"GET"})
 	if !ok {
@@ -80,5 +92,12 @@ func GetMe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	me.BlockedUsernames = usernames
+	emptyDataArray := checkEmptyData(me)
+	if emptyDataArray != nil {
+		lib.RespondWithJSON(w, http.StatusOK, map[string]interface{}{
+			"redirect": emptyDataArray,
+		})
+		return
+	}
 	lib.RespondWithJSON(w, http.StatusOK, me)
 }

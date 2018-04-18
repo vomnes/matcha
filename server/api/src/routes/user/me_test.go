@@ -144,3 +144,36 @@ func TestGetMeWrongMethod(t *testing.T) {
 		t.Errorf("%v", strError)
 	}
 }
+
+func TestGetMeEmpty(t *testing.T) {
+	tests.DbClean()
+	username := "test_" + lib.GetRandomString(43)
+	_ = tests.InsertUser(lib.User{
+		Username: username,
+	}, tests.DB)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: username,
+		UserID:   "1",
+	}
+	r := tests.CreateRequest("GET", "/v1/users/me", nil, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		GetMe(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	expectedJSONResponse := map[string]interface{}{
+		"redirect": []string{
+			"age",
+			"picture",
+		},
+	}
+	strError := tests.CompareResponseJSONCode(w, 200, expectedJSONResponse)
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+}
