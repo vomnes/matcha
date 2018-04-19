@@ -182,9 +182,9 @@ func TestEditLocation(t *testing.T) {
 	body := []byte(`{
     "lat": 1.2,
     "lng": 1.2,
-		"city": "myCity",
+		"city": "myCíty",
 		"zip": "",
-		"country": "myCountry"
+		"country": "myCoùntry"
     }`)
 	r := tests.CreateRequest("POST", "/v1/profiles/edit/location", body, context)
 	r.Header.Add("Content-Type", "application/json")

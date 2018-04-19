@@ -76,6 +76,7 @@ If any elements in the body is not valid
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Not a valid <detail>"  
 Set firstname and lastname with Title format and biography with all lower case  
 Convert string format time from body to \*time.Time  
+Check if the new email address (if exists) is not already used by an other user  
 Update the table Users in the database with the new values  
 If a new field is empty then this field won't be updated  
 Return HTTP Code 200 Status OK  
@@ -102,7 +103,7 @@ If the latitude or longitude is in overflow
 Trim and escape characters of city, zip and country  
 If the city, zip or country is invalid (common name)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: <detail> is invalid"  
-Format as title the city name and country and format as upper case the ZIP  
+Format as title the city name and country and format as upper case the ZIP and remove accents  
 Update the table Users in the database with the new values and set geolocalisation_allowed as true  
 Return HTTP Code 200 Status OK  
 

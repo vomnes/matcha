@@ -2,7 +2,6 @@ package profile
 
 import (
 	"errors"
-	"fmt"
 	"html"
 	"log"
 	"net/http"
@@ -41,7 +40,6 @@ func checkLocationInput(d *locationData) (int, string, error) {
 	d.Country = strings.Title(d.Country)
 	d.Country = sanitize.Accents(d.Country)
 	if d.City != "" {
-		fmt.Println(d.City)
 		if !lib.IsValidCommonName(d.City) {
 			return 406, "City name is invalid", errors.New("City invalid")
 		}
@@ -90,7 +88,7 @@ func UpdateLocationInDB(db *sqlx.DB, latitude, longitude float64,
 // Trim and escape characters of city, zip and country
 // If the city, zip or country is invalid (common name)
 //    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: <detail> is invalid"
-// Format as title the city name and country and format as upper case the ZIP
+// Format as title the city name and country and format as upper case the ZIP and remove accents
 // Update the table Users in the database with the new values and set geolocalisation_allowed as true
 // Return HTTP Code 200 Status OK
 func EditLocation(w http.ResponseWriter, r *http.Request) {

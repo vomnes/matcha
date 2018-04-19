@@ -489,3 +489,36 @@ func TestEditDataUpdateBirthdayDate(t *testing.T) {
 		t.Error(compare)
 	}
 }
+
+func TestEditDataEmailAddressAlreadyUsed(t *testing.T) {
+	tests.DbClean()
+	today := time.Now()
+	birthdayTime := time.Date(today.Year(), today.Month(), today.Day(), 0, 0, 0, 0, time.UTC)
+	username := "test_" + lib.GetRandomString(43)
+	userData := tests.InsertUser(lib.User{Username: username, Email: "v@v.co", Lastname: "Omnes", Firstname: "Valentin", Biography: "I&#39;m Valentin Omnes", Birthday: &birthdayTime, Genre: "example_genre", InterestingIn: "example_interesting_in"}, tests.DB)
+	_ = tests.InsertUser(lib.User{Username: "ImUsingYourNewEmailSorry", Email: "valentin@gmail.com"}, tests.DB)
+	context := tests.ContextData{
+		DB:       tests.DB,
+		Username: username,
+		UserID:   userData.ID,
+	}
+	body := []byte(`{
+    "email": "valentin@gmail.com"
+    }`)
+	r := tests.CreateRequest("POST", "/v1/profiles/edit/data", body, context)
+	r.Header.Add("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	output := tests.CaptureOutput(func() {
+		EditData(w, r)
+	})
+	// Check : Content stardard output
+	if output != "" {
+		t.Error(output)
+	}
+	strError := tests.CompareResponseJSONCode(w, 406, map[string]interface{}{
+		"error": "Email address already used by an other user",
+	})
+	if strError != nil {
+		t.Errorf("%v", strError)
+	}
+}

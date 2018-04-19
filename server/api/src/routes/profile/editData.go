@@ -1,6 +1,7 @@
 package profile
 
 import (
+	"database/sql"
 	"html"
 	"log"
 	"net/http"
@@ -20,6 +21,19 @@ type userData struct {
 	Genre         string `json:"genre"`
 	InterestingIn string `json:"interesting_in"`
 	BirthdayTime  *time.Time
+}
+
+func checkEmailAddressAvailability(db *sqlx.DB, username, newEmailAddress string) (int, string) {
+	var user lib.User
+	err := db.Get(&user, "SELECT username FROM Users WHERE email = $1 AND username <> $2", newEmailAddress, username)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return 0, ""
+		}
+		log.Println(lib.PrettyError("[DB REQUEST - SELECT] Check email address availability in the database " + err.Error()))
+		return 500, "Failed to check if users exists in the database"
+	}
+	return 406, "Email address already used by an other user"
 }
 
 func checkDataInput(d *userData) (int, string) {
@@ -133,6 +147,7 @@ func updateDataInDB(db *sqlx.DB, data userData, userID, username string) (int, s
 //    -> Return an error - HTTP Code 406 Not Acceptable - JSON Content "Error: Not a valid <details>"
 // Set firstname and lastname with Title format and biography with all lower case
 // Convert string format time from body to *time.Time
+// Check if the new email address (if exists) is not already used by an other user
 // Update the table Users in the database with the new values
 // If a new field is empty then this field won't be updated
 // Return HTTP Code 200 Status OK
@@ -149,6 +164,11 @@ func EditData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	errCode, errContent = checkDataInput(&inputData)
+	if errCode != 0 && errContent != "" {
+		lib.RespondWithErrorHTTP(w, errCode, errContent)
+		return
+	}
+	errCode, errContent = checkEmailAddressAvailability(db, username, inputData.EmailAddress)
 	if errCode != 0 && errContent != "" {
 		lib.RespondWithErrorHTTP(w, errCode, errContent)
 		return
