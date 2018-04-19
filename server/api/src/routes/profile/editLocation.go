@@ -2,6 +2,7 @@ package profile
 
 import (
 	"errors"
+	"fmt"
 	"html"
 	"log"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 
 	"../../../../lib"
 	"github.com/jmoiron/sqlx"
+	"github.com/kennygrant/sanitize"
 )
 
 type locationData struct {
@@ -30,13 +32,16 @@ func checkLocationInput(d *locationData) (int, string, error) {
 		return 406, "Longitude value is over the limit", errors.New("Longitude overflow")
 	}
 	d.City = strings.Trim(d.City, " ")
+	d.City = sanitize.Accents(d.City)
 	d.City = html.EscapeString(d.City)
 	d.ZIP = strings.Trim(d.ZIP, " ")
 	d.ZIP = html.EscapeString(d.ZIP)
 	d.Country = strings.Trim(d.Country, " ")
 	d.Country = html.EscapeString(d.Country)
 	d.Country = strings.Title(d.Country)
+	d.Country = sanitize.Accents(d.Country)
 	if d.City != "" {
+		fmt.Println(d.City)
 		if !lib.IsValidCommonName(d.City) {
 			return 406, "City name is invalid", errors.New("City invalid")
 		}
