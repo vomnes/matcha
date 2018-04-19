@@ -93,8 +93,8 @@ func checkDataInput(d *userData) (int, string) {
 			log.Println(lib.PrettyError("[Time] Failed to convert date string[" + d.Birthday + "] in date time.Time" + err.Error()))
 			return 500, "Failed to decode birthday date"
 		}
-		if time.Now().Sub(dateTime) < 0 {
-			return 406, "Cannot set birthday in the futur"
+		if lib.GetAge(&dateTime) < 16 {
+			return 406, "Can't have under 16 year old"
 		}
 		d.BirthdayTime = &dateTime
 	}
