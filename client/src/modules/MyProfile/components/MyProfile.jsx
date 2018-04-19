@@ -296,15 +296,15 @@ class MyProfile extends Component {
               </div>
               <form className="profile-personal-data" onSubmit={this.handleSubmitPersonal}>
                 <span className="field-name">Firstname</span><br />
-                <input className="field-input" placeholder={this.state.data.firstname || ''} type="text" name="firstname"
+                <input className="field-input" placeholder={this.state.data.firstname || ''} type="text" name="firstname" autoComplete="name given-name"
                   pattern="[a-zA-Z\-]{1,64}" title="Firstname must be between 1 and 64 characters and contain only lowercase and uppercase characters and dash."
                   value={this.state.personal.firstname || ''} onChange={this.handleUserInputPersonal}/><br />
                 <span className="field-name">Lastname</span><br />
-                <input className="field-input" placeholder={userData.lastname || ''} type="text" name="lastname"
+                <input className="field-input" placeholder={userData.lastname || ''} type="text" name="lastname" autoComplete="name family-name"
                   pattern="[a-zA-Z\-]{1,64}" title="Lastname must be between 1 and 64 characters and contain only lowercase and uppercase characters and dash."
                   value={this.state.personal.lastname || ''} onChange={this.handleUserInputPersonal}/><br />
                 <span className="field-name">Email address</span><br />
-                <input className="field-input" placeholder={userData.email || ''} minLength="6" maxLength="254" type="email" name="email"
+                <input className="field-input" placeholder={userData.email || ''} minLength="6" maxLength="254" type="email" name="email" autoComplete="email"
                   value={this.state.personal.email || ''} onChange={this.handleUserInputPersonal}/><br />
                 <span className="field-name">Biography</span><br />
                 <input className="field-input" placeholder={userData.biography || ''} type="text" name="biography"
@@ -331,14 +331,15 @@ class MyProfile extends Component {
               <div className="field-title">Set your password</div>
               <form className="profile-personal-data" onSubmit={this.handleSubmitPassword}>
                 <span className="field-name">Current password</span><br />
-                <input className="field-input" type="password" name="password"
+                <input type="text" autoComplete="username" ng-hide="true" style={{ display: "none" }}/>
+                <input className="field-input" type="password" name="password" autoComplete="current-password"
                   value={this.state.password} onChange={this.handleUserInput}/><br />
                 <span className="field-name">New password</span><br />
-                  <input className="field-input" type="password" name="new_password"
+                  <input className="field-input" type="password" name="new_password" autoComplete="new-password"
                     pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,100}$" title="Must contain only and at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
                     value={this.state.new_password} onChange={this.handleUserInput}/><br />
                 <span className="field-name">Type it again</span><br />
-                  <input className="field-input" type="password" name="new_rePassword"
+                  <input className="field-input" type="password" name="new_rePassword" autoComplete="new-password"
                     pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,100}$" title="Must contain only and at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
                     value={this.state.new_rePassword} onChange={this.handleUserInput}/><br />
                 {updatePasswordBtn}

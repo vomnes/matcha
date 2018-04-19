@@ -100,21 +100,21 @@ class Register extends Component {
           <h2 className="title-form">Register</h2>
           <h3 className="sub-title-form">A simple dating website</h3>
           <form onSubmit={this.handleSubmit}>
-            <input className="input-form" id="placeholder-icon-username" placeholder="Username" type="text" name="username"
+            <input className="input-form" id="placeholder-icon-username" placeholder="Username" type="text" name="username" autoComplete="username"
               pattern="[a-zA-Z0-9\.\-_]{6,64}" title="Username must be between 6 and 64 characters and contain only lowercase and uppercase characters, digit, dot, dash and underscore."
               value={this.state.username} onChange={this.handleUserInput} required/><br />
-            <input className="input-form placeholder-icon-name" placeholder="First name" type="text" name="firstname"
+            <input className="input-form placeholder-icon-name" placeholder="First name" type="text" name="firstname" autoComplete="name given-name"
               pattern="[a-zA-Z\-]{1,64}" title="Firstname must be between 1 and 64 characters and contain only lowercase and uppercase characters and dash."
               value={this.state.firstname} onChange={this.handleUserInput} required/><br />
-            <input className="input-form placeholder-icon-name" placeholder="Last name" type="text" name="lastname"
+            <input className="input-form placeholder-icon-name" placeholder="Last name" type="text" name="lastname" autoComplete="name family-name"
               pattern="[a-zA-Z\-]{1,64}" title="Lastname must be between 1 and 64 characters and contain only lowercase and uppercase characters and dash."
               value={this.state.lastname} onChange={this.handleUserInput} required/><br />
-            <input className="input-form" id="placeholder-icon-email" placeholder="Email address" minLength="6" maxLength="254" type="email" name="email"
+            <input className="input-form" id="placeholder-icon-email" placeholder="Email address" minLength="6" maxLength="254" type="email" name="email" autoComplete="email"
               value={this.state.email} onChange={this.handleUserInput} required/><br />
-            <input className="input-form" id="placeholder-icon-password" placeholder="Password" type="password" name="password"
+            <input className="input-form" id="placeholder-icon-password" placeholder="Password" type="password" name="password" autoComplete="new-password"
               pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,100}$" title="Must contain only and at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
               value={this.state.password} onChange={this.handleUserInput} required/><br />
-            <input className="input-form" id="placeholder-icon-re-password" placeholder="Re-enter Password" type="password" name="rePassword"
+            <input className="input-form" id="placeholder-icon-re-password" placeholder="Re-enter Password" type="password" name="rePassword" autoComplete="new-password"
               pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,100}$" title="Must contain only and at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
               value={this.state.rePassword} onChange={this.handleUserInput} required/><br />
             <input className="submit-form" type="submit" value="Register"/>

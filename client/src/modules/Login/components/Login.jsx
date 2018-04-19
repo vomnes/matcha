@@ -100,9 +100,9 @@ class Login extends Component {
           <h2 className="title-form">Login</h2>
           <h3 className="sub-title-form">Welcome back !</h3>
           <form onSubmit={this.handleSubmit}>
-            <input className="input-form" id="placeholder-icon-username" placeholder="Username" type="text" name="username"
+            <input className="input-form" id="placeholder-icon-username" placeholder="Username" type="text" name="username" autoComplete="username"
               value={this.state.username} onChange={this.handleUserInput} required/><br />
-            <input className="input-form" id="placeholder-icon-password" placeholder="Password" type="password" name="password"
+            <input className="input-form" id="placeholder-icon-password" placeholder="Password" type="password" name="password" autoComplete="current-password"
               value={this.state.password} onChange={this.handleUserInput} required/><br />
             <input className="submit-form" type="submit" value="Enter"/>
             <div className="form-link">

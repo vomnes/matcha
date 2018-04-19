@@ -16,7 +16,9 @@ class Logout extends Component {
       if (response.status >= 400) {
         localStorage.removeItem('matcha_token');
         createError();
-        throw new Error("Bad response from server - Logout");
+        if (response.status >= 500) {
+          throw new Error("Bad response from server - Logout");
+        }
       } else {
         return;
       }

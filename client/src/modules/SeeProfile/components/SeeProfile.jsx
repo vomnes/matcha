@@ -88,7 +88,6 @@ class SeeProfile extends Component {
     } else {
       change = -1;
     }
-    console.log(this.state.indexProfilePictures, change);
     const update = this.state.indexProfilePictures + change;
     if (update === -1 || update === len) {
       return

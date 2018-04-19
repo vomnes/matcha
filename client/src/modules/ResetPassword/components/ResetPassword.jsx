@@ -87,10 +87,11 @@ class ResetPassword extends Component {
           <h2 className="title-form">Reset password</h2>
           <h3 className="sub-title-form" style={{ fontSize: "20px" }}>Enter your new password.</h3>
           <form onSubmit={this.handleSubmit}>
-            <input className="input-form" id="placeholder-icon-password" placeholder="Password" type="password" name="password"
+            <input type="text" autoComplete="username" ng-hide="true" style={{ display: "none" }}/>
+            <input className="input-form" id="placeholder-icon-password" placeholder="Password" type="password" name="password" autoComplete="new-password"
               pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,100}$" title="Must contain only and at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
               value={this.state.password} onChange={this.handleUserInput} required/><br />
-            <input className="input-form" id="placeholder-icon-re-password" placeholder="Re-enter password" type="password" name="rePassword"
+            <input className="input-form" id="placeholder-icon-re-password" placeholder="Re-enter password" type="password" name="rePassword" autoComplete="new-password"
               pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,100}$" title="Must contain only and at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
               value={this.state.rePassword} onChange={this.handleUserInput} required/><br />
             <input className="submit-form" type="submit" value="Reset"/>
