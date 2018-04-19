@@ -38,7 +38,7 @@ const UpdateLocation = async (args, updateGlobalState, updateState) => {
   if (res) {
     if (res.status >= 400) {
       const response = await res.json();
-      if (res.status >= 400) {
+      if (res.status >= 500) {
         throw new Error("Bad response from server - UpdateLocation has failed");
       } else if (res.status >= 400) {
         updateGlobalState('newError', 'Location: ' + response.error);
