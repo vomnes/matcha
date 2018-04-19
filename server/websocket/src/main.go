@@ -10,6 +10,7 @@ import (
 	"../../lib"
 
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 )
 
 // handleWSRoutes instantiates and populates the router

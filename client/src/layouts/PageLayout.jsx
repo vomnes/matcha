@@ -67,14 +67,16 @@ const NotifElement = (props) => {
         content = '';
   }
   return (
-    <div className="notif-element">
-      <div className="picture-notif-background" style={{ backgroundImage: `url(${utils.pictureURLFormated(props.picture)})` }}></div>
-      <div className="white-notif-background"></div>
-      <div className="notif-logo">
-        <img alt="View profile" src={icon} style={{ fill: "#434343", width: "100%", opacity: "0.7" }}/>
+    <a href={`/profile/${props.username}`}>
+      <div className="notif-element">
+        <div className="picture-notif-background" style={{ backgroundImage: `url(${utils.pictureURLFormated(props.picture)})` }}></div>
+        <div className="white-notif-background"></div>
+        <div className="notif-logo">
+          <img alt="View profile" src={icon} style={{ fill: "#434343", width: "100%", opacity: "0.7" }}/>
+        </div>
+        <span className="notif-text">{content}<br/>{moment(props.date).format("M/D/YYYY - HH:mm")}</span>
       </div>
-      <span className="notif-text">{content}<br/>{moment(props.date).format("M/D/YYYY - HH:mm")}</span>
-    </div>
+    </a>
   )
 }
 
@@ -85,6 +87,7 @@ const NotifList = (props) => {
     listNotifications.push(
       <NotifElement
         type={notification.type}
+        username={notification.username}
         fullname={`${notification.firstname} ${notification.lastname}`}
         picture={notification.user_picture_url}
         date={notification.date}

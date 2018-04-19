@@ -119,7 +119,7 @@ class Register extends Component {
               value={this.state.rePassword} onChange={this.handleUserInput} required/><br />
             <input className="submit-form" type="submit" value="Register"/>
           </form>
-          <hr className="form-line"/>
+          <div className="limit" style={{ width: "50%" }}></div>
           <div className="form-link">
             <a href='/login' className="form-link-btn"><span>Already a member ?</span></a>
           </div>

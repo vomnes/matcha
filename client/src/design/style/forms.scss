@@ -11,11 +11,11 @@
 
 #box-left-side-form {
   @extend %box-form;
-  width: 420px;
+  width: 300px;
   height: auto;
-  top: 333px;
+  top: 250px;
   left: 17.5%;
-  font-size: 1.35em;
+  font-size: 1em;
 }
 
 @media (max-width: 638px) {
@@ -28,7 +28,7 @@
 
 #box-center-top-form {
   @extend %box-form;
-  width: 420px;
+  width: 320px;
   height: auto;
   top: 10%;
   @include position-center(50%);
@@ -44,8 +44,8 @@
 
 .up-title-form {
   position: absolute;
-  font-size: 3em;
-  top: -140px;
+  font-size: 2.5em;
+  top: -115px;
   font-family: $font-logo;
   @include position-center(50%);
   @include font-color-gradient($gradient-btn-a, $gradient-btn-b);
@@ -56,7 +56,7 @@
 .title-form {
   text-align: center;
   font-size: 1.7em;
-  margin: 15px;
+  margin: 5px;
   color: $design-red;
 }
 
@@ -70,15 +70,15 @@
   display: inline-block;
   height: 25px;
   width: 75%;
-  margin-left: 6%;
-  margin-top: 5%;
+  margin-left: 5%;
+  margin-top: 1%;
   padding: 7.55px;
   font-size: 25px;
-  border-bottom: 3px solid $design-blue;
+  border-bottom: 2px solid $design-blue;
   font-family: $font;
   color: $design-blue;
   &:invalid {
-    border-bottom: 3px solid $design-red;
+    border-bottom: 2px solid $design-red;
   }
 }
 
@@ -98,8 +98,10 @@ input {
 
 %placeholder-picture {
   background-repeat: no-repeat;
-  background-position: 2% 3px;
-  padding-left: 45px;
+  background-size: 20px;
+  background-position: 3% 10px;
+  font-size: 20px;
+  padding-left: 35px;
 }
 
 
@@ -162,7 +164,7 @@ input {
   margin-top: 5%;
   margin-bottom: 2%;
   padding: 7.55px;
-  font-size: 25px;
+  font-size: 20px;
   font-family: $font;
   color: white;
   &:hover {

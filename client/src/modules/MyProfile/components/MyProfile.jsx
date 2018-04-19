@@ -79,7 +79,6 @@ const editProfile = async (args, originalData, updateState, updatePersonal, upda
 }
 
 const editPassword = async (args, updateState) => {
-  console.log(args);
   let res = await api.editpassword(args);
   if (res && res.status >= 400) {
     const response = await res.json();
@@ -170,7 +169,6 @@ class MyProfile extends Component {
   updateStatePersonal = (field, value) => {
     var personal = this.state.personal;
     personal[field] = value;
-    console.log("personal:", personal);
     this.setState({
       personal: personal,
     });

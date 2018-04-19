@@ -10,8 +10,8 @@ body, html {
 
 #background-register {
   @extend %background;
-  // background-image: url("../../../design/pictures/Register-andrew-welch-229148-unsplash.jpg");
-  background-image: url("../../../design/pictures/Register-robson-hatsukami-morgan-250757-unsplash.jpg");
+  background-image: url("../../../design/pictures/Register-andrew-welch-229148-unsplash.jpg");
+  // background-image: url("../../../design/pictures/Register-robson-hatsukami-morgan-250757-unsplash.jpg");
 }
 
 #member {
@@ -36,7 +36,7 @@ body, html {
   }
 }
 
-.form-line {
+.limit {
   @include hide;
 }
 
@@ -56,15 +56,13 @@ body, html {
     width: 80%;
   }
 
-  .form-line {
+  .limit {
     @include show;
-    height: 0.5px;
-    width: 50%;
   }
 
   .form-link-btn {
     @include show;
-    font-size: 2em;
+    font-size: 15px;
     &:hover {
       text-decoration: underline;
     }
