@@ -2,7 +2,10 @@
 
 #### WS - /ws/{jwt}
 
-The Websocket server listen and serve on 'ws://localhost:8081/ws/{jwt}'.  
+The Websocket server listen and serve on
+```
+ws://localhost:8081/ws/{jwt}'
+```
 The parameter jwt contains the JSON Web Token of the connected user.  
 
 #### Login
