@@ -1,7 +1,7 @@
 # matcha
 This project is about creating a dating website.
 
-I have realised this project from scratch using ReactJS, Golang, PostgreSQL, Redis, HTML and SCSS (CSS) during my studies at 'Ecole 42'.
+I have designed and realised this project from scratch using ReactJS, Golang, PostgreSQL, Redis, HTML and SCSS (CSS) during my studies at 'Ecole 42'.
 It was first big project using ReactJS, PostgreSQL, Redis and SCSS.
 
 I haven't used any HTML/CSS framework, everything from scratch with a responsive web design.
@@ -11,6 +11,8 @@ I haven't used any HTML/CSS framework, everything from scratch with a responsive
 - [Server](./server)
 
 ## Features
+
+<img alt="Register visual" src="./screenshots/Register.gif" title="Register">
 
 ### Profile
 - Create an account
