@@ -8,7 +8,8 @@ const resetPassword = (randomToken, password, rePassword, createError, createSuc
       randomToken,
       password,
       rePassword
-  }).then(function(response) {
+  })
+  .then(function(response) {
     if (response.status >= 500) {
       throw new Error("Bad response from server - ResetPassword has failed");
     } else if (response.status >= 400) {
@@ -20,6 +21,9 @@ const resetPassword = (randomToken, password, rePassword, createError, createSuc
       createSuccess("Your password has been reset.")
       return;
     }
+  })
+  .catch((e) => {
+    console.log(e.message)
   })
 }
 

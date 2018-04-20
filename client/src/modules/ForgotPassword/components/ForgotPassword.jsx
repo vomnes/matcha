@@ -7,7 +7,8 @@ import utils from '../../../library/utils/input.js'
 const sendForgotPasswordEmail = (email, createError, createSuccess) => {
   api.forgotpassword({
       email,
-  }).then(function(response) {
+  })
+  .then((response) => {
     if (response.status >= 500) {
       throw new Error("Bad response from server - SendForgotPasswordEmail has failed");
     } else if (response.status >= 400) {
@@ -19,6 +20,9 @@ const sendForgotPasswordEmail = (email, createError, createSuccess) => {
       createSuccess("Reset password email sent to " + email + ".")
       return;
     }
+  })
+  .catch((e) => {
+    console.log(e.message)
   })
 }
 

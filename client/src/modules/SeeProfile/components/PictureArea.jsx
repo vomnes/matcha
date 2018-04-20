@@ -7,52 +7,60 @@ const like = async (isLiked, method, username, updateStateHere, updateState, han
   if (method === `POST` && isLiked) {
     return;
   }
-  let res = await api.like(method, username);
-  const response = await res.json();
-  if (res.status >= 500) {
-    throw new Error("Bad response from server - Like has failed - ", response.error);
-  } else if (res.status >= 400) {
-    updateState('newError', response.error);
-    return;
-  } else {
-    var type = "liked"
-    if (method === `DELETE`) {
-      type = "unliked"
-      updateStateHere("liked", false);
-      updateStateHere("usersAreConnected", false);
-      if (response.users_were_linked) {
-        handleWebsocketSend("unmatch", username);
-      }
+  try {
+    let res = await api.like(method, username);
+    const response = await res.json();
+    if (res.status >= 500) {
+      throw new Error("Bad response from server - Like has failed - ", response.error);
+    } else if (res.status >= 400) {
+      updateState('newError', response.error);
+      return;
     } else {
-      updateStateHere("liked", true);
-      updateStateHere("usersAreConnected", response.users_linked);
-      if (response.users_linked) {
-        handleWebsocketSend("match", username);
+      var type = "liked"
+      if (method === `DELETE`) {
+        type = "unliked"
+        updateStateHere("liked", false);
+        updateStateHere("usersAreConnected", false);
+        if (response.users_were_linked) {
+          handleWebsocketSend("unmatch", username);
+        }
       } else {
-        handleWebsocketSend("like", username);
+        updateStateHere("liked", true);
+        updateStateHere("usersAreConnected", response.users_linked);
+        if (response.users_linked) {
+          handleWebsocketSend("match", username);
+        } else {
+          handleWebsocketSend("like", username);
+        }
       }
+      updateState('newSuccess', `You have just ${type} ${username}'s profile`);
     }
-    updateState('newSuccess', `You have just ${type} ${username}'s profile`);
+  } catch (e) {
+    console.log(e.message);
   }
 }
 
 const fake = async (method, username, updateStateHere, updateState) => {
-  let res = await api.fake(method, username);
-  if (res.status >= 400) {
-    const response = await res.json();
-    if (res.status >= 500) {
-      throw new Error("Bad response from server - Fake has failed - ", response.error);
-    } else if (res.status >= 400) {
-      updateState('newError', response.error);
-      return;
+  try {
+    let res = await api.fake(method, username);
+    if (res.status >= 400) {
+      const response = await res.json();
+      if (res.status >= 500) {
+        throw new Error("Bad response from server - Fake has failed - ", response.error);
+      } else if (res.status >= 400) {
+        updateState('newError', response.error);
+        return;
+      }
     }
-  }
-  if (method === `DELETE`) {
-    updateStateHere("reportedAsFakeAccount", false);
-    updateState('newError', `You have just invalide you fake account report.`);
-  } else {
-    updateStateHere("reportedAsFakeAccount", true);
-    updateState('newError', `You have just declared this profile as fake account.`);
+    if (method === `DELETE`) {
+      updateStateHere("reportedAsFakeAccount", false);
+      updateState('newError', `You have just invalide you fake account report.`);
+    } else {
+      updateStateHere("reportedAsFakeAccount", true);
+      updateState('newError', `You have just declared this profile as fake account.`);
+    }
+  } catch (e) {
+    console.log(e.message);
   }
 }
 

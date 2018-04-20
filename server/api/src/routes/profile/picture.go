@@ -85,20 +85,20 @@ func base64ToImageFile(path, base64, pictureNumber, username string) (string, in
 	case "image/png":
 		imagePath, err = generatePng(newpath+"/"+fileName, res)
 		if err != nil {
-			log.Println(lib.PrettyError("[Base 64] Failed to generate png file - " + err.Error()))
-			return "", 500, "Failed to generate png file", err
+			log.Println(lib.PrettyError("[Base 64][Username:" + username + "] - Failed to generate png file - " + err.Error()))
+			return "", 406, "Corrupted png file", err
 		}
 	case "image/jpg":
 		imagePath, err = generateJpeg(newpath+"/"+fileName, res)
 		if err != nil {
-			log.Println(lib.PrettyError("[Base 64] Failed to generate jpg file - " + err.Error()))
-			return "", 500, "Failed to generate jpg file", err
+			log.Println(lib.PrettyError("[Base 64][Username:" + username + "] - Failed to generate jpg file - " + err.Error()))
+			return "", 406, "Corrupted jpg file", err
 		}
 	case "image/jpeg":
 		imagePath, err = generateJpeg(newpath+"/"+fileName, res)
 		if err != nil {
-			log.Println(lib.PrettyError("[Base 64] Failed to generate jpeg file - " + err.Error()))
-			return "", 500, "Failed to generate jpeg file", err
+			log.Println(lib.PrettyError("[Base 64][Username:" + username + "] - Failed to generate jpeg file - " + err.Error()))
+			return "", 406, "Corrupted jpeg file", err
 		}
 	default:
 		return "", 406, "Image type [" + typeImage + "] not accepted, support only png, jpg and jpeg images", errors.New("Unsupported file type")

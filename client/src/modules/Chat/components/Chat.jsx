@@ -8,53 +8,65 @@ import MsgArea from './Messages.jsx'
 var moment = require('moment');
 
 const GetListMatches = async (updateState) => {
-  let res = await api.listMatches();
-  if (res) {
-    const response = await res.json();
-    if (res.status >= 500) {
-      throw new Error("Bad response from server - ListMatches has failed");
-    } else if (res.status >= 400) {
-      console.log(response.error);
-    } else {
-      if (response.data === "No matches") {
-        updateState("listMatches", []);
+  try {
+    let res = await api.listMatches();
+    if (res) {
+      const response = await res.json();
+      if (res.status >= 500) {
+        throw new Error("Bad response from server - ListMatches has failed");
+      } else if (res.status >= 400) {
+        console.log(response.error);
       } else {
-        updateState("listMatches", response);
+        if (response.data === "No matches") {
+          updateState("listMatches", []);
+        } else {
+          updateState("listMatches", response);
+        }
+        return;
       }
-      return;
     }
+  } catch (e) {
+    console.log(e.message);
   }
 }
 
 const GetListMessages = async (username, updateState) => {
-  let res = await api.messages(`GET`, username);
-  if (res) {
-    const response = await res.json();
-    if (res.status >= 500) {
-      throw new Error("Bad response from server - GetMe has failed");
-    } else if (res.status >= 400) {
-      console.log(response.error);
-    } else {
-      if (response.data === "No messages") {
-        updateState("messages", []);
+  try {
+    let res = await api.messages(`GET`, username);
+    if (res) {
+      const response = await res.json();
+      if (res.status >= 500) {
+        throw new Error("Bad response from server - GetMe has failed");
+      } else if (res.status >= 400) {
+        console.log(response.error);
       } else {
-        updateState("messages", response);
+        if (response.data === "No messages") {
+          updateState("messages", []);
+        } else {
+          updateState("messages", response);
+        }
+        return;
       }
-      return;
     }
+  } catch (e) {
+    console.log(e.message);
   }
 }
 
 const MarkAsReadMessages = async (username) => {
-  let res = await api.messages(`POST`, username);
-  if (res && res.status > 400) {
-    const response = await res.json();
-    if (res.status >= 500) {
-      throw new Error("Bad response from server - GetMe has failed");
-    } else if (res.status >= 400) {
-      console.log(response.error);
+  try {
+    let res = await api.messages(`POST`, username);
+    if (res && res.status > 400) {
+      const response = await res.json();
+      if (res.status >= 500) {
+        throw new Error("Bad response from server - GetMe has failed");
+      } else if (res.status >= 400) {
+        console.log(response.error);
+      }
+      return;
     }
-    return;
+  } catch (e) {
+    console.log(e.message);
   }
 }
 

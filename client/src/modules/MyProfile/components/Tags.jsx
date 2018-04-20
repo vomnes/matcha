@@ -3,18 +3,22 @@ import './Tags.css';
 import api from '../../../library/api'
 
 const unlinkTag = async (args, updateState, deleteTag) => {
-  let res = await api.tag(`DELETE`, args);
-  if (res && res.status >= 400) {
-    const response = await res.json();
-    if (res.status >= 500) {
-      throw new Error("Bad response from server - Tag has failed - ", response.error);
-    } else if (res.status >= 400) {
-      updateState('newError', response.error);
-      return;
+  try {
+    let res = await api.tag(`DELETE`, args);
+    if (res && res.status >= 400) {
+      const response = await res.json();
+      if (res.status >= 500) {
+        throw new Error("Bad response from server - Tag has failed - ", response.error);
+      } else if (res.status >= 400) {
+        updateState('newError', response.error);
+        return;
+      }
     }
+    updateState('newSuccess', 'Tag ' + args.tagName + ' has been deleted');
+    deleteTag(args.tagName, args.tagID);
+  } catch (e) {
+    console.log(e.message);
   }
-  updateState('newSuccess', 'Tag ' + args.tagName + ' has been deleted');
-  deleteTag(args.tagName, args.tagID);
 }
 
 const MyTag = (props) => {
@@ -36,15 +40,19 @@ const addTag = async (tags, args, updateState, appendTag) => {
       return;
     }
   }
-  let res = await api.tag(`POST`, args);
-  const response = await res.json();
-  if (res.status >= 500) {
-    throw new Error("Bad response from server - Tag has failed - ", response.error);
-  } else if (res.status >= 400) {
-    updateState('newError', response.error);
-  } else {
-    updateState('newError', '');
-    appendTag(args.tagName, response.tag_id);
+  try {
+    let res = await api.tag(`POST`, args);
+    const response = await res.json();
+    if (res.status >= 500) {
+      throw new Error("Bad response from server - Tag has failed - ", response.error);
+    } else if (res.status >= 400) {
+      updateState('newError', response.error);
+    } else {
+      updateState('newError', '');
+      appendTag(args.tagName, response.tag_id);
+    }
+  } catch (e) {
+    console.log(e.message);
   }
 }
 

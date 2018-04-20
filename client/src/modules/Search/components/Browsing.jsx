@@ -9,8 +9,11 @@ import Downshift from 'downshift'
 import FilterLogo from '../../../design/icons/filter.svg'
 
 const GetGeocode = (location, updateState, globalUpdateState) => {
-    fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=AIzaSyCPhgHvPYOdkj1t5RLcvlRP_sTt6hgK71o`)
+    fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(location)}&key=AIzaSyCPhgHvPYOdkj1t5RLcvlRP_sTt6hgK71o`)
     .then(response => {
+      if (response.status >= 500) {
+        throw new Error("Bad response from Google - GetGeocode has failed");
+      }
       return response.json();
     })
     .then(data => {
@@ -22,6 +25,9 @@ const GetGeocode = (location, updateState, globalUpdateState) => {
       globalUpdateState('lng', location.lng);
       updateState('location', '');
       updateState('newLocation', data.results[0].formatted_address)
+    })
+    .catch((e) => {
+      console.log(e.message)
     })
 }
 

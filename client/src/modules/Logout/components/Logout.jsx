@@ -11,18 +11,22 @@ class Logout extends Component {
     const createError = () => {
       this.setState({ hasError: true });
     }
-    api.logout()
-    .then(function(response) {
-      if (response.status >= 400) {
-        localStorage.removeItem('matcha_token');
-        createError();
-        if (response.status >= 500) {
-          throw new Error("Bad response from server - Logout");
+    try {
+      api.logout()
+      .then(function(response) {
+        if (response.status >= 400) {
+          localStorage.removeItem('matcha_token');
+          createError();
+          if (response.status >= 500) {
+            throw new Error("Bad response from server - Logout");
+          }
+        } else {
+          return;
         }
-      } else {
-        return;
-      }
-    })
+      })
+    } catch (e) {
+      console.log(e.message);
+    }
   }
 
   render() {

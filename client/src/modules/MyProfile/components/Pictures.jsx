@@ -4,18 +4,22 @@ import api from '../../../library/api'
 import utils from '../../../library/utils/pictures.js'
 
 const getPicture = async (args, updatePicture, updateState) => {
-  let res = await api.editpicture(args);
-  if (res) {
-    const json = await res.json();
-    if (res.status >= 500) {
-      throw new Error("Bad response from server - getPicture has failed");
-    } else if (res.status >= 400) {
-      updateState('newError', json.error);
-      return;
-    } else {
-      updatePicture('picture_url_'+args.number, json.picture_url);
-      return;
+  try {
+    let res = await api.editpicture(args);
+    if (res) {
+      const json = await res.json();
+      if (res.status >= 500) {
+        throw new Error("Bad response from server - getPicture has failed");
+      } else if (res.status >= 400) {
+        updateState('newError', json.error);
+        return;
+      } else {
+        updatePicture('picture_url_'+args.number, json.picture_url);
+        return;
+      }
     }
+  } catch (e) {
+    console.log(e.message);
   }
 }
 

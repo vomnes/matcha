@@ -5,48 +5,58 @@ import Pin from '../../../design/icons/map-pin-64.png';
 import api from '../../../library/api'
 
 const GetGeocode = (address, updateData) => {
-    fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=AIzaSyCPhgHvPYOdkj1t5RLcvlRP_sTt6hgK71o`)
-    .then(response => {
-      return response.json();
-    })
-    .then(data => {
-      if (!data.results[0] || !data.results[0].geometry.location) {
-        updateData('error', 'Error: Invalid address');
-        return;
+  fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=AIzaSyCPhgHvPYOdkj1t5RLcvlRP_sTt6hgK71o`)
+  .then(response => {
+    if (response.status >= 500) {
+      throw new Error("Bad response from Google - GetGeocode has failed");
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (!data.results[0] || !data.results[0].geometry.location) {
+      updateData('error', 'Error: Invalid address');
+      return;
+    }
+    const location = data.results[0].geometry.location;
+    data.results[0].address_components.forEach((elem) => {
+      if (elem.types[0] === "locality") {
+        updateData("city", elem.long_name);
+      } else if (elem.types[0] === "postal_code") {
+        updateData("zip", elem.long_name);
+      } else if (elem.types[0] === "country") {
+        updateData("country", elem.long_name);
       }
-      const location = data.results[0].geometry.location;
-      data.results[0].address_components.forEach((elem) => {
-        if (elem.types[0] === "locality") {
-          updateData("city", elem.long_name);
-        } else if (elem.types[0] === "postal_code") {
-          updateData("zip", elem.long_name);
-        } else if (elem.types[0] === "country") {
-          updateData("country", elem.long_name);
-        }
-      });
-      updateData('lat', location.lat);
-      updateData('lng', location.lng);
-      updateData('geolocalisation_allowed', true);
-      updateData('address', '');
-      updateData('newAddress', true);
-      updateData('error', '');
-    })
+    });
+    updateData('lat', location.lat);
+    updateData('lng', location.lng);
+    updateData('geolocalisation_allowed', true);
+    updateData('address', '');
+    updateData('newAddress', true);
+    updateData('error', '');
+  })
+  .catch((e) => {
+    console.log(e.message);
+  })
 }
 
 const UpdateLocation = async (args, updateGlobalState, updateState) => {
-  let res = await api.location(args);
-  if (res) {
-    if (res.status >= 400) {
-      const response = await res.json();
-      if (res.status >= 500) {
-        throw new Error("Bad response from server - UpdateLocation has failed");
-      } else if (res.status >= 400) {
-        updateGlobalState('newError', 'Location: ' + response.error);
-        return
+  try {
+    let res = await api.location(args);
+    if (res) {
+      if (res.status >= 400) {
+        const response = await res.json();
+        if (res.status >= 500) {
+          throw new Error("Bad response from server - UpdateLocation has failed");
+        } else if (res.status >= 400) {
+          updateGlobalState('newError', 'Location: ' + response.error);
+          return
+        }
       }
+      updateState('newAddress', false);
+      return;
     }
-    updateState('newAddress', false);
-    return;
+  } catch (e) {
+    console.log(e.message);
   }
 }
 

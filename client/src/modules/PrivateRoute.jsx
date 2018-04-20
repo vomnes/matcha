@@ -7,16 +7,20 @@ import PageLayout from '../layouts/PageLayout';
 import api from '../library/api'
 
 const GetMe = async () => {
-  let res = await api.me();
-  if (res) {
-    const response = await res.json();
-    if (res.status >= 500) {
-      throw new Error("Bad response from server - GetMe has failed");
-    } else if (res.status >= 400) {
-      return res.status;
-    } else {
-      return response;
+  try {
+    let res = await api.me();
+    if (res) {
+      const response = await res.json();
+      if (res.status >= 500) {
+        throw new Error("Bad response from server - GetMe has failed");
+      } else if (res.status >= 400) {
+        return res.status;
+      } else {
+        return response;
+      }
     }
+  } catch (e) {
+    console.log(e.message);
   }
 }
 

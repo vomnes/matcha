@@ -14,26 +14,30 @@ const getSuccessContent = () => {
 }
 
 const signIn = (username, password, createError, redirectHome) => {
-  api.login({
-      username,
-      password,
-      'uuid': window.navigator.userAgent.replace(/\D+/g, ''),
-  }).then(function(response) {
-    if (response.status >= 500) {
-      throw new Error("Bad response from server - SignIn has failed");
-    } else if (response.status >= 400) {
-      response.json().then(function(data) {
-        createError(data.error);
+  try {
+    api.login({
+        username,
+        password,
+        'uuid': window.navigator.userAgent.replace(/\D+/g, ''),
+    }).then(function(response) {
+      if (response.status >= 500) {
+        throw new Error("Bad response from server - SignIn has failed");
+      } else if (response.status >= 400) {
+        response.json().then(function(data) {
+          createError(data.error);
+          return;
+        });
+      } else {
+        response.json().then(function(data) {
+          localStorage.setItem('matcha_token', data.token);
+          redirectHome();
+        });
         return;
-      });
-    } else {
-      response.json().then(function(data) {
-        localStorage.setItem('matcha_token', data.token);
-        redirectHome();
-      });
-      return;
-    }
-  })
+      }
+    })
+  } catch (e) {
+    console.log(e.message);
+  }
 }
 
 class Login extends Component {

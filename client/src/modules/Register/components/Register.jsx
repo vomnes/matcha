@@ -12,11 +12,11 @@ const signUp = (username, firstname, lastname, email, password, rePassword, crea
       email,
       password,
       rePassword
-  }).then(function(response) {
+  }).then((response) => {
     if (response.status >= 500) {
       throw new Error("Bad response from server - SignUp has failed");
     } else if (response.status >= 400) {
-      response.json().then(function(data) {
+      response.json().then((data) => {
         createError(data.error);
         return;
       });
@@ -24,7 +24,9 @@ const signUp = (username, firstname, lastname, email, password, rePassword, crea
       redirectLogin();
       return;
     }
-  })
+  }).catch((e) => {
+    console.log(e.message)
+  });
 }
 
 class Register extends Component {

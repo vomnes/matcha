@@ -6,63 +6,75 @@ import api from '../../../library/api'
 import encode from '../../../library/utils/encode.js'
 
 const GetMe = async (updateState) => {
-  let res = await api.me();
-  if (res) {
-    const response = await res.json();
-    if (res.status >= 500) {
-      throw new Error("Bad response from server - GetMe has failed");
-    } else if (res.status >= 400) {
-      console.log(response.error);
-    } else {
-      updateState("me", response);
-      return;
+  try {
+    let res = await api.me();
+    if (res) {
+      const response = await res.json();
+      if (res.status >= 500) {
+        throw new Error("Bad response from server - GetMe has failed");
+      } else if (res.status >= 400) {
+        console.log(response.error);
+      } else {
+        updateState("me", response);
+        return;
+      }
     }
+  } catch (e) {
+    console.log(e.message);
   }
 }
 
 const GetMatch = async (updateState, optionsBase64, profiles) => {
-  let res = await api.match(optionsBase64);
-  if (res) {
-    const response = await res.json();
-    if (res.status >= 500) {
-      throw new Error("Bad response from server - GetMatch has failed");
-    } else if (res.status >= 400) {
-      console.log(response.error);
-    } else {
-      if (response.data === "No (more) users") {
-        if (!profiles) {
-          updateState("profiles", []);
-        }
-        updateState("allDataCollected", true);
+  try {
+    let res = await api.match(optionsBase64);
+    if (res) {
+      const response = await res.json();
+      if (res.status >= 500) {
+        throw new Error("Bad response from server - GetMatch has failed");
+      } else if (res.status >= 400) {
+        console.log(response.error);
       } else {
-        if (profiles) {
-          updateState("profiles", response.concat(profiles));
-        } else {
-          updateState("profiles", response);
-        }
-        if (response.length < 20) {
+        if (response.data === "No (more) users") {
+          if (!profiles) {
+            updateState("profiles", []);
+          }
           updateState("allDataCollected", true);
         } else {
-          updateState("allDataCollected", false);
+          if (profiles) {
+            updateState("profiles", response.concat(profiles));
+          } else {
+            updateState("profiles", response);
+          }
+          if (response.length < 20) {
+            updateState("allDataCollected", true);
+          } else {
+            updateState("allDataCollected", false);
+          }
         }
+        return;
       }
-      return;
     }
+  } catch (e) {
+    console.log(e.message);
   }
 }
 
 const GetTags = async (updateState) => {
-  let res = await api.existingTags();
-  if (res) {
-    const response = await res.json();
-    if (res.status >= 500) {
-      throw new Error("Bad response from server - GetMatch has failed");
-    } else if (res.status >= 400) {
-      console.log(response.error);
-    } else {
-      updateState("existingTags", response);
-      return;
+  try {
+    let res = await api.existingTags();
+    if (res) {
+      const response = await res.json();
+      if (res.status >= 500) {
+        throw new Error("Bad response from server - GetMatch has failed");
+      } else if (res.status >= 400) {
+        console.log(response.error);
+      } else {
+        updateState("existingTags", response);
+        return;
+      }
     }
+  } catch (e) {
+    console.log(e.message);
   }
 }
 

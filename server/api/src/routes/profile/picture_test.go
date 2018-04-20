@@ -92,12 +92,12 @@ func TestPictureUploadFailToGeneratePng(t *testing.T) {
 		testApplicantServer().ServeHTTP(w, r)
 	})
 	// Check : Content stardard output
-	expectedError := "[Base 64] Failed to generate png file"
+	expectedError := "Failed to generate png file"
 	if !strings.Contains(output, expectedError) {
 		t.Errorf("Must write an error on the standard output that contains '%s'\nnot '%s'\n", expectedError, output)
 	}
-	strError := tests.CompareResponseJSONCode(w, 500, map[string]interface{}{
-		"error": "Failed to generate png file",
+	strError := tests.CompareResponseJSONCode(w, 406, map[string]interface{}{
+		"error": "Corrupted png file",
 	})
 	if strError != nil {
 		t.Errorf("%v", strError)
@@ -119,12 +119,12 @@ func TestPictureUploadFailToGenerateJpg(t *testing.T) {
 		testApplicantServer().ServeHTTP(w, r)
 	})
 	// Check : Content stardard output
-	expectedError := "[Base 64] Failed to generate jpg file"
+	expectedError := "Failed to generate jpg file"
 	if !strings.Contains(output, expectedError) {
 		t.Errorf("Must write an error on the standard output that contains '%s'\nNot: %s\n", expectedError, output)
 	}
-	strError := tests.CompareResponseJSONCode(w, 500, map[string]interface{}{
-		"error": "Failed to generate jpg file",
+	strError := tests.CompareResponseJSONCode(w, 406, map[string]interface{}{
+		"error": "Corrupted jpg file",
 	})
 	if strError != nil {
 		t.Errorf("%v", strError)
@@ -146,12 +146,12 @@ func TestPictureUploadFailToGenerateJpeg(t *testing.T) {
 		testApplicantServer().ServeHTTP(w, r)
 	})
 	// Check : Content stardard output
-	expectedError := "[Base 64] Failed to generate jpeg file"
+	expectedError := "Failed to generate jpeg file"
 	if !strings.Contains(output, expectedError) {
 		t.Errorf("Must write an error on the standard output that contains '%s'\nNot: %s\n", expectedError, output)
 	}
-	strError := tests.CompareResponseJSONCode(w, 500, map[string]interface{}{
-		"error": "Failed to generate jpeg file",
+	strError := tests.CompareResponseJSONCode(w, 406, map[string]interface{}{
+		"error": "Corrupted jpeg file",
 	})
 	if strError != nil {
 		t.Errorf("%v", strError)

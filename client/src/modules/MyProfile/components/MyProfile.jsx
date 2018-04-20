@@ -10,89 +10,107 @@ import api from '../../../library/api'
 const queryString = require('query-string');
 
 const getProfileData = async (ip, updateState, setStateGenre) => {
-  let res = await api.getprofile(ip);
-  if (res) {
-    const response = await res.json();
-    if (res.status >= 500) {
-      throw new Error("Bad response from server - GetProfileData has failed");
-    } else if (res.status >= 400) {
-      console.log(response.error);
-    } else {
-      updateState("data", response);
-      setStateGenre();
-      return;
+  try {
+    let res = await api.getprofile(ip);
+    if (res) {
+      const response = await res.json();
+      if (res.status >= 500) {
+        throw new Error("Bad response from server - GetProfileData has failed");
+      } else if (res.status >= 400) {
+        console.log(response.error);
+      } else {
+        updateState("data", response);
+        setStateGenre();
+        return;
+      }
     }
+  } catch (e) {
+    console.log(e.message);
   }
 }
 
 const getIP = async (getData, updateState, setStateGenre) => {
-  let res;
-  res = await fetch("https://freegeoip.net/json/", {
-    method: 'GET',
-    mod: 'no-cors',
-  });
-  if (res) {
-    const json = await res.json();
-    getData(json.ip, updateState, setStateGenre);
-    return;
+  try {
+    let res = await fetch("https://freegeoip.net/json/", {
+      method: 'GET',
+      mod: 'no-cors',
+    });
+    if (res) {
+      if (res.status >= 500) {
+        throw new Error("Bad response from freegeoip - getIP has failed");
+      }
+      const json = await res.json();
+      getData(json.ip, updateState, setStateGenre);
+      return;
+    }
+  } catch (e) {
+    console.log(e.message);
   }
 }
 
 const editProfile = async (args, originalData, updateState, updatePersonal, updateData) => {
-  let res = await api.editprofile(args);
-  if (res && res.status >= 400) {
-    const response = await res.json();
-    if (res.status >= 500) {
-      throw new Error("Bad response from server - EditProfile has failed - ", response.error);
-    } else if (res.status >= 400) {
-      updateState('newError', response.error);
+  try {
+    let res = await api.editprofile(args);
+    if (res && res.status >= 400) {
+      const response = await res.json();
+      if (res.status >= 500) {
+        throw new Error("Bad response from server - EditProfile has failed - ", response.error);
+      } else if (res.status >= 400) {
+        updateState('newError', response.error);
+      }
+    } else {
+      updateState('newError', '');
+      if (args.firstname) {
+        updateData('firstname', args.firstname);
+        updatePersonal('firstname', '');
+      }
+      if (args.lastname) {
+        updateData('lastname', args.lastname);
+        updatePersonal('lastname', '');
+      }
+      if (args.email) {
+        updateData('email', args.email);
+        updatePersonal('email', '');
+      }
+      if (args.biography) {
+        updateData('biography', args.biography);
+        updatePersonal('biography', '');
+      }
+      if (args.birthday) {
+        updateData('birthday', args.birthday);
+        updatePersonal('birthday', '');
+      }
+      if (args.genre !== originalData.genre) {
+        updateData('genre', args.genre);
+      }
+      if (args.interesting_in !== originalData.interesting_in) {
+        updateData('interesting_in', args.interesting_in);
+      }
     }
-  } else {
-    updateState('newError', '');
-    if (args.firstname) {
-      updateData('firstname', args.firstname);
-      updatePersonal('firstname', '');
-    }
-    if (args.lastname) {
-      updateData('lastname', args.lastname);
-      updatePersonal('lastname', '');
-    }
-    if (args.email) {
-      updateData('email', args.email);
-      updatePersonal('email', '');
-    }
-    if (args.biography) {
-      updateData('biography', args.biography);
-      updatePersonal('biography', '');
-    }
-    if (args.birthday) {
-      updateData('birthday', args.birthday);
-      updatePersonal('birthday', '');
-    }
-    if (args.genre !== originalData.genre) {
-      updateData('genre', args.genre);
-    }
-    if (args.interesting_in !== originalData.interesting_in) {
-      updateData('interesting_in', args.interesting_in);
-    }
+  } catch (e) {
+    console.log(e.message);
   }
 }
 
 const editPassword = async (args, updateState) => {
-  let res = await api.editpassword(args);
-  if (res && res.status >= 400) {
-    const response = await res.json();
-    if (res.status >= 500) {
-      throw new Error("Bad response from server - editPassword has failed - ", response.error);
-    } else if (res.status >= 400) {
-      updateState('newError', response.error);
+  try {
+    let res = await api.editpassword(args);
+    if (res && res.status >= 400) {
+      const response = await res.json();
+      if (res.status >= 500) {
+        throw new Error("Bad response from server - editPassword has failed - ", response.error);
+      } else if (res.status >= 400) {
+        updateState('newError', response.error);
+      }
+    } else {
+      updateState('newError', '');
+      updateState('newSuccess', 'Password updated');
+      updateState('password', '');
+      updateState('new_password', '');
+      updateState('new_rePassword', '');
     }
-  } else {
-    updateState('newError', '');
-    updateState('newSuccess', 'Password updated');
-    updateState('password', '');
-    updateState('new_password', '');
-    updateState('new_rePassword', '');
+  } catch (e) {
+    console.log(e.message);
   }
 }
 
@@ -101,19 +119,23 @@ const isEmpty = (value) => {
 }
 
 const deletePicture = async (args, updateStateData, updateState) => {
-  let res = await api.editpicture(args);
-  if (res) {
-    if (res.status >= 400) {
-      const json = await res.json();
-      if (res.status >= 500) {
-        throw new Error("Bad response from server - deletePicture has failed");
-      } else if (res.status >= 400) {
-        updateState('newError', json.error);
-        return;
+  try {
+    let res = await api.editpicture(args);
+    if (res) {
+      if (res.status >= 400) {
+        const json = await res.json();
+        if (res.status >= 500) {
+          throw new Error("Bad response from server - deletePicture has failed");
+        } else if (res.status >= 400) {
+          updateState('newError', json.error);
+          return;
+        }
       }
+      updateStateData('picture_url_'+args.number, '');
+      return;
     }
-    updateStateData('picture_url_'+args.number, '');
-    return;
+  } catch (e) {
+    console.log(e.message);
   }
 }
 

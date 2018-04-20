@@ -12,38 +12,46 @@ import utils from '../../../library/utils/pictures.js'
 var moment = require('moment');
 
 const getUserData = async (username, updateState) => {
-  let res = await api.getuser(username);
-  if (res) {
-    const response = await res.json();
-    if (res.status >= 500) {
-      updateState("userExist", false);
-      throw new Error("Bad response from server - GetUserData has failed");
-    } else if (res.status >= 400) {
-      updateState("userExist", false);
-      console.log(response.error);
-    } else {
-      updateState("data", response);
-      return;
+  try {
+    let res = await api.getuser(username);
+    if (res) {
+      const response = await res.json();
+      if (res.status >= 500) {
+        updateState("userExist", false);
+        throw new Error("Bad response from server - GetUserData has failed");
+      } else if (res.status >= 400) {
+        updateState("userExist", false);
+        console.log(response.error);
+      } else {
+        updateState("data", response);
+        return;
+      }
     }
+  } catch (e) {
+    console.log(e.message);
   }
 }
 
 const targetedMatch = async (optionsBase64, username, updateState) => {
-  let res = await api.targetedmatch(optionsBase64, username);
-  if (res) {
-    const response = await res.json();
-    if (res.status >= 500) {
-      throw new Error("Bad response from server - GetMatch has failed");
-    } else if (res.status >= 400) {
-      console.log(response.error);
-    } else {
-      if (response.previous) {
-        updateState("previousProfile", response.previous);
-      }
-      if (response.next) {
-        updateState("nextProfile", response.next);
+  try {
+    let res = await api.targetedmatch(optionsBase64, username);
+    if (res) {
+      const response = await res.json();
+      if (res.status >= 500) {
+        throw new Error("Bad response from server - GetMatch has failed");
+      } else if (res.status >= 400) {
+        console.log(response.error);
+      } else {
+        if (response.previous) {
+          updateState("previousProfile", response.previous);
+        }
+        if (response.next) {
+          updateState("nextProfile", response.next);
+        }
       }
     }
+  } catch (e) {
+    console.log(e.message);
   }
 }
 
@@ -153,7 +161,7 @@ class SeeProfile extends Component {
     wsConn.onmessage = (e) => {
       try {
         var msg = JSON.parse(e.data);
-      } catch (e) {
+      } catch (err) {
         return;
       }
       this.handleWebsocket(msg);
