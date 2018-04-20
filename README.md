@@ -38,7 +38,7 @@ I haven't used any HTML/CSS framework, everything from scratch with a responsive
 - A map with the position of the matched profiles
 
 <img alt="Browsing" src="./screenshots/browsing.png" width="75%" title="browsing">
-<img alt="Browsing responsive" src="./screenshots/browsing-responsive.png" width="75%" title="browsing responsive">
+<img alt="Browsing responsive" src="./screenshots/browsing-responsive.png" width="40%" title="browsing responsive">
 
 ### See profile
 - User data
