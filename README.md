@@ -12,8 +12,6 @@ I haven't used any HTML/CSS framework, everything from scratch with a responsive
 
 ## Features
 
-<img alt="Register visual" src="./screenshots/Register.gif" title="Register">
-
 ### Profile
 - Create an account
 - Reset your password through an unique link sent by email (Using third party MailJet)
@@ -31,10 +29,16 @@ I haven't used any HTML/CSS framework, everything from scratch with a responsive
   * Location - Default IP location
   * Tag list
 
+<img alt="Login" src="./screenshots/login.png" title="login">
+<img alt="Profile" src="./screenshots/my-profile.png" title="profile">
+
 ### Browsing
 - List suggested profiles (age, interesting in, location)
 - Search and filter profiles according age, location, rating, tags
 - A map with the position of the matched profiles
+
+<img alt="Browsing" src="./screenshots/browsing.png" width="75%" title="browsing">
+<img alt="Browsing responsive" src="./screenshots/browsing-responsive.png" title="browsing responsive">
 
 ### See profile
 - User data
@@ -50,9 +54,14 @@ I haven't used any HTML/CSS framework, everything from scratch with a responsive
 - Like/Dislike the profile
 - Report as fake account/Remove fake account report (a reported as fake user, block notification and doesn't appear any more in the searches)
 
+<img alt="Profile 1" src="./screenshots/profile-1.png" width="75%" title="profile 1">
+<img alt="Profile 2" src="./screenshots/profile-2.png" width="75%" title="profile 2">
+
 ### Chat with the matches (both liked each other)
 - Show all the messages shared
 - Able to chat with the matched profiles (live - websocket)
+
+<img alt="Matches and notifications" src="./screenshots/matches.png" width="75%" title="Matches and notifications">
 
 ### Notifications
 - See when the logged user has received a view (profile), like, match, unmatch and a new message

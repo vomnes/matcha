@@ -115,8 +115,6 @@ SELECT (2 * 6371 *
 $BODY$
 LANGUAGE sql IMMUTABLE COST 100;
 
-INSERT INTO Users (username, email, lastname, firstname, password) VALUES ('vomnes', 'valentin.omnes@gmail.com', 'Omnes', 'Valentin', '$2a$10$pgek6WtdhtKmGXPWOOtEf.gsgtNXOkqr3pBjaCCa9il6XhRS7LAua');
-
 \echo '----- Initialize db_matcha_tests -----'
 
 DROP DATABASE IF EXISTS db_matcha_tests;
