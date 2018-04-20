@@ -8,7 +8,7 @@ const unlinkTag = async (args, updateState, deleteTag) => {
     if (res && res.status >= 400) {
       const response = await res.json();
       if (res.status >= 500) {
-        throw new Error("Bad response from server - Tag has failed - ", response.error);
+        throw new Error("Bad response from server - Tag has failed - " + response.error);
       } else if (res.status >= 400) {
         updateState('newError', response.error);
         return;
@@ -44,7 +44,7 @@ const addTag = async (tags, args, updateState, appendTag) => {
     let res = await api.tag(`POST`, args);
     const response = await res.json();
     if (res.status >= 500) {
-      throw new Error("Bad response from server - Tag has failed - ", response.error);
+      throw new Error("Bad response from server - Tag has failed - " + response.error);
     } else if (res.status >= 400) {
       updateState('newError', response.error);
     } else {

@@ -11,7 +11,7 @@ const like = async (isLiked, method, username, updateStateHere, updateState, han
     let res = await api.like(method, username);
     const response = await res.json();
     if (res.status >= 500) {
-      throw new Error("Bad response from server - Like has failed - ", response.error);
+      throw new Error("Bad response from server - Like has failed - " + response.error);
     } else if (res.status >= 400) {
       updateState('newError', response.error);
       return;
@@ -46,7 +46,7 @@ const fake = async (method, username, updateStateHere, updateState) => {
     if (res.status >= 400) {
       const response = await res.json();
       if (res.status >= 500) {
-        throw new Error("Bad response from server - Fake has failed - ", response.error);
+        throw new Error("Bad response from server - Fake has failed - " + response.error);
       } else if (res.status >= 400) {
         updateState('newError', response.error);
         return;
