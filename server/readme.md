@@ -6,6 +6,12 @@ This is the backend of the project written in Golang, everything is unit tested.
 - [API](./api)
 - [Websocket](./websocket)
 
+**Note to myself for my next web project:**
+> Store useful variables (db, userid, username, errors has occurred) inside a structure
+
+> Create a lib to handle easily and in standardised way the database requests
+
+
 ## Launch on UNIX system
 
 ### Setup
