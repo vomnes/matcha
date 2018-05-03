@@ -127,10 +127,7 @@ class SeeProfile extends Component {
     this.updateStateData("nextProfile", {});
     getUserData(username, this.updateStateData);
     targetedMatch(this.state.searchparameters, username, this.updateStateData);
-    wsSend(this.state.wsConn, {
-      "event": "view",
-      "target": username,
-    });
+    this.handleWebsocketSend("view", username);
     this.props.match.params.username = username;
   }
   handleWebsocket = (msg) => {
